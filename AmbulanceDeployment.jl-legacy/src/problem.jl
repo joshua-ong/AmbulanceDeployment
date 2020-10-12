@@ -1,4 +1,4 @@
-type DeploymentProblem{ IM <: AbstractMatrix{Int},
+struct DeploymentProblem{ IM <: AbstractMatrix{Int},
                         BM <: AbstractMatrix{Bool}}
     nambulances::Int
     nlocations::Int

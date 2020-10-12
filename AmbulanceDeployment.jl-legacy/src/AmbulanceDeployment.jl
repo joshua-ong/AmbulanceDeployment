@@ -1,7 +1,7 @@
 module AmbulanceDeployment
 
     import JuMP, Gurobi
-    import Base.Collections: PriorityQueue, enqueue!, dequeue!
+    import DataStructures: PriorityQueue, enqueue!, dequeue!
     import DataFrames: DataFrame, isna, nrow
     import Distributions: Poisson, LogNormal, quantile, sample
 
