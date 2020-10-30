@@ -1,7 +1,13 @@
-using Distributions, JLD, CSV, DataFrames
+using Distributions, JLD, CSV, DataFrames,Pkg
+
+Pkg.add("Gurobi")
+Pkg.add("JuMP")
+using Gurobi
+using JuMP
 
 abstract type BM <: AbstractMatrix{Bool} end
 abstract type IM <: AbstractMatrix{Int} end
+
 
 struct DeploymentProblem{ IM <: AbstractMatrix{Int},
                         BM <: AbstractMatrix{Bool}}
@@ -14,6 +20,8 @@ struct DeploymentProblem{ IM <: AbstractMatrix{Int},
     coverage::BM    # nregion x nlocation !! can potentially break !!
     adjacency::BM   # nregion x nregion !! can potentially break !!
 end
+
+# ambulance deployment problem _ determines where to put ambulances
 
 function DeploymentProblem(
         hourly_calls::DataFrame,
@@ -79,6 +87,8 @@ end
 
 test_calls = CSV.File("test_calls.csv") |> DataFrame
 
+# ambulance routing problem / where the ambulances should go based on a call
+
 mutable struct DispatchProblem
     emergency_calls::DataFrame
     hospitals::DataFrame
@@ -130,3 +140,151 @@ function DispatchProblem(
 end
 
 problem = DispatchProblem(test_calls, hospitals, stations, p.coverage, x, turnaround=turnaround)
+
+# defined a new abstract DispatchModel and struct (abstract contained in model.jl)
+# struct defined in ClosestDispatch.jl
+
+abstract type DispatchModel end
+
+struct ClosestDispatch <: DispatchModel
+           drivetime::DataFrame
+           candidates::Vector{Vector{Int}}
+       end
+# defined a ClosestDispatch Function 
+
+function ClosestDispatch(p::DeploymentProblem, drivetime::DataFrame)
+    candidates = Array(Vector{Int}, p.nregions)
+    I = 1:p.nlocations
+    for region in 1:p.nregions
+        candidates[region] = I[vec(p.coverage[region,:])]
+    end
+    ClosestDispatch(drivetime, candidates)
+end
+
+
+
+struct AssignmentModel <: RedeployModel
+           model::Gurobi.Model
+           lambda::Float64
+
+           hosp2stn::Matrix{Float64}
+           stn2stn::Matrix{Float64}
+
+           assignment::Vector{Int} # which location the ambulance is assigned to
+           ambulances::Vector{Vector{Int}} # list of ambulances assigned to each location
+           status::Vector{Symbol} # the current status of the ambulance
+               # possible statuses: :available, :responding, :atscene, :conveying, :returning
+           fromtime::Vector{Int} # the time it started the new status
+           hospital::Vector{Int} # the hospital the ambulance is at (0 otherwise)
+
+           soln::Vector{Float64} # buffer for storing dynamic assignment solutions
+       end
+       
+function AssignmentModel(
+        p::DeploymentProblem,
+        available::Vector{Int},
+        # utilization::Vector{Float64},
+        hospitals::DataFrame,
+        stations::DataFrame;
+        lambda::Float64 = 100.0
+    )
+
+    nambulances = sum(available)
+    nlocations = length(available)
+    assignment = zeros(Int, nambulances)
+
+    hosp2stn = convert(Matrix{Float64},
+        hcat([hospitals[Symbol("stn$(i)_min")] for i in 1:nlocations]...)
+    )
+    stn2stn =  convert(Matrix{Float64},
+        hcat([stations[Symbol("stn$(i)_min")] for i in 1:nlocations]...)
+    )
+
+    k = 1
+    ambulances = [Int[] for i in 1:nlocations]
+    for i in eachindex(available), j in 1:available[i]
+        assignment[k] = i
+        push!(ambulances[i], k)
+        k += 1
+    end
+    @assert k == nambulances + 1
+
+    @assert sum(length(a) for a in ambulances) == nambulances
+    status = fill(:available, nambulances)
+    fromtime = zeros(Int, nambulances)
+    hospital = zeros(Int, nambulances)
+
+    m = Gurobi.Model(Gurobi.Env(), "redeploy", :minimize)
+    Gurobi.setparam!(m, "OutputFlag", 0)
+    for a in 1:nambulances, i in 1:nlocations # w variables
+        Gurobi.add_bvar!(m, 0.)
+    end
+    for i in 1:nlocations # eta1
+        Gurobi.add_cvar!(m, 0., -Inf, Inf)
+    end
+    for a in 1:nambulances, i in 1:nlocations # eta2 variables
+        Gurobi.add_cvar!(m, lambda, 0., Inf)
+    end
+    for i in 1:nlocations # eta3 := eta1^2
+        Gurobi.add_cvar!(m, 1., 0., Inf)
+    end
+
+    # η₁[i] >= available[i] - sum(w[a,i] for a in 1:nambulances)
+    #     reformulated to
+    # sum(w[a,i] for a in 1:nambulances) + η₁[i] >= available[i]
+    for i in 1:nlocations
+            Gurobi.add_constr!(m,
+                   [((1:nambulances).-1)*nlocations.+i; nambulances*nlocations + i], # inds
+                   ones(nambulances + 1), # coeffs
+                   '>', Float64(available[i]))
+           end
+
+    ## repaired with dot syntax 
+
+    # sum(w[a,i] for i in 1:nlocations) == 1       [a=1:nambulances]
+    for a in 1:nambulances
+        Gurobi.add_constr!(m,
+            collect((a-1)*nlocations .+ (1:nlocations)), # inds
+            ones(nlocations), # coeffs
+            '=', 1.)
+    end
+
+    # eta2[a,i] >= |w[a,i] - (assignment[a] == i)|   [a=1:nambulances, i=1:nlocations]
+    #     reformulated to
+    # eta2[a,i] >= w[a,i] - (assignment[a] == i)   i.e. eta2[a,i] - w[a,i] >= -(assignment[a] == i)
+    # eta2[a,i] >= - w[a,i] + (assignment[a] == i) i.e. eta2[a,i] + w[a,i] >=  (assignment[a] == i)
+    for a in 1:nambulances, i in 1:nlocations
+        offset = (a-1)*nlocations + i
+        inds = [(nambulances+1)*nlocations + offset, offset]
+        Gurobi.add_constr!(m, inds, [1., -1.], '>', - Float64(assignment[a] == i))
+        Gurobi.add_constr!(m, inds, [1., 1.], '>', Float64(assignment[a] == i))
+    end
+
+    # eta3[i] = eta1[i]^2
+    #     reformulated into
+    # eta3[i] >= 0
+    # eta3[i] >= 1 + 2*eta1[i]
+    # eta3[i] >= 4 + 4*eta1[i]
+    # eta3[i] >= 9 + 6*eta1[i]
+    # ...
+    for i in 1:nlocations
+        for k in 0.1:0.1:0.9
+            Gurobi.add_constr!(m,
+                [2*nambulances*nlocations + nlocations + i, nambulances*nlocations + i], # inds
+                [1., -2*k], # coeffs
+                '>', Float64(k^2))
+        end
+        for k in 1:3
+            Gurobi.add_constr!(m,
+                [2*nambulances*nlocations + nlocations + i, nambulances*nlocations + i], # inds
+                [1., -Float64(2*k)], # coeffs
+                '>', Float64(k^2))
+        end
+    end
+
+    AssignmentModel(m, lambda, hosp2stn, stn2stn, assignment, ambulances,
+                    status, fromtime, hospital, zeros(nambulances*nlocations))
+end
+
+
+redeploy = AssignmentModel(p, x, hospitals, stations, lambda=Float64(lambda))
