@@ -8,6 +8,10 @@ using JuMP
 abstract type BM <: AbstractMatrix{Bool} end
 abstract type IM <: AbstractMatrix{Int} end
 
+abstract type DispatchModel end
+abstract type DeploymentModel end
+abstract type RedeployModel end 
+
 
 struct DeploymentProblem{ IM <: AbstractMatrix{Int},
                         BM <: AbstractMatrix{Bool}}
@@ -143,8 +147,6 @@ problem = DispatchProblem(test_calls, hospitals, stations, p.coverage, x, turnar
 
 # defined a new abstract DispatchModel and struct (abstract contained in model.jl)
 # struct defined in ClosestDispatch.jl
-
-abstract type DispatchModel end
 
 struct ClosestDispatch <: DispatchModel
            drivetime::DataFrame
