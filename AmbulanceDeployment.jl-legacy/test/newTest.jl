@@ -10,7 +10,7 @@ abstract type IM <: AbstractMatrix{Int} end
 
 abstract type DispatchModel end
 abstract type DeploymentModel end
-abstract type RedeployModel end 
+abstract type RedeployModel end
 
 
 struct DeploymentProblem{ IM <: AbstractMatrix{Int},
@@ -104,7 +104,7 @@ mutable struct DispatchProblem
     wait_queue::Vector{Vector{Int}} # length nbhd
     available::Vector{Int} # length stns
     redeploy_events::Vector{Tuple{Int,Int,Int,Int}} # amb,from,to,time
-    
+
     DispatchProblem(emergency_data::DataFrame,
                         hospitals::DataFrame,
                         stations::DataFrame,
@@ -121,7 +121,7 @@ function initialize!(problem::DispatchProblem, deployment::Vector{Int})
 
     problem.emergency_calls[:arrival_seconds] =
         cumsum(problem.emergency_calls[:interarrival_seconds])
-    
+
     problem
 end
 
@@ -152,7 +152,7 @@ struct ClosestDispatch <: DispatchModel
            drivetime::DataFrame
            candidates::Vector{Vector{Int}}
        end
-# defined a ClosestDispatch Function 
+# defined a ClosestDispatch Function
 
 function ClosestDispatch(p::DeploymentProblem, drivetime::DataFrame)
     candidates = Array(Vector{Int}, p.nregions)
@@ -161,6 +161,11 @@ function ClosestDispatch(p::DeploymentProblem, drivetime::DataFrame)
         candidates[region] = I[vec(p.coverage[region,:])]
     end
     ClosestDispatch(drivetime, candidates)
+end
+
+function ClosestDispatch(p::DeploymentProblem, problem::DispatchProblem)
+    stn_names = [Symbol("stn$(i)_min") for i in 1:size(p.coverage,2)]
+    ClosestDispatch(p, problem.emergency_calls[:, stn_names])
 end
 
 
@@ -181,7 +186,7 @@ struct AssignmentModel <: RedeployModel
 
            soln::Vector{Float64} # buffer for storing dynamic assignment solutions
        end
-       
+
 function AssignmentModel(
         p::DeploymentProblem,
         available::Vector{Int},
@@ -241,7 +246,7 @@ function AssignmentModel(
                    '>', Float64(available[i]))
            end
 
-    ## repaired with dot syntax 
+    ## repaired with dot syntax
 
     # sum(w[a,i] for i in 1:nlocations) == 1       [a=1:nambulances]
     for a in 1:nambulances
@@ -290,3 +295,13 @@ end
 
 
 redeploy = AssignmentModel(p, x, hospitals, stations, lambda=Float64(lambda))
+dispatch = ClosestDispatch(p, problem)
+
+# id 145 dispatch to nbhd 88
+using Random
+
+include("../src/simulate.jl")
+Random.seed!(1234) # reset seed
+@time df = simulate_events!(problem, dispatch, redeploy)
+@show mean(df[:waittime]), maximum(df[:waittime])
+@show mean(df[:waittime] + df[:responsetime])
