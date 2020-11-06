@@ -19,7 +19,7 @@ function EMSEngine(problem::DispatchProblem)
         hospital = zeros(Int, ncalls),
         ambulance = zeros(Int, ncalls)
     )
-    eventqueue = PriorityQueue{Tuple{Symbol,Int,Int,Int},Int,Base.Order.ForwardOrdering}()
+    eventqueue = PriorityQueue{Tuple{Symbol,Int,Int,Int},Int}()
     for i in 1:nrow(problem.emergency_calls)
         t = problem.emergency_calls[i, :arrival_seconds]
         enqueue!(eventqueue, (:call, i, t, problem.emergency_calls[i, :neighborhood]), t)
