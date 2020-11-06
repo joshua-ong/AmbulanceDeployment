@@ -1,7 +1,12 @@
-using Distributions, JLD, CSV, DataFrames,Pkg
+Pkg.add("JLD")
+Pkg.add("CSV")
+Pkg.add("DataFrames")
+Pkg.add("DataStructures")
 
 Pkg.add("Gurobi")
 Pkg.add("JuMP")
+
+using Distributions, JLD, CSV, DataFrames, Pkg, DataStructures
 using Gurobi
 using JuMP
 
