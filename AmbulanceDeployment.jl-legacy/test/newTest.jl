@@ -155,10 +155,12 @@ struct ClosestDispatch <: DispatchModel
 # defined a ClosestDispatch Function
 
 function ClosestDispatch(p::DeploymentProblem, drivetime::DataFrame)
-    candidates = Array(Vector{Int}, p.nregions)
+    #candidates = Array{Vector{Int},p.nregions}
+    candidates = Any[]
     I = 1:p.nlocations
     for region in 1:p.nregions
-        candidates[region] = I[vec(p.coverage[region,:])]
+        #candidates[region] = I[vec(p.coverage[region,:])]
+        push!(candidates, I[vec(p.coverage[region,:])])
     end
     ClosestDispatch(drivetime, candidates)
 end
