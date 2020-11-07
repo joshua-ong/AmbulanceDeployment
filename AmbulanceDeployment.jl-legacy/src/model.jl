@@ -1,8 +1,8 @@
-abstract DeploymentModel
+abstract type DeploymentModel end
 
-abstract DispatchModel
+abstract type DispatchModel end
 
-abstract RedeployModel
+abstract type RedeployModel end
     # Interface
     # =========
     # assignment::Vector{Int} # which location the ambulance is assigned to
