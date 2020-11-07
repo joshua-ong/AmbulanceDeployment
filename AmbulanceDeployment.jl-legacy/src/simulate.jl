@@ -1,5 +1,5 @@
 
-type EMSEngine{T}
+mutable struct EMSEngine{T}
     eventlog::DataFrame
     eventqueue::PriorityQueue{T,Int,Base.Order.ForwardOrdering}
 end
@@ -19,7 +19,7 @@ function EMSEngine(problem::DispatchProblem)
         hospital = zeros(Int, ncalls),
         ambulance = zeros(Int, ncalls)
     )
-    eventqueue = PriorityQueue{Tuple{Symbol,Int,Int,Int},Int,Base.Order.ForwardOrdering}()
+    eventqueue = PriorityQueue{Tuple{Symbol,Int,Int,Int},Int}()
     for i in 1:nrow(problem.emergency_calls)
         t = problem.emergency_calls[i, :arrival_seconds]
         enqueue!(eventqueue, (:call, i, t, problem.emergency_calls[i, :neighborhood]), t)
@@ -41,7 +41,7 @@ function call_event!(
         @assert false "$id: no ambulance reachable for call at $nbhd"
     elseif sum(problem.available[problem.coverage[nbhd,:]]) > 0
         i = available_for(dispatch, id, problem)
-        @assert i > 0 "$id: dispatch from $i to nbhd $nbhd" # assume valid i (enforced by <if> condition) 
+        @assert i > 0 "$id: dispatch from $i to nbhd $nbhd" # assume valid i (enforced by <if> condition)
         update_ambulances!(dispatch, i, -1)
         ems.eventlog[id, :dispatch_from] = i
         @assert problem.available[i] > 0
@@ -50,7 +50,7 @@ function call_event!(
         travel_time = ceil(Int, 60*2*problem.emergency_calls[id, Symbol("stn$(i)_min")])
         @assert travel_time >= 0
         ems.eventlog[id, :responsetime] = travel_time / 60 # minutes
-        
+
         amb = respond_to!(redeploy, i, t)
         ems.eventlog[id, :ambulance] = amb
         enqueue!(ems.eventqueue, (:arrive, id, t + travel_time, amb), t + travel_time)
