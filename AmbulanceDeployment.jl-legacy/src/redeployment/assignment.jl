@@ -1,4 +1,4 @@
-type AssignmentModel <: RedeployModel
+struct AssignmentModel <: RedeployModel
     model::Gurobi.Model
     lambda::Float64
 

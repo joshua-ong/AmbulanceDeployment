@@ -16,7 +16,7 @@ abstract type RedeployModel end
 
 function respond_to!(redeploy::RedeployModel, i::Int, t::Int)
     @assert length(redeploy.ambulances[i]) > 0 "$i: $(redeploy.ambulances[i])"
-    amb = shift!(redeploy.ambulances[i])
+    amb = popfirst!(redeploy.ambulances[i])
     # @assert redeploy.hospital[amb] == 0
     @assert amb != 0
     @assert redeploy.status[amb] == :available "$amb: $(redeploy.status[amb])"

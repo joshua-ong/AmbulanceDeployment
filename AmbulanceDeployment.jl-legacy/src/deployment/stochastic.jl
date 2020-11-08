@@ -1,6 +1,6 @@
-type StochasticDeployment <: DeploymentModel
+struct StochasticDeployment <: DeploymentModel
     m::JuMP.Model
-    x::Vector{JuMP.Variable}
+    x::Vector{JuMP.VariableRef}
 end
 deployment(m::StochasticDeployment) = [round(Int,x) for x in JuMP.getvalue(m.x)]
 

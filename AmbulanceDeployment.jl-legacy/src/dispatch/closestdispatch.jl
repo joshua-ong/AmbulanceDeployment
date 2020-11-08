@@ -1,4 +1,4 @@
-type ClosestDispatch <: DispatchModel
+struct ClosestDispatch <: DispatchModel
     drivetime::DataFrame
     candidates::Vector{Vector{Int}}
 end

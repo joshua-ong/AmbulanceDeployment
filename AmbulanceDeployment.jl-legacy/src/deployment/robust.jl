@@ -1,30 +1,33 @@
-type Gamma
+
+struct Gamma
     _single::Vector{Int}
     _local::Vector{Int}
     _regional::Vector{Int}
     _global::Int
 end
 
-type Qrobust
+
+#might need to change JuMP.Variable into JuMP.VariableRef
+struct Qrobust
     m::JuMP.Model
     I::UnitRange{Int}
     J::UnitRange{Int}
-    d::Vector{JuMP.Variable}
-    q::Vector{JuMP.Variable}
+    d::Vector{JuMP.VariableRef}
+    q::Vector{JuMP.VariableRef}
     γ::Gamma
 end
 
-type RobustDeployment <: DeploymentModel
+struct RobustDeployment <: DeploymentModel
     m::JuMP.Model
     Q::Qrobust
 
     I::UnitRange{Int}
     J::UnitRange{Int}
 
-    x::Vector{JuMP.Variable}
-    y::Vector{Matrix{JuMP.Variable}}
-    z::Vector{Vector{JuMP.Variable}}
-    η::JuMP.Variable
+    x::Vector{JuMP.VariableRef}
+    y::Vector{Matrix{JuMP.VariableRef}}
+    z::Vector{Vector{JuMP.VariableRef}}
+    η::JuMP.VariableRef
 
     scenarios::Vector{Vector{Int}}
     upperbounds::Vector{Float64}
@@ -79,13 +82,13 @@ function Qrobust(problem::DeploymentProblem; α=params.α, verbose=false,
     Qrobust(m, I, J, d, q, γ)
 end
 
-function evaluate{T <: Real}(Q::Qrobust, x::Vector{T})
+function evaluate(Q::Qrobust, x::Vector{T}) where {T <: Real}
     JuMP.@objective(Q.m, Max, sum(Q.d[j] for j in Q.J) - sum(x[i]*Q.q[i] for i in Q.I))
     status = JuMP.solve(Q.m)
     JuMP.getobjectivevalue(Q.m), Int[round(Int,d) for d in JuMP.getvalue(Q.d)]
 end
 
-function evaluate_objvalue{T <: Real}(Q::Qrobust, x::Vector{T})
+function evaluate_objvalue(Q::Qrobust, x::Vector{T}) where {T <: Real}
     JuMP.@objective(Q.m, Max, sum(Q.d[j] for j in Q.J) - sum(x[i]*Q.q[i] for i in Q.I))
     status = JuMP.solve(Q.m)
     JuMP.getobjectivevalue(Q.m)
@@ -104,8 +107,8 @@ function RobustDeployment(p::DeploymentProblem; α=params.α, eps=params.ε, tol
     m = JuMP.Model(solver=solver)
     JuMP.@variable(m, x[i=1:p.nlocations] >= 0, Int, start=warmstart[i])
     JuMP.@variable(m, η >= 0)
-    y = Vector{Matrix{JuMP.Variable}}()
-    z = Vector{JuMP.Variable}()
+    y = Vector{Matrix{JuMP.VariableRef}}()
+    z = Vector{JuMP.VariableRef}()
 
     # Initial Restricted Master Problem
     JuMP.@objective(m, Min, η)
@@ -119,16 +122,16 @@ function RobustDeployment(p::DeploymentProblem; α=params.α, eps=params.ε, tol
                      Vector{Int}[warmstart], Vector{Float64}(), Vector{Float64}())
 end
 
-function add_scenario{T <: Real}(model::RobustDeployment, p::DeploymentProblem, scenario::Vector{T}; tol=params.δ)
+function add_scenario(model::RobustDeployment, p::DeploymentProblem, scenario::Vector{T}; tol=params.δ) where {T <: Real}
     # Create variables yˡ
-    push!(model.y, Array(JuMP.Variable, (p.nlocations,p.nregions)))
+    push!(model.y, Array(JuMP.VariableRef, (p.nlocations,p.nregions)))
     l = length(model.y)
     for i in model.I, j in model.J
-        model.y[l][i,j] = JuMP.Variable(model.m, 0, p.nambulances, :Int, String("y[$i,$j,$l]"))
+        model.y[l][i,j] = JuMP.VariableRef(model.m, 0, p.nambulances, :Int, String("y[$i,$j,$l]"))
     end
-    push!(model.z, Array(JuMP.Variable, p.nregions))
+    push!(model.z, Array(JuMP.VariableRef, p.nregions))
     for j in model.J
-        model.z[l][j] = JuMP.Variable(model.m, 0, Inf, :Int, String("z[$j,$l]"))
+        model.z[l][j] = JuMP.VariableRef(model.m, 0, Inf, :Int, String("z[$j,$l]"))
     end
 
     # (1) η >= 1ᵀ(dˡ + Bᴶyˡ)^+

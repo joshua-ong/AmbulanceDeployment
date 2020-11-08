@@ -4,8 +4,11 @@ authors = ["guyFarmer <farmerguycf@utexas.edu>"]
 version = "0.1.0"
 
 [deps]
+CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
 DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
 DataStructures = "864edb3b-99cc-5e75-8d2d-829cb0a9cfe8"
 Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
 Gurobi = "2e9cd046-0924-5485-92f1-d5272153d98b"
+JLD = "4138dd39-2aa7-5051-a626-17a0bb65d9c8"
 JuMP = "4076af6c-e467-56ae-b986-b466b2749572"
+Query = "1a8c2f83-1ff3-5112-b086-8aa67b057ba1"

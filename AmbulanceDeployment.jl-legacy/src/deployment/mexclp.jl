@@ -1,6 +1,6 @@
-type MEXCLPDeployment <: DeploymentModel
+struct MEXCLPDeployment <: DeploymentModel
     m::JuMP.Model
-    x::Vector{JuMP.Variable}
+    x::Vector{JuMP.VariableRef}
 end
 deployment(m::MEXCLPDeployment) = Int[round(Int,x) for x in JuMP.getvalue(m.x)]
 
@@ -13,7 +13,7 @@ function MEXCLPDeployment(p::DeploymentProblem,
     @assert max_amb > 0
     demand = vec(mean(p.demand[p.train,:],1))
     @assert length(demand) == p.nregions
-    
+
     I = 1:p.nlocations
     J = 1:p.nregions
     K = 1:max_amb

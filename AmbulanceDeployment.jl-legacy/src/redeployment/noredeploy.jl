@@ -1,4 +1,4 @@
-type NoRedeployModel <: RedeployModel
+struct NoRedeployModel <: RedeployModel
     assignment::Vector{Int} # which location the ambulance is assigned to
     ambulances::Vector{Vector{Int}} # list of ambulances assigned to each location
     status::Vector{Symbol} # the current status of the ambulance

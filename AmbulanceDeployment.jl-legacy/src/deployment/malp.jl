@@ -1,6 +1,6 @@
-type MALPDeployment <: DeploymentModel
+struct MALPDeployment <: DeploymentModel
     m::JuMP.Model
-    x::Vector{JuMP.Variable}
+    x::Vector{JuMP.VariableRef}
 end
 deployment(m::MALPDeployment) = Int[round(Int,x) for x in JuMP.getValue(m.x)]
 
@@ -11,7 +11,7 @@ function MALPDeployment(p::DeploymentProblem,
                         solver = GurobiSolver(OutputFlag=0))
     demand = vec(mean(p.demand[p.train,:],1))
     @assert length(demand) == p.nregions
-    
+
     I = 1:p.nlocations
     J = 1:p.nregions
     b = ceil(Int, log(1-α)/log(q))

@@ -1,3 +1,6 @@
+include("dispatch/closestdispatch.jl")
+include("model.jl")
+include("problem.jl")
 
 mutable struct EMSEngine{T}
     eventlog::DataFrame
@@ -88,7 +91,7 @@ function convey_event!(
     h = let mintime = Inf, minindex = 0
         for h in 1:nrow(problem.hospitals)
             traveltime = problem.emergency_calls[id, Symbol("hosp$(h)_min")]
-            if !isna(traveltime) && traveltime < mintime
+            if !isna(traveltime) && !(traveltime=="NA") && traveltime < mintime
                 @assert traveltime >= 0
                 minindex = h; mintime = traveltime
             end
@@ -151,7 +154,7 @@ function done_event!(
         @assert 0 <= mintime < Inf
 
         # respond to the person
-        let id = shift!(problem.wait_queue[minindex])
+        let id = popfirst!(problem.wait_queue[minindex])
             println(id,": amb ", amb, " redirected from stn ", stn, " to serve ", problem.emergency_calls[id, :neighborhood])
             ems.eventlog[id, :return_to] = id
             ems.eventlog[id, :return_type] = :incident
