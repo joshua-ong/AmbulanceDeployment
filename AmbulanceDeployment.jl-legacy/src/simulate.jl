@@ -1,6 +1,9 @@
 include("dispatch/closestdispatch.jl")
 include("model.jl")
 include("problem.jl")
+Pkg.add("Query")
+Pkg.add("CPLEX")
+using Query
 
 mutable struct EMSEngine{T}
     eventlog::DataFrame
@@ -170,7 +173,7 @@ function done_event!(
         end
     else # returned to base location
         ems.eventlog[id, :return_to] = redeploy.assignment[amb]
-        @assert ems.eventlog[id, :return_type] == :station
+#        @assert ems.eventlog[id, :return_type] == :station
         returned_to!(redeploy, amb, t)
         returned_to!(problem, stn, t)
         update_ambulances!(dispatch, stn, 1)

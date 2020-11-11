@@ -1,12 +1,7 @@
-Pkg.add("JLD")
-Pkg.add("CSV")
-Pkg.add("DataFrames")
-Pkg.add("DataStructures")
+using Distributions, JLD, CSV, DataFrames,Pkg, DataStructures
 
 Pkg.add("Gurobi")
 Pkg.add("JuMP")
-
-using Distributions, JLD, CSV, DataFrames, Pkg, DataStructures
 using Gurobi
 using JuMP
 
@@ -160,11 +155,9 @@ struct ClosestDispatch <: DispatchModel
 # defined a ClosestDispatch Function
 
 function ClosestDispatch(p::DeploymentProblem, drivetime::DataFrame)
-    #candidates = Array{Vector{Int},p.nregions}
     candidates = Any[]
     I = 1:p.nlocations
     for region in 1:p.nregions
-        #candidates[region] = I[vec(p.coverage[region,:])]
         push!(candidates, I[vec(p.coverage[region,:])])
     end
     ClosestDispatch(drivetime, candidates)

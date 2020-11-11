@@ -1,3 +1,6 @@
+Pkg.add("Gadfly")
+Pkg.add("GeoInterface")
+Pkg.add("GeoConverters")
 import Gadfly: lab_gradient
 import GeoInterface: coordinates
 import GeoConverters: composeform
@@ -147,4 +150,3 @@ function compose_chloropleth{T <: Real}(
     )
     compose(location_c, region_c)
 end
-

@@ -1,6 +1,9 @@
-function within{T <: Real}(scenario::Vector{T}, gamma::Gamma, p::DeploymentProblem)
+abstract type T <: Real end
+abstract type T1 <: Real end
+abstract type T2 <: Real end
+function within(scenario::Vector{T}, gamma::Gamma, p::DeploymentProblem)
     # returns true if scenario ∈ gamma; false otherwise
-    if any(scenario .> gamma._single) 
+    if any(scenario .> gamma._single)
         return false
     elseif sum(scenario) > gamma._global
         return false
@@ -19,13 +22,13 @@ function within{T <: Real}(scenario::Vector{T}, gamma::Gamma, p::DeploymentProbl
     true
 end
 
-type Evaluation
+struct Evaluation
     objvalue::Int
     shortfall::Vector{Int}
     dispatch::Matrix{Int}
 end
 
-function evaluate{T1, T2 <: Real}(x::Vector{T1}, scenario::Vector{T2}, p::DeploymentProblem;
+function evaluate(x::Vector{T1}, scenario::Vector{T2}, p::DeploymentProblem;
     solver=GurobiSolver(OutputFlag=0,PrePasses=3))
 
     I = 1:p.nlocations
@@ -55,11 +58,11 @@ function evaluate{T1, T2 <: Real}(x::Vector{T1}, scenario::Vector{T2}, p::Deploy
                map(y->round(Int,y), JuMP.getValue(y)))
 end
 
-function evaluate{T <: Real}(x::Vector{T}, p::DeploymentProblem)
+function evaluate(x::Vector{T}, p::DeploymentProblem)
     Evaluation[evaluate(x,vec(p.demand[i,:]),p) for i in p.test]
 end
 
-type Result
+struct Result
     stoch_x
     robust_x
     bad_scenarios
@@ -114,4 +117,3 @@ function test_performance(p::DeploymentProblem; namb::Vector{Int}=[25:5:45], alp
     end
     results
 end
-
