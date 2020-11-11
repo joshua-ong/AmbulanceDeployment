@@ -1,4 +1,6 @@
 
+include("../problem.jl")
+
 struct Gamma
     _single::Vector{Int}
     _local::Vector{Int}
