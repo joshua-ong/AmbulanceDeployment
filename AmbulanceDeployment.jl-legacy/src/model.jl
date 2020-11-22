@@ -1,3 +1,4 @@
+using Gurobi
 abstract type DeploymentModel end
 
 abstract type DispatchModel end

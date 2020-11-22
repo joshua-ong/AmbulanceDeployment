@@ -1,5 +1,10 @@
 
 include("../problem.jl")
+import JuMP, JuMP.optimize!
+Pkg.add("JuMP")
+Pkg.add("GLPK")
+#Pkg.add(name=”Gurobi” version=”0.8.1”)
+using JuMP, Gurobi, GLPK, Distributions
 
 struct Gamma
     _single::Vector{Int}
@@ -43,10 +48,26 @@ deployment(m::RobustDeployment) = m.deployment[end]
 
 function Gamma(p::DeploymentProblem; α=params.α)
     demand = p.demand[p.train,:]
-    γ_single = vec(maximum(demand,1) + 1*(maximum(demand,1) .== 0))
-    γ_local = [quantile(Poisson(mean(sum(demand[:,vec(p.adjacency[i,:])], 2))),1-α) for i=1:p.nregions]
-    γ_regional = [quantile(Poisson(mean(sum(demand[:,p.coverage[:,i]],2))),1-α) for i in 1:p.nlocations]
-    γ_global = quantile(Poisson(mean(sum(demand,2))),1-α)
+    γ_single = Any[] # vec(maximum(demand,1) + 1 *(maximum(demand,1) .== 0))
+
+    for x in 1:size(demand)[2]
+        y = maximum(demand[:,x])
+        if y == 0
+            y = 1
+        end
+        push!(γ_single,y)
+    end
+#have to know what the purpose is for dealing with the mean in this manner,
+# quick repair is to adjust the dimensions by changing sum(demand[:,vec(p.adjacency[i,:])], 2) to sum(demand[:,vec(p.adjacency[i,:])])
+# this will give the total sum across 2 dimensions, but will nullify the mean function
+# will change the mean function from mean(A) to actually divide the sum by the total indices in the demand subarray
+# the same logic is occuring for γ_regional and γ_global
+# /90 represents the number of calls in a 3 month period
+    #γ_local = [quantile(Poisson((sum(demand[:,vec(p.adjacency[i,:])], 2))/90),1-α) for i=1:p.nregions]
+    # γ_local = [quantile(Poisson(mean(sum(demand[:,vec(p.adjacency[i,:])]))),1-α) for i=1:p.nregions]
+    γ_local = [quantile(Poisson(mean(sum(demand[:,vec(p.adjacency[i,:])]))/90),1-α) for i=1:p.nregions]
+    γ_regional = [quantile(Poisson(mean(sum(demand[:,p.coverage[:,i]]))/90),1-α) for i in 1:p.nlocations]
+    γ_global = quantile(Poisson(mean(sum(demand))/90),1-α)
     Gamma(γ_single,γ_local,γ_regional,γ_global)
 end
 
@@ -60,7 +81,7 @@ function Qrobust(problem::DeploymentProblem; α=params.α, verbose=false,
     I = 1:problem.nlocations
     J = 1:problem.nregions
 
-    m = JuMP.Model(solver=solver)
+    m = Model(GLPK.Optimizer)
     JuMP.@variable(m, d[1:problem.nregions]>=0, Int)
     JuMP.@variable(m, p[1:problem.nregions], Bin)
     JuMP.@variable(m, q[1:problem.nlocations], Bin)
@@ -86,7 +107,8 @@ end
 
 function evaluate(Q::Qrobust, x::Vector{T}) where {T <: Real}
     JuMP.@objective(Q.m, Max, sum(Q.d[j] for j in Q.J) - sum(x[i]*Q.q[i] for i in Q.I))
-    status = JuMP.solve(Q.m)
+    #status = JuMP.solve(Q.m)
+    status = JuMP.optimize!(Q.m)
     JuMP.getobjectivevalue(Q.m), Int[round(Int,d) for d in JuMP.getvalue(Q.d)]
 end
 
@@ -96,8 +118,13 @@ function evaluate_objvalue(Q::Qrobust, x::Vector{T}) where {T <: Real}
     JuMP.getobjectivevalue(Q.m)
 end
 
-function RobustDeployment(p::DeploymentProblem; α=params.α, eps=params.ε, tol=params.δ,
-    solver=GurobiSolver(OutputFlag=0, MIPGapAbs=0.9), verbose=false, master_verbose=false)
+println(params.α)
+function RobustDeployment(p::DeploymentProblem; α=params.α)
+     eps=params.ε
+     tol=params.δ
+     solver=GurobiSolver(OutputFlag=0, MIPGapAbs=0.9)
+     verbose=false
+     master_verbose=false
     if master_verbose
         solver=GurobiSolver(OutputFlag=1, MIPGapAbs=0.9)
     end
@@ -106,7 +133,9 @@ function RobustDeployment(p::DeploymentProblem; α=params.α, eps=params.ε, tol
 
     warmstart = naive_solution(p)
 
-    m = JuMP.Model(solver=solver)
+    #m = JuMP.Model(solver=solver)
+    # m = Model(with_optimizer(GLPK.Optimizer))
+    m = Model(GLPK.Optimizer)
     JuMP.@variable(m, x[i=1:p.nlocations] >= 0, Int, start=warmstart[i])
     JuMP.@variable(m, η >= 0)
     y = Vector{Matrix{JuMP.VariableRef}}()
@@ -171,7 +200,7 @@ function solve(model::RobustDeployment, p::DeploymentProblem; verbose=false, max
 
         push!(model.deployment, [round(Int,x) for x in JuMP.getvalue(model.x)])
 
-        tic()
+        #tic()
         shortfall, scenario = evaluate(model.Q, model.deployment[end])
         push!(model.upptiming, toq())
         UB = min(UB, shortfall)
@@ -182,3 +211,5 @@ function solve(model::RobustDeployment, p::DeploymentProblem; verbose=false, max
         push!(model.lowerbounds, LB)
     end
 end
+
+optimize!(model::RobustDeployment, p::DeploymentProblem) = JuMP.optimize!(model.m)

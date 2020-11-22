@@ -1,9 +1,12 @@
 Pkg.add("Gadfly")
 Pkg.add("GeoInterface")
-Pkg.add("GeoConverters")
+Pkg.add("Winston")
+Pkg.add("Colors")
+Pkg.add("Compose")
+#Pkg.add("GeoConverters")
 import Gadfly: lab_gradient
 import GeoInterface: coordinates
-import GeoConverters: composeform
+#import GeoConverters: composeform
 import Winston: FramedPlot, Curve, Legend, setattr, add
 import Colors: LCHab, Colorant
 import Compose: Polygon, UnitBox, context, compose, linewidth
@@ -67,8 +70,8 @@ function compose_neighborhoods(
     end
     c
 end
-
-function compose_neighborhoods{T <: Real}(
+abstract type T <: Real end
+function compose_neighborhoods(
         df::DataFrame,
         values::Vector{T};
         fill_color::AbstractString = "blue",
@@ -94,7 +97,7 @@ function compose_neighborhoods{T <: Real}(
     c
 end
 
-function compose_neighborhoods_nominal{T <: Real}(
+function compose_neighborhoods_nominal(
         df::DataFrame,
         values::Vector{T};
         fill_color::AbstractString = "blue",
@@ -130,7 +133,7 @@ function compose_locations(
     ))
 end
 
-function compose_chloropleth{T <: Real}(
+function compose_chloropleth(
         location_df::DataFrame,
         region_df::DataFrame,
         values::Vector{T},

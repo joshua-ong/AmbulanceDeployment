@@ -1,17 +1,18 @@
 
-using Distributions, JLD, CSV, DataFrames,Pkg
+import Distributions, JLD, CSV, DataFrames,Pkg
+using DataFrames, Distributions, JLD, CSV, Pkg
 abstract type BM <: AbstractMatrix{Bool} end
 abstract type IM <: AbstractMatrix{Int} end
-struct DeploymentProblem{ IM <: AbstractMatrix{Int},
-                        BM <: AbstractMatrix{Bool}}
-    nambulances::Int
-    nlocations::Int
-    nregions::Int
-    demand::IM      # nperiod x nregion !! can potentially break !!
-    train::Vector{Int}
-    test::Vector{Int}
-    coverage::BM    # nregion x nlocation !! can potentially break !!
-    adjacency::BM   # nregion x nregion !! can potentially break !!
+
+mutable struct DeploymentProblem
+        nambulances::Int
+        nlocations::Int
+        nregions::Int
+        demand::Array{Int64,2}      # nperiod x nregion !! can potentially break !!
+        train::Vector{Int}
+        test::Vector{Int}
+        coverage::Array{Bool,2}    # nregion x nlocation !! can potentially break !!
+        adjacency::Array{Bool,2}   # nregion x nregion !! can potentially break !!
 end
 
 function DeploymentProblem(

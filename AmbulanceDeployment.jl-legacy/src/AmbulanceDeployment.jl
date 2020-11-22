@@ -4,19 +4,23 @@ module AmbulanceDeployment
     import DataStructures: PriorityQueue, enqueue!, dequeue!
     import DataFrames: DataFrame, isna, nrow
     import Distributions: Poisson, LogNormal, quantile, sample
-
+    import Pkg
+    #import JLD, Query, CSV, CPLEX
+    import CSV, JLD, Query
+    using Gurobi, CSV, JLD, Query, JuMP
+    Pkg.resolve()
     include("model.jl")
     include("dispatch/closestdispatch.jl")
     include("problem.jl")
     include("simulate.jl")
     include("evaluate.jl")
     include("plot.jl")
-    include("../test/runtests.jl")
+    #include("../test/runtests.jl")
 
 
 
-    export DeploymentProblem,
-
+    export
+           DeploymentProblem,
            RobustDeployment,
            StochasticDeployment,
            MALPDeployment,
