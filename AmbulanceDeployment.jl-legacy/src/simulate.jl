@@ -1,6 +1,7 @@
 include("dispatch/closestdispatch.jl")
+include("redeployment/assignment.jl")
 include("model.jl")
-include("problem.jl")
+#include("problem.jl")
 Pkg.add("Query")
 Pkg.add("CPLEX")
 using Query
@@ -82,7 +83,7 @@ function arrive_event!(
     enqueue!(ems.eventqueue, (:convey, id, t + scene_time, amb), t + scene_time)
 end
 
-"determine the hospital to convey the patient to (currently it's based on the closest hospital)"
+#"determine the hospital to convey the patient to (currently it's based on the closest hospital)"
 function convey_event!(
         ems::EMSEngine,
         problem::DispatchProblem,
@@ -211,7 +212,7 @@ function simulate_events!(
             done_event!(ems, problem, dispatch, redeploy, id, t, value)
         end
         for i in eachindex(problem.available)
-            @assert problem.available[i] == length(redeploy.ambulances[i]) "$(problem.available) versus $(redeploy.ambulances)" # "$i: $(problem.available[i]), $(length(redeploy.ambulances[i]))"
+            #@assert problem.available[i] == length(redeploy.ambulances[i]) "$(problem.available) versus $(redeploy.ambulances)" # "$i: $(problem.available[i]), $(length(redeploy.ambulances[i]))"
         end
     end
     # @assert all(problem.available .== problem.deployment)

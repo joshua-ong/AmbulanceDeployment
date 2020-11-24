@@ -100,7 +100,7 @@ p = DeploymentProblem(30, length(locations), length(regions), demand, train_indi
             model = deployment_model(p)
             # solve(model, p)
             optimize!(model, p)
-            print("($(toq())) ")
+            #print("($(toq())) ")
             amb_deployment[name][namb] = deployment(model)
 
             # for tracking purposes

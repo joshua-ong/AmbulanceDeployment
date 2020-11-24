@@ -1,5 +1,5 @@
 
-include("../problem.jl")
+#include("../problem.jl")
 import JuMP, JuMP.optimize!
 Pkg.add("JuMP")
 Pkg.add("GLPK")
@@ -12,8 +12,17 @@ struct Gamma
     _regional::Vector{Int}
     _global::Int
 end
+#remember to comment out with package
+struct Params
+    α::Float64 # Probabilistic Guarantee
+    ε::Float64 # Convergence
+    δ::Float64 # Solver Tolerance
 
+    nperiods::Int # for StochasticDeployment
 
+    maxiter::Int # for RobustDeployment
+end
+paramss = Params(0.01, 0.5, 1e-6, 500, 50)
 #might need to change JuMP.Variable into JuMP.VariableRef
 struct Qrobust
     m::JuMP.Model
@@ -46,7 +55,7 @@ struct RobustDeployment <: DeploymentModel
 end
 deployment(m::RobustDeployment) = m.deployment[end]
 
-function Gamma(p::DeploymentProblem; α=params.α)
+function Gamma(p::DeploymentProblem; α=paramss.α)
     demand = p.demand[p.train,:]
     γ_single = Any[] # vec(maximum(demand,1) + 1 *(maximum(demand,1) .== 0))
 
@@ -71,7 +80,7 @@ function Gamma(p::DeploymentProblem; α=params.α)
     Gamma(γ_single,γ_local,γ_regional,γ_global)
 end
 
-function Qrobust(problem::DeploymentProblem; α=params.α, verbose=false,
+function Qrobust(problem::DeploymentProblem; α=paramss.α, verbose=false,
     solver=GurobiSolver(OutputFlag=0, MIPGapAbs=0.9)) #, TimeLimit=30))
     if verbose
         solver=GurobiSolver(OutputFlag=1) #, MIPGapAbs=0.9)
@@ -118,10 +127,10 @@ function evaluate_objvalue(Q::Qrobust, x::Vector{T}) where {T <: Real}
     JuMP.getobjectivevalue(Q.m)
 end
 
-println(params.α)
-function RobustDeployment(p::DeploymentProblem; α=params.α)
-     eps=params.ε
-     tol=params.δ
+
+function RobustDeployment(p::DeploymentProblem; α=paramss.α)
+     eps=paramss.ε
+     tol=paramss.δ
      solver=GurobiSolver(OutputFlag=0, MIPGapAbs=0.9)
      verbose=false
      master_verbose=false
@@ -153,7 +162,7 @@ function RobustDeployment(p::DeploymentProblem; α=params.α)
                      Vector{Int}[warmstart], Vector{Float64}(), Vector{Float64}())
 end
 
-function add_scenario(model::RobustDeployment, p::DeploymentProblem, scenario::Vector{T}; tol=params.δ) where {T <: Real}
+function add_scenario(model::RobustDeployment, p::DeploymentProblem, scenario::Vector{T}; tol=paramss.δ) where {T <: Real}
     # Create variables yˡ
     push!(model.y, Array(JuMP.VariableRef, (p.nlocations,p.nregions)))
     l = length(model.y)

@@ -1,6 +1,6 @@
 using Distributions, JLD, CSV, DataFrames,Pkg, DataStructures
 
-Pkg.add("Gurobi")
+#Pkg.add("Gurobi")
 Pkg.add("JuMP")
 using Gurobi
 using JuMP
@@ -293,6 +293,10 @@ function AssignmentModel(
                     status, fromtime, hospital, zeros(nambulances*nlocations))
 end
 
+function returned_to!(problem::DispatchProblem, location::Int, t::Int)
+    @assert problem.available[location] >= 0
+    problem.available[location] += 1
+end
 
 redeploy = AssignmentModel(p, x, hospitals, stations, lambda=Float64(lambda))
 dispatch = ClosestDispatch(p, problem)
