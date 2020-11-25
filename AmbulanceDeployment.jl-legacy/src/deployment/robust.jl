@@ -1,5 +1,5 @@
 
-#include("../problem.jl")
+include("../problem.jl")
 import JuMP, JuMP.optimize!
 Pkg.add("JuMP")
 Pkg.add("GLPK")
@@ -118,13 +118,14 @@ function evaluate(Q::Qrobust, x::Vector{T}) where {T <: Real}
     JuMP.@objective(Q.m, Max, sum(Q.d[j] for j in Q.J) - sum(x[i]*Q.q[i] for i in Q.I))
     #status = JuMP.solve(Q.m)
     status = JuMP.optimize!(Q.m)
-    JuMP.getobjectivevalue(Q.m), Int[round(Int,d) for d in JuMP.getvalue(Q.d)]
+    JuMP.objective_value(Q.m), Int[round(Int,JuMP.value(d)) for d in Q.d]
+
 end
 
 function evaluate_objvalue(Q::Qrobust, x::Vector{T}) where {T <: Real}
     JuMP.@objective(Q.m, Max, sum(Q.d[j] for j in Q.J) - sum(x[i]*Q.q[i] for i in Q.I))
     status = JuMP.solve(Q.m)
-    JuMP.getobjectivevalue(Q.m)
+    JuMP.objective_value(Q.m)
 end
 
 
@@ -164,30 +165,46 @@ end
 
 function add_scenario(model::RobustDeployment, p::DeploymentProblem, scenario::Vector{T}; tol=paramss.δ) where {T <: Real}
     # Create variables yˡ
-    push!(model.y, Array(JuMP.VariableRef, (p.nlocations,p.nregions)))
+    push!(model.y, Array{VariableRef}(undef,(p.nlocations,p.nregions)))
     l = length(model.y)
+    # for i in model.I, j in model.J
+    #     model.y[l][i,j] = JuMP.VariableRef(model.m, lower_bound=0, upper_bound=p.nambulances, variable_type=:Int, base_name=String("y[$i,$j,$l]"))
+    # end
     for i in model.I, j in model.J
-        model.y[l][i,j] = JuMP.VariableRef(model.m, 0, p.nambulances, :Int, String("y[$i,$j,$l]"))
-    end
-    push!(model.z, Array(JuMP.VariableRef, p.nregions))
+               variable = @variable(model.m)
+               set_lower_bound(variable, 0)
+               set_upper_bound(variable, p.nambulances)
+               set_integer(variable)
+               set_name(variable, String("y[$i,$j,$l]"))
+               model.y[l][i,j] = variable
+           end
+    push!(model.z, Array{VariableRef}(undef, p.nregions))
+    # for j in model.J
+    #     model.z[l][j] = JuMP.VariableRef(model.m, 0, Inf, :Int, String("z[$j,$l]"))
+    # end
     for j in model.J
-        model.z[l][j] = JuMP.VariableRef(model.m, 0, Inf, :Int, String("z[$j,$l]"))
-    end
+               variable = @variable(model.m)
+               set_lower_bound(variable, 0)
+               set_upper_bound(variable, Inf)
+               set_integer(variable)
+               set_name(variable, String("z[$j,$l]"))
+               model.z[l][j] = variable
+           end
 
     # (1) η >= 1ᵀ(dˡ + Bᴶyˡ)^+
     JuMP.@constraint(model.m, model.η >= sum(model.z[l][j] for j=model.J) + tol*sum(model.y[l][i,j] for i=model.I, j=model.J))
-    for i in model.I # flow constraints at each station
-        JuMP.@expression(m, outflow, sum(model.y[l][i,j] for j in filter(j->p.coverage[j,i], model.J)))
-        JuMP.@constraint(model.m, model.x[i] >= outflow)
-    end
+    for i in model.I
+             outflow = JuMP.@expression(model.m, sum(model.y[l][i,j] for j in filter(j->p.coverage[j,i], model.J)))
+             JuMP.@constraint(model.m, model.x[i] >= outflow)
+           end
     # (2) yˡ ∈ Y(x)
     for j in model.J # shortfall from satisfying demand/calls
-        JuMP.@expression(m, inflow, sum(model.y[l][i,j] for i in filter(i->p.coverage[j,i], model.I)))
+        inflow = JuMP.@expression(model.m, sum(model.y[l][i,j] for i in filter(i->p.coverage[j,i], model.I)))
         JuMP.@constraint(model.m, model.z[l][j] >= scenario[j] - inflow)
     end
 end
 
-function solve(model::RobustDeployment, p::DeploymentProblem; verbose=false, maxiter=params.maxiter, eps=params.ε)
+function optimize!(model::RobustDeployment, p::DeploymentProblem; verbose=false, maxiter=params.maxiter, eps=params.ε)
     LB = 0.0
     UB, scenario = evaluate(model.Q, model.deployment[end])
     push!(model.lowerbounds, LB)
@@ -205,9 +222,9 @@ function solve(model::RobustDeployment, p::DeploymentProblem; verbose=false, max
         push!(model.lowtiming, toq())
         @assert status == :Optimal
 
-        LB = JuMP.getobjectivevalue(model.m)
+        LB = JuMP.objective_value(model.m)
 
-        push!(model.deployment, [round(Int,x) for x in JuMP.getvalue(model.x)])
+        push!(model.deployment, [round(Int,x) for x in JuMP.value(model.x)])
 
         #tic()
         shortfall, scenario = evaluate(model.Q, model.deployment[end])
