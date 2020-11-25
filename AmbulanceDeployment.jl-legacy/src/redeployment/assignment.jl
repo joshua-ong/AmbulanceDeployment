@@ -68,16 +68,18 @@ function AssignmentModel(
     #     reformulated to
     # sum(w[a,i] for a in 1:nambulances) + η₁[i] >= available[i]
     for i in 1:nlocations
-        Gurobi.add_constr!(m,
-            [((1:nambulances)-1)*nlocations+i; nambulances*nlocations + i], # inds
-            ones(nambulances + 1), # coeffs
-            '>', Float64(available[i]))
-    end
+            Gurobi.add_constr!(m,
+                   [((1:nambulances).-1)*nlocations.+i; nambulances*nlocations + i], # inds
+                   ones(nambulances + 1), # coeffs
+                   '>', Float64(available[i]))
+           end
+
+    ## repaired with dot syntax
 
     # sum(w[a,i] for i in 1:nlocations) == 1       [a=1:nambulances]
     for a in 1:nambulances
         Gurobi.add_constr!(m,
-            collect((a-1)*nlocations + (1:nlocations)), # inds
+            collect((a-1)*nlocations .+ (1:nlocations)), # inds
             ones(nlocations), # coeffs
             '=', 1.)
     end
