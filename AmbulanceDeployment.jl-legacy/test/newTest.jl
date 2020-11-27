@@ -34,9 +34,9 @@ function DeploymentProblem(
         namb = 30,
         train_filter = (hourly_calls[:year] .== 2012) .* (hourly_calls[:month] .<= 3)
     )
-    regions = Int[parse(Int,string(x)) for x in names(hourly_calls[5:end])]
+    regions = Int[parse(Int,string(x)) for x in names(hourly_calls[:,5:ncol(hourly_calls)])]
     locations = collect(1:size(coverage,2))
-    adjacent = convert(Array, adjacent_nbhd[2:end])[regions,regions] .> 0.5
+    adjacent = convert(Array, adjacent_nbhd[:,2:ncol(adjacent_nbhd)])[regions,regions] .> 0.5
     demand = convert(Array,hourly_calls[:,5:end])
 
     indices = 1:nrow(hourly_calls)
@@ -308,4 +308,4 @@ include("../src/simulate.jl")
 Random.seed!(1234) # reset seed
 @time df = simulate_events!(problem, dispatch, redeploy)
 @show mean(df[!,:waittime]), maximum(df[!,:waittime])
-@show mean(df[!,:waittime] + df[!,;:responsetime])
+@show mean(df[!,:waittime] + df[!,:responsetime])
