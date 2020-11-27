@@ -76,18 +76,18 @@ p = DeploymentProblem(
            adjacent_nbhd,
            coverage,
            namb = namb,
-           train_filter = (hourly_calls[:year] .== 2012) .* (hourly_calls[:month] .<= 3)
+           train_filter = (hourly_calls[!,:year] .== 2012) .* (hourly_calls[!,:month] .<= 3)
        )
 
 
-function naive_solution(p::DeploymentProblem)
-    # evenly distribute the ambulances over all the locations
-    x = zeros(Int, p.nlocations)
-    for i in 0:p.nambulances-1
-        x[1 + (i % p.nlocations)] += 1
-    end
-    x
-end
+# function naive_solution(p::DeploymentProblem)
+#     # evenly distribute the ambulances over all the locations
+#     x = zeros(Int, p.nlocations)
+#     for i in 0:p.nambulances-1
+#         x[1 + (i % p.nlocations)] += 1
+#     end
+#     x
+# end
 
 test_calls = CSV.File("test_calls.csv") |> DataFrame
 
@@ -120,7 +120,7 @@ function initialize!(problem::DispatchProblem, deployment::Vector{Int})
     problem.redeploy_events = Tuple{Int,Int,Int,Int}[]
 
     problem.emergency_calls[:arrival_seconds] =
-        cumsum(problem.emergency_calls[:interarrival_seconds])
+        cumsum(problem.emergency_calls[!,:interarrival_seconds])
 
     problem
 end
@@ -307,5 +307,5 @@ using Random
 include("../src/simulate.jl")
 Random.seed!(1234) # reset seed
 @time df = simulate_events!(problem, dispatch, redeploy)
-@show mean(df[:waittime]), maximum(df[:waittime])
-@show mean(df[:waittime] + df[:responsetime])
+@show mean(df[!,:waittime]), maximum(df[!,:waittime])
+@show mean(df[!,:waittime] + df[!,;:responsetime])
