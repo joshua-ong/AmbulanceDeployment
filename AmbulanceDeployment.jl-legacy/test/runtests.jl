@@ -1,4 +1,9 @@
 using AmbulanceDeployment, DataFrames, JLD, Distributions, CSV, Random
+include("..//src//model.jl")
+include("..//src//dispatch/closestdispatch.jl")
+include("..//src//problem.jl")
+include("..//src//simulate.jl")
+#include("..//src//evaluate.jl")
 
 turnaround = Distributions.LogNormal(3.65, 0.3)
 ncalls = 1000
