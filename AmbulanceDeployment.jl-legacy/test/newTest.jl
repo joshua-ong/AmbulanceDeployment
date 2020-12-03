@@ -61,10 +61,16 @@ namb = 30
 lambda = 0
 
 hourly_calls = CSV.File("data/processed/2-weekday_calls.csv") |> DataFrame
-adjacent_nbhd = CSV.File("data/processed/2-adjacent_nbhd.csv") |> DataFrame
-coverage = JLD.load("data/processed/3-coverage.jld", "stn_coverage")
-hospitals = CSV.File("data/processed/3-hospitals.csv") |> DataFrame
-stations = CSV.File("data/processed/3-stations.csv") |> DataFrame
+adjacent_nbhd = CSV.File("data/processed/2-adjacent_nbhd.csv") |> DataFrame # regions x regions
+coverage = JLD.load("data/processed/3-coverage.jld", "stn_coverage") # regions x stations
+
+# Code we will need to make our coverage matrix match
+# coverage = CSV.File("data/processed/coverage.csv") |> DataFrame # regions x stations
+# coverage = convert(Matrix, coverage)
+# coverage = convert(Matrix{Bool}, coverage[2:end, 2:end])
+
+hospitals = CSV.File("data/processed/3-hospitals.csv") |> DataFrame # hospitals x stations
+stations = CSV.File("data/processed/3-stations.csv") |> DataFrame # stations x stations
 solverstats = JLD.load("data/processed/4-solve-stats.jld")
 amb_deployment = solverstats["amb_deployment"]
 const model_names = (:Stochastic, :Robust01, :Robust005, :Robust001, :Robust0001, :Robust00001, :MEXCLP, :MALP)
