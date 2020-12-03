@@ -80,10 +80,10 @@ function Gamma(p::DeploymentProblem; α=paramss.α)
     Gamma(γ_single,γ_local,γ_regional,γ_global)
 end
 
-function Qrobust(problem::DeploymentProblem; α=paramss.α, verbose=false,
-    solver=GurobiSolver(OutputFlag=0, MIPGapAbs=0.9)) #, TimeLimit=30))
+function Qrobust(problem::DeploymentProblem; α=paramss.α, verbose=false, solver=Gurobi.Optimizer(OutputFlag=0)) #, MIPGapAbs=0.9)
     if verbose
-        solver=GurobiSolver(OutputFlag=1) #, MIPGapAbs=0.9)
+        solver=Gurobi.Optimizer(OutputFlag=1) #, MIPGapAbs=0.9)
+        #solver=JuMP.set_optimizer_attribute(model.m,MOI.TimeLimitSec(), 30)
     end
     γ = Gamma(problem, α=α)
     upp_bound = maximum(γ._single)
@@ -132,11 +132,14 @@ end
 function RobustDeployment(p::DeploymentProblem; α=paramss.α)
      eps=paramss.ε
      tol=paramss.δ
-     solver=GurobiSolver(OutputFlag=0, MIPGapAbs=0.9)
+     m = Model(GLPK.Optimizer)
+     solver=Gurobi.Optimizer(OutputFlag=0, MIPGapAbs=0.9)
+     #JuMP.set_optimizer_attribute(m,MOI.TimeLimitSec(), 30)
      verbose=false
      master_verbose=false
     if master_verbose
-        solver=GurobiSolver(OutputFlag=1, MIPGapAbs=0.9)
+        solver=Gurobi.Optimizer(OutputFlag=1, MIPGapAbs=0.9)
+        #JuMP.set_optimizer_attribute(m,MOI.TimeLimitSec(), 30)
     end
     I = 1:p.nlocations
     J = 1:p.nregions
@@ -145,7 +148,6 @@ function RobustDeployment(p::DeploymentProblem; α=paramss.α)
 
     #m = JuMP.Model(solver=solver)
     # m = Model(with_optimizer(GLPK.Optimizer))
-    m = Model(GLPK.Optimizer)
     JuMP.@variable(m, x[i=1:p.nlocations] >= 0, Int, start=warmstart[i])
     JuMP.@variable(m, η >= 0)
     y = Vector{Matrix{JuMP.VariableRef}}()

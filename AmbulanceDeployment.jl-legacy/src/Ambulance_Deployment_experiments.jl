@@ -98,6 +98,7 @@ p = DeploymentProblem(30, length(locations), length(regions), demand, train_indi
             print("$namb ")
             p.nambulances = namb
             model = deployment_model(p)
+            set_optimizer(model.m, Gurobi.Optimizer)
             # solve(model, p)
             optimize!(model, p)
             #print("($(toq())) ")

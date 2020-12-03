@@ -1,5 +1,6 @@
 struct AssignmentModel <: RedeployModel
-    model::Gurobi.Model
+    #model::Gurobi.Model
+    model::JuMP.Model
     lambda::Float64
 
     hosp2stn::Matrix{Float64}
