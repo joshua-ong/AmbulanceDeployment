@@ -114,4 +114,6 @@ p = DeploymentProblem(30, length(locations), length(regions), demand, train_indi
         end
         println()
     end
+    println("Hello1")
 end
+println("Hello2")
