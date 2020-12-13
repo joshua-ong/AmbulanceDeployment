@@ -68,6 +68,19 @@
 
 -Will
 
+## How to run after installation
+1. In the Julia terminal, navigate to the AmbulanceDeployment.jl-legacy folder
+2. Import Pkg
+3. Hit "]" to go into Pkg mode. Here, type "activate ."
+4. Go back to Julia mode by pressing backspace
+5. Pkg.instantiate()
+6. Pkg.add(name="Gurobi", version="0.8.1")
+7. Pkg.build("Gurobi")
+8. using Gurobi
+9. cd into src
+10. Run a file with include("file_name"). For example, include("Ambulance_Deployment_experiments.jl")
+
+
 [1]: https://docs.julialang.org/en/v1/stdlib/REPL/
 [2]: https://julialang.github.io/Pkg.jl/v1/creating-packages/
 [3]: https://www.gurobi.com/academia/academic-program-and-licenses/
