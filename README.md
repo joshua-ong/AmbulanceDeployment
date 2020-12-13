@@ -46,7 +46,7 @@
             * Import Pkg
             * Pkg.add(“Gurobi”) or Pkg.add(name=”Gurobi”, version=”0.8.1”)
             * Pkg.build(“Gurobi”)
-            * Using Gurobi
+            * using Gurobi
             * Gurobi
                 * This should print “Gurobi” back to the terminal if correct. Otherwise, it will say it is undefined
             * Gurobi.Model
