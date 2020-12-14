@@ -4,7 +4,7 @@ include("model.jl")
 #include("problem.jl")
 Pkg.add("Query")
 Pkg.add("CPLEX")
-using Query
+using Query, DataStructures
 
 mutable struct EMSEngine{T}
     eventlog::DataFrame
@@ -216,6 +216,6 @@ function simulate_events!(
         end
     end
     # @assert all(problem.available .== problem.deployment)
-    @assert all(ems.eventlog[:dispatch_from] .>= 0)
+    @assert all(ems.eventlog[!,:dispatch_from] .>= 0)
     ems.eventlog
 end
