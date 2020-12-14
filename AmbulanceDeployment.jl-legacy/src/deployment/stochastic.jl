@@ -2,10 +2,11 @@ struct StochasticDeployment <: DeploymentModel
     m::JuMP.Model
     x::Vector{JuMP.VariableRef}
 end
-deployment(m::StochasticDeployment) = [round(Int,x) for x in JuMP.getvalue(m.x)]
+deployment(m::StochasticDeployment) = [round(Int,x) for x in JuMP.value.(m.x)]
 
 function StochasticDeployment(p::DeploymentProblem; nperiods=params.nperiods, tol=params.δ,
-    solver=GurobiSolver(OutputFlag=0))
+    #solver=GurobiSolver(OutputFlag=0))
+    solver=Gurobi.Optimizer(OutputFlag=0))
 
     nperiods = min(length(p.train), nperiods)
     demand = p.demand[p.train,:]
@@ -13,7 +14,7 @@ function StochasticDeployment(p::DeploymentProblem; nperiods=params.nperiods, to
     J = 1:p.nregions
     T = 1:nperiods
 
-    m = JuMP.Model(solver=solver)
+    m = Model(GLPK.Optimizer)
     JuMP.@variable(m, x[1:p.nlocations] >= 0, Int)
     JuMP.@variable(m, y[1:p.nlocations,1:p.nregions,1:nperiods] >= 0, Int)
     JuMP.@variable(m, z[1:p.nregions,1:nperiods] >= 0, Int)
@@ -28,18 +29,18 @@ function StochasticDeployment(p::DeploymentProblem; nperiods=params.nperiods, to
 
     # flow constraints at each station
     for i in I, t in T
-        JuMP.@expression(m, outflow, sum(y[i,j,t] for j in filter(j->p.coverage[j,i], J)))
+        outflow = JuMP.@expression(m, sum(y[i,j,t] for j in filter(j->p.coverage[j,i], J)))
         JuMP.@constraint(m, x[i] >= outflow)
     end
 
     # shortfall from satisfying demand/calls
     for j in J, t in T
-        JuMP.@expression(m, inflow, sum(y[i,j,t] for i in filter(i->p.coverage[j,i], I)))
+        inflow = JuMP.@expression(m, sum(y[i,j,t] for i in filter(i->p.coverage[j,i], I)))
         JuMP.@constraint(m, z[j,t] >= demand[t,j] - inflow)
     end
 
     StochasticDeployment(m, x)
 end
 
-solve(model::StochasticDeployment) = JuMP.solve(model.m)
-solve(model::StochasticDeployment, p::DeploymentProblem) = JuMP.solve(model.m)
+optimize!(model::StochasticDeployment) = JuMP.optimize!(model.m)
+optimize!(model::StochasticDeployment, p::DeploymentProblem) = JuMP.optimize!(model.m)
