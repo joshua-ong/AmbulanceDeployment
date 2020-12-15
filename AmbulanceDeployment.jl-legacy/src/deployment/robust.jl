@@ -74,9 +74,9 @@ function Gamma(p::DeploymentProblem; α=paramss.α)
 # /90 represents the number of calls in a 3 month period
     #γ_local = [quantile(Poisson((sum(demand[:,vec(p.adjacency[i,:])], 2))/90),1-α) for i=1:p.nregions]
     # γ_local = [quantile(Poisson(mean(sum(demand[:,vec(p.adjacency[i,:])]))),1-α) for i=1:p.nregions]
-    γ_local = [quantile(Poisson(mean(sum(demand[:,vec(p.adjacency[i,:])]))/90),1-α) for i=1:p.nregions]
-    γ_regional = [quantile(Poisson(mean(sum(demand[:,p.coverage[:,i]]))/90),1-α) for i in 1:p.nlocations]
-    γ_global = quantile(Poisson(mean(sum(demand))/90),1-α)
+    γ_local = [quantile(Poisson(mean(sum(demand[:,vec(p.adjacency[i,:])]))),1-α) for i=1:p.nregions]
+    γ_regional = [quantile(Poisson(mean(sum(demand[:,p.coverage[:,i]]))),1-α) for i in 1:p.nlocations]
+    γ_global = quantile(Poisson(mean(sum(demand))),1-α)
     Gamma(γ_single,γ_local,γ_regional,γ_global)
 end
 
@@ -147,7 +147,7 @@ function RobustDeployment(p::DeploymentProblem; α=paramss.α)
     warmstart = naive_solution(p)
 
     #m = JuMP.Model(solver=solver)
-    # m = Model(with_optimizer(GLPK.Optimizer))
+    #m = Model(with_optimizer(GLPK.Optimizer))
     JuMP.@variable(m, x[i=1:p.nlocations] >= 0, Int, start=warmstart[i])
     JuMP.@variable(m, η >= 0)
     y = Vector{Matrix{JuMP.VariableRef}}()
@@ -219,9 +219,15 @@ function optimize!(model::RobustDeployment, p::DeploymentProblem; verbose=false,
         verbose && println("  solving Q with $(model.deployment[end])")
 
         add_scenario(model, p, scenario)
+<<<<<<< HEAD
         #tic()
         status = JuMP.optimize!(model.m)
         #push!(model.lowtiming, toq())
+=======
+        # tic()
+        status = JuMP.optimize!(model.m)
+        push!(model.lowtiming)
+>>>>>>> master
         #@assert status == :Optimal
 
         LB = JuMP.objective_value(model.m)
@@ -230,7 +236,11 @@ function optimize!(model::RobustDeployment, p::DeploymentProblem; verbose=false,
 
         #tic()
         shortfall, scenario = evaluate(model.Q, model.deployment[end])
+<<<<<<< HEAD
         #push!(model.upptiming, toq())
+=======
+        push!(model.upptiming)
+>>>>>>> master
         UB = min(UB, shortfall)
 
         # for tracking convergence later

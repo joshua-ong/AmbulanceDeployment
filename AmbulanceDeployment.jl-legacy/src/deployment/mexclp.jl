@@ -2,23 +2,26 @@ struct MEXCLPDeployment <: DeploymentModel
     m::JuMP.Model
     x::Vector{JuMP.VariableRef}
 end
-deployment(m::MEXCLPDeployment) = Int[round(Int,x) for x in JuMP.getvalue(m.x)]
+deployment(m::MEXCLPDeployment) = Int[round(Int,x) for x in JuMP.value.(m.x)]
 
 function MEXCLPDeployment(p::DeploymentProblem,
                           q::Float64; # busy fraction
                           max_amb::Int = 0,
                           tol = params.δ,
-                          solver = GurobiSolver(OutputFlag=0))
+                          solver = Gurobi.Optimizer(OutputFlag=0))
     (max_amb == 0) && (max_amb = p.nambulances)
     @assert max_amb > 0
-    demand = vec(mean(p.demand[p.train,:],1))
+    #demand = vec(mean(p.demand[p.train,:],1))
+    demand = vec(mean(p.demand[p.train,:],dims = 1))
     @assert length(demand) == p.nregions
 
     I = 1:p.nlocations
     J = 1:p.nregions
     K = 1:max_amb
 
-    m = JuMP.Model(solver=solver)
+    #m = JuMP.Model(solver=solver)
+    m = Model(GLPK.Optimizer)
+    solver=Gurobi.Optimizer(OutputFlag=0, MIPGapAbs=0.9)
     JuMP.@variable(m, x[1:p.nlocations] >= 0, Int)
     JuMP.@variable(m, z[1:p.nregions, 1:max_amb], Bin)
 
@@ -35,5 +38,5 @@ function MEXCLPDeployment(p::DeploymentProblem,
     MEXCLPDeployment(m, x)
 end
 
-solve(model::MEXCLPDeployment) = JuMP.solve(model.m)
-solve(model::MEXCLPDeployment, p::DeploymentProblem) = JuMP.solve(model.m)
+optimize!(model::MEXCLPDeployment) = JuMP.optimize!(model.m)
+optimize!(model::MEXCLPDeployment, p::DeploymentProblem) = JuMP.optimize!(model.m)
