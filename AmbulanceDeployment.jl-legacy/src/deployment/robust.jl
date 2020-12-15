@@ -124,7 +124,7 @@ end
 
 function evaluate_objvalue(Q::Qrobust, x::Vector{T}) where {T <: Real}
     JuMP.@objective(Q.m, Max, sum(Q.d[j] for j in Q.J) - sum(x[i]*Q.q[i] for i in Q.I))
-    status = JuMP.solve(Q.m)
+    status = JuMP.optimize!(Q.m)
     JuMP.objective_value(Q.m)
 end
 
@@ -219,9 +219,15 @@ function optimize!(model::RobustDeployment, p::DeploymentProblem; verbose=false,
         verbose && println("  solving Q with $(model.deployment[end])")
 
         add_scenario(model, p, scenario)
+<<<<<<< HEAD
+        #tic()
+        status = JuMP.optimize!(model.m)
+        #push!(model.lowtiming, toq())
+=======
         # tic()
         status = JuMP.optimize!(model.m)
         push!(model.lowtiming)
+>>>>>>> master
         #@assert status == :Optimal
 
         LB = JuMP.objective_value(model.m)
@@ -230,7 +236,11 @@ function optimize!(model::RobustDeployment, p::DeploymentProblem; verbose=false,
 
         #tic()
         shortfall, scenario = evaluate(model.Q, model.deployment[end])
+<<<<<<< HEAD
+        #push!(model.upptiming, toq())
+=======
         push!(model.upptiming)
+>>>>>>> master
         UB = min(UB, shortfall)
 
         # for tracking convergence later
