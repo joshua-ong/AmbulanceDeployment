@@ -30,7 +30,7 @@ for x in incidents[!,:neighborhood]
     if(!haskey(regions2index,x))
         regions2index[x] = 0
     end
- end
+end
 incidents[!,:neighborhood] = [regions2index[x] for x in incidents[!,:neighborhood]];
 
 calls = incidents[:,[[:hour,:dow,:month,:year,:neighborhood,:interarrival_seconds];
@@ -65,14 +65,16 @@ train_offpeak = indices[.~peak_period .* train_filter]
 test_peak = indices[peak_period .* test_filter]
 test_offpeak = indices[.~peak_period .* test_filter]
 
-test_inc_peak = inc_peak_period .* inc_test_filter
-test_inc_offpeak = .~inc_peak_period .* inc_test_filter;
-
 p = DeploymentProblem(30, length(locations), length(regions), demand, train_indices,
                       test_indices, coverage[regions,:], Array{Bool,2}(adjacent));
 
+test_inc_peak = inc_peak_period .* inc_test_filter
+test_inc_offpeak = .~inc_peak_period .* inc_test_filter;
+
+
+
 ## make sure to include @time begin
-@time begin
+
     amb_deployment = Dict{Symbol, Dict{Int, Vector{Int}}}()
     scenarios = Dict{Symbol, Dict{Int, Vector{Vector{Int}}}}()
     generated_deployment = Dict{Symbol, Dict{Int, Vector{Vector{Int}}}}()
@@ -81,12 +83,12 @@ p = DeploymentProblem(30, length(locations), length(regions), demand, train_indi
     upptiming = Dict{Symbol, Dict{Int, Vector{Float64}}}()
     lowtiming = Dict{Symbol, Dict{Int, Vector{Float64}}}()
 
-    for (deployment_model, name) in ((dp -> RobustDeployment(dp, α=0.1), :Robust01),
+    for(deployment_model, name) in ((dp -> RobustDeployment(dp, α=0.1), :Robust01),
                                       (dp -> RobustDeployment(dp, α=0.05), :Robust005),
                                       (dp -> RobustDeployment(dp, α=0.01), :Robust001),
                                       (dp -> RobustDeployment(dp, α=0.001), :Robust0001),
                                       (dp -> RobustDeployment(dp, α=0.0001), :Robust00001))
-        print("$name: ")
+        println("$name: ")
         amb_deployment[name] = Dict{Int, Vector{Int}}()
         scenarios[name] = Dict{Int, Vector{Vector{Int}}}()
         generated_deployment[name] = Dict{Int, Vector{Vector{Int}}}()
@@ -95,12 +97,12 @@ p = DeploymentProblem(30, length(locations), length(regions), demand, train_indi
         upptiming[name] = Dict{Int, Vector{Float64}}()
         lowtiming[name] = Dict{Int, Vector{Float64}}()
         for namb in 10:5:50
-            print("$namb ")
+            println("$namb ")
             p.nambulances = namb
             model = deployment_model(p)
             set_optimizer(model.m, Gurobi.Optimizer)
             # solve(model, p)
-            optimize!(model, p)
+            @time optimize!(model, p)
             #print("($(toq())) ")
             amb_deployment[name][namb] = deployment(model)
 
@@ -112,8 +114,31 @@ p = DeploymentProblem(30, length(locations), length(regions), demand, train_indi
             upptiming[name][namb] = model.upptiming
             lowtiming[name][namb] = model.lowtiming
         end
-        println()
+        println
     end
-    println("Hello1")
-end
-println("Hello2")
+
+            # amb_deployment = Dict{Symbol, Dict{Int, Vector{Int}}}()
+             for (next_deployment_model, name) in ((next_dp -> StochasticDeployment(next_dp, nperiods=500), :Stochastic),
+                                             (next_dp -> MEXCLPDeployment(next_dp, 0.654), :MEXCLP),
+                                             (next_dp -> MALPDeployment(next_dp, 0.654), :MALP))
+                println("$name: ")
+                amb_deployment[name] = Dict{Int, Vector{Int}}()
+                for namb in 10:5:50
+                    println("$namb ")
+                    p.nambulances = namb
+                    next_model = next_deployment_model(p)
+                    set_optimizer(next_model.m, Gurobi.Optimizer)
+                    @time optimize!(next_model, p)
+                    amb_deployment[name][namb] = deployment(next_model)
+                end
+                println()
+            end
+    JLD.jldopen("team_stats.jld", "w") do file
+        write(file, "amb_deployment", amb_deployment)
+        write(file, "scenarios", scenarios)
+        write(file, "generated_deployment", generated_deployment)
+        write(file, "upperbounds", upperbounds)
+        write(file, "lowerbounds", lowerbounds)
+        write(file, "upptiming", upptiming)
+        write(file, "lowtiming", lowtiming)
+    end
