@@ -1,0 +1,45 @@
+Academic license - for non-commercial use only
+215: call from 16 queued behind Int64[]
+216: call from 16 queued behind [215]
+215: amb 23 redirected from stn 27 to serve 16
+224: call from 33 queued behind Int64[]
+224: amb 13 redirected from stn 11 to serve 33
+216: amb 25 redirected from stn 30 to serve 16
+291: call from 166 queued behind Int64[]
+293: call from 131 queued behind Int64[]
+291: amb 12 redirected from stn 10 to serve 166
+293: amb 15 redirected from stn 13 to serve 131
+296: call from 43 queued behind Int64[]
+296: amb 29 redirected from stn 34 to serve 43
+299: call from 62 queued behind Int64[]
+299: amb 14 redirected from stn 11 to serve 62
+301: call from 183 queued behind Int64[]
+301: amb 21 redirected from stn 24 to serve 183
+565: call from 93 queued behind Int64[]
+565: amb 8 redirected from stn 7 to serve 93
+621: call from 112 queued behind Int64[]
+621: amb 1 redirected from stn 1 to serve 112
+629: call from 117 queued behind Int64[]
+628: call from 117 queued behind [629]
+629: amb 19 redirected from stn 17 to serve 117
+628: amb 9 redirected from stn 8 to serve 117
+637: call from 101 queued behind Int64[]
+637: amb 27 redirected from stn 32 to serve 101
+638: call from 138 queued behind Int64[]
+638: amb 23 redirected from stn 27 to serve 138
+640: call from 170 queued behind Int64[]
+640: amb 29 redirected from stn 34 to serve 170
+642: call from 88 queued behind Int64[]
+642: amb 15 redirected from stn 13 to serve 88
+647: call from 1 queued behind Int64[]
+650: call from 1 queued behind [647]
+647: amb 20 redirected from stn 19 to serve 1
+650: amb 13 redirected from stn 11 to serve 1
+910: call from 42 queued behind Int64[]
+910: amb 1 redirected from stn 1 to serve 42
+966: call from 159 queued behind Int64[]
+966: amb 26 redirected from stn 31 to serve 159
+ 21.620930 seconds (3.57 M allocations: 263.160 MiB, 0.49% gc time)
+(mean(df[!, :waittime]), maximum(df[!, :waittime])) = (0.15498333333333336, 41.65)
+mean(df[!, :waittime] + df[!, :responsetime]) = 8.455666666666668
+8.455666666666668
