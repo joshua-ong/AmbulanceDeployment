@@ -22,15 +22,15 @@ function DeploymentProblem(
         namb = 30,
         train_filter = (hourly_calls[:year] .== 2012) .* (hourly_calls[:month] .<= 3)
     )
-    regions = Int[parse(Int,string(x)) for x in names(hourly_calls[5:end])]
+    regions = Int[parse(Int,string(x)) for x in names(hourly_calls[!,5:end])]
     locations = collect(1:size(coverage,2))
-    adjacent = convert(Array, adjacent_nbhd[2:end])[regions,regions] .> 0.5
+    adjacent = convert(Array, adjacent_nbhd[!,2:end])[regions,regions] .> 0.5
     demand = convert(Array,hourly_calls[:,5:end])
 
     indices = 1:nrow(hourly_calls)
     train_indices = indices[train_filter]
     test_indices = indices[.!train_filter]
-
+ 
     DeploymentProblem(
         namb,
         length(locations),
@@ -78,8 +78,8 @@ function initialize!(problem::DispatchProblem, deployment::Vector{Int})
     problem.deployment = deepcopy(deployment)
     problem.redeploy_events = Tuple{Int,Int,Int,Int}[]
 
-    problem.emergency_calls[:arrival_seconds] =
-        cumsum(problem.emergency_calls[:interarrival_seconds])
+    problem.emergency_calls[!,:arrival_seconds] =
+        cumsum(problem.emergency_calls[!,:interarrival_seconds])
 
     problem
 end
