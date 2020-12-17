@@ -2,19 +2,20 @@ module AmbulanceDeployment
 
     import JuMP, Gurobi
     import DataStructures: PriorityQueue, enqueue!, dequeue!
-    import DataFrames: DataFrame, isna, nrow
+    import DataFrames: DataFrame, nrow
     import Distributions: Poisson, LogNormal, quantile, sample
     import Pkg
     #import JLD, Query, CSV, CPLEX
     import CSV, JLD, Query
     using Gurobi, CSV, JLD, Query, JuMP
-    Pkg.resolve()
+    #Pkg.resolve()
     include("model.jl")
     include("dispatch/closestdispatch.jl")
     include("problem.jl")
     include("simulate.jl")
     include("evaluate.jl")
     include("plot.jl")
+    #include("problem.jl")
     #include("../test/runtests.jl")
 
 
@@ -29,7 +30,6 @@ module AmbulanceDeployment
            ClosestDispatch,
            NoRedeployModel,
            AssignmentModel,
-
            solve,
            evaluate,
            deployment,
@@ -41,7 +41,6 @@ module AmbulanceDeployment
            test_performance,
            plot_timings,
            simulate_events!,
-
            initialize!
 
 end

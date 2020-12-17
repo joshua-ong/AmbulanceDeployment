@@ -1,7 +1,3 @@
-#Summary - runs for loop of models and ambulance numbers
-#Author - Joshua Ong
-#Update - 12-15-20
-
 using DataFrames, JLD, Distributions, CSV, Random, Plots
 import DataStructures: PriorityQueue, enqueue!, dequeue!
 include("..//src//model.jl")
@@ -27,7 +23,7 @@ amb_deployment = solverstats["amb_deployment"]
 const model_names = (:Stochastic, :Robust01, :Robust005, :Robust001, :Robust0001, :Robust00001, :MEXCLP, :MALP)
 #const model_names = (:Stochastic, :Robust01,:MEXCLP, :MALP)
 model_namb = [20, 25, 35, 45, 50] #note 10 breaks some assertion in simulation
-
+#name = model_names[1]
 
 p = DeploymentProblem(
     hourly_calls,
@@ -48,39 +44,38 @@ test_calls = CSV.File("test_calls.csv")|> DataFrame
 test_calls = test_calls[1:ncalls,:] #lowers call count. which makes simulation faster for debugging.
 
 #iterates through model (names) and number of ambulances for example Stochastic model with 20 ambulances
+results = Array{Float64,3}(undef, 2, 5, 2) #it saves the results to print later
+for j = 1:2
+    for i = 1:5
+    print(i, j, "\n")
+    x = amb_deployment[model_names[j]][model_namb[i]]
+    problem = DispatchProblem(test_calls, hospitals, stations, p.coverage, x, turnaround=turnaround)
+    dispatch = ClosestDispatch(p, problem)
+    redeploy = AssignmentModel(p, x, hospitals, stations, lambda=Float64(lambda))
 
-# results = Array{Float64,3}(undef, 2, 5, 2) #it saves the results to print later
-# for j = 1:2
-#     for i = 1:5
-#     print(i, j, "\n")
-#     x = amb_deployment[model_names[j]][model_namb[i]]
-#     problem = DispatchProblem(test_calls, hospitals, stations, p.coverage, x, turnaround=turnaround)
-#     dispatch = ClosestDispatch(p, problem)
-#     redeploy = AssignmentModel(p, x, hospitals, stations, lambda=Float64(lambda))
-#
-#     # id 145 dispatch to nbhd 88
-#     Random.seed!(1234); # reset seed
-#     @time df = simulate_events!(problem, dispatch, redeploy);
-#     #@show mean(df[!,:waittime]), maximum(df[!,:waittime])
-#     #@show mean(df[!,:waittime] + df[!,:responsetime])
-#     #results[j,i,1] = mean(df[!,:waittime]), maximum(df[!,:waittime])
-#     results[j,i,2] = mean(df[!,:waittime] + df[!,:responsetime])
-#
-# end
-# end
-#
-# plot(model_namb, adjoint(results[:,:,2]), markershape = :ltriangle, label = ["stochastic" "robust"])
-# xlabel!("Number of Ambulances")
-# ylabel!("Mean Response Time")
-# savefig("nuplot.png")
+    # id 145 dispatch to nbhd 88
+    Random.seed!(1234); # reset seed
+    @time df = simulate_events!(problem, dispatch, redeploy);
+    #@show mean(df[!,:waittime]), maximum(df[!,:waittime])
+    #@show mean(df[!,:waittime] + df[!,:responsetime])
+    #results[j,i,1] = mean(df[!,:waittime]), maximum(df[!,:waittime])
+    results[j,i,2] = mean(df[!,:waittime] + df[!,:responsetime])
 
-x = amb_deployment[name][namb]
-problem = DispatchProblem(test_calls, hospitals, stations, p.coverage, x, turnaround=turnaround)
-dispatch = ClosestDispatch(p, problem)
-redeploy = AssignmentModel(p, x, hospitals, stations, lambda=Float64(lambda))
+end
+end
 
-# id 145 dispatch to nbhd 88
-Random.seed!(1234); # reset seed
-@time df = simulate_events!(problem, dispatch, redeploy);
-@show mean(df[!,:waittime]), maximum(df[!,:waittime])
-@show mean(df[!,:waittime] + df[!,:responsetime])
+plot(model_namb, adjoint(results[:,:,2]), markershape = :ltriangle, label = ["stochastic" "robust"])
+xlabel!("Number of Ambulances")
+ylabel!("Mean Response Time")
+savefig("nuplot.png")
+
+# x = amb_deployment[name][namb]
+# problem = DispatchProblem(test_calls, hospitals, stations, p.coverage, x, turnaround=turnaround)
+# dispatch = ClosestDispatch(p, problem)
+# redeploy = AssignmentModel(p, x, hospitals, stations, lambda=Float64(lambda))
+#
+# # id 145 dispatch to nbhd 88
+# Random.seed!(1234); # reset seed
+# @time df = simulate_events!(problem, dispatch, redeploy);
+# @show mean(df[!,:waittime]), maximum(df[!,:waittime])
+# @show mean(df[!,:waittime] + df[!,:responsetime])
