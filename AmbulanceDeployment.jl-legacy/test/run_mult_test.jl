@@ -74,7 +74,7 @@ test_calls = test_calls[1:ncalls,:] #lowers call count. which makes simulation f
 # ylabel!("Mean Response Time")
 # savefig("nuplot.png")
 
-x = amb_deployment[model_names[1]][namb]
+x = amb_deployment[name][namb]
 problem = DispatchProblem(test_calls, hospitals, stations, p.coverage, x, turnaround=turnaround)
 dispatch = ClosestDispatch(p, problem)
 redeploy = AssignmentModel(p, x, hospitals, stations, lambda=Float64(lambda))
