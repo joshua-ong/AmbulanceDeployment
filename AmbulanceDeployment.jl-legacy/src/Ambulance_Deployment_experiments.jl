@@ -75,14 +75,14 @@ test_inc_offpeak = .~inc_peak_period .* inc_test_filter;
 
 ## make sure to include @time begin
 
-    amb_deployment = Dict{Symbol, Dict{Int, Vector{Int}}}()
+
     scenarios = Dict{Symbol, Dict{Int, Vector{Vector{Int}}}}()
     generated_deployment = Dict{Symbol, Dict{Int, Vector{Vector{Int}}}}()
     upperbounds = Dict{Symbol, Dict{Int, Vector{Float64}}}()
     lowerbounds = Dict{Symbol, Dict{Int, Vector{Float64}}}()
     upptiming = Dict{Symbol, Dict{Int, Vector{Float64}}}()
     lowtiming = Dict{Symbol, Dict{Int, Vector{Float64}}}()
-
+    amb_deployment = Dict{Symbol, Dict{Int, Vector{Int}}}()
     for(deployment_model, name) in ((dp -> RobustDeployment(dp, α=0.1), :Robust01),
                                       (dp -> RobustDeployment(dp, α=0.05), :Robust005),
                                       (dp -> RobustDeployment(dp, α=0.01), :Robust001),
@@ -117,7 +117,7 @@ test_inc_offpeak = .~inc_peak_period .* inc_test_filter;
         println
     end
 
-            # amb_deployment = Dict{Symbol, Dict{Int, Vector{Int}}}()
+
              for (next_deployment_model, name) in ((next_dp -> StochasticDeployment(next_dp, nperiods=500), :Stochastic),
                                              (next_dp -> MEXCLPDeployment(next_dp, 0.654), :MEXCLP),
                                              (next_dp -> MALPDeployment(next_dp, 0.654), :MALP))
