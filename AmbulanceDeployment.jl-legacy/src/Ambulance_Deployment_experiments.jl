@@ -131,7 +131,7 @@ test_inc_offpeak = .~inc_peak_period .* inc_test_filter;
                                              (next_dp -> MALPDeployment(next_dp, 0.654), :MALP))
                 println("$name: ")
                 amb_deployment[name] = Dict{Int, Vector{Int}}()
-                for namb in 10:5:50
+                for namb in 25:5:50
                     println("$namb ")
                     p.nambulances = namb
                     next_model = next_deployment_model(p)
