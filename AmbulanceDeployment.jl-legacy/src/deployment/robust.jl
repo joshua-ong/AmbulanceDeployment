@@ -109,6 +109,9 @@ function Qrobust(problem::DeploymentProblem; α=paramss.α, verbose=false, solve
         covered_regions = filter(j->problem.coverage[j,i],J)
         JuMP.@constraint(m, sum(d[j] for j in covered_regions) <= γ._regional[i])
     end
+    for i in I
+        JuMP.@constraint(m, x[i] <= 5)
+    end
     JuMP.@constraint(m, sum(d[j] for j in J) <= γ._global)
 
     Qrobust(m, I, J, d, q, γ)

@@ -34,7 +34,9 @@ function MEXCLPDeployment(p::DeploymentProblem,
         JuMP.@constraint(m, sum(x[i] for i in filter(i->p.coverage[j,i], I)) >=
                             sum(z[j,k] for k in K))
     end
-
+    for i in I
+        JuMP.@constraint(m, x[i] <= 5)
+    end
     MEXCLPDeployment(m, x)
 end
 

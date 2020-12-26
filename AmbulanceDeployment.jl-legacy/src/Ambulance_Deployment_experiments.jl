@@ -104,7 +104,7 @@ test_inc_offpeak = .~inc_peak_period .* inc_test_filter;
     #     lowerbounds[name] = Dict{Int, Vector{Float64}}()
     #     upptiming[name] = Dict{Int, Vector{Float64}}()
     #     lowtiming[name] = Dict{Int, Vector{Float64}}()
-    #     for namb in 10:5:50
+    #     for namb in 30:5:50
     #         println("$namb ")
     #         p.nambulances = namb
     #         model = deployment_model(p)
@@ -126,9 +126,23 @@ test_inc_offpeak = .~inc_peak_period .* inc_test_filter;
     # end
 
 
-             for (next_deployment_model, name) in ((next_dp -> StochasticDeployment(next_dp, nperiods=500), :Stochastic),
-                                             (next_dp -> MEXCLPDeployment(next_dp, 0.654), :MEXCLP),
-                                             (next_dp -> MALPDeployment(next_dp, 0.654), :MALP))
+            #  for (next_deployment_model, name) in ((next_dp -> StochasticDeployment(next_dp, nperiods=500), :Stochastic),
+            #                                  (next_dp -> MEXCLPDeployment(next_dp, 0.654), :MEXCLP),
+            #                                  (next_dp -> MALPDeployment(next_dp, 0.654), :MALP))
+            #     println("$name: ")
+            #     amb_deployment[name] = Dict{Int, Vector{Int}}()
+            #     for namb in 25:5:50
+            #         println("$namb ")
+            #         p.nambulances = namb
+            #         next_model = next_deployment_model(p)
+            #         set_optimizer(next_model.m, Gurobi.Optimizer)
+            #         @time optimize!(next_model, p)
+            #         amb_deployment[name][namb] = deployment(next_model)
+            #     end
+            #     println()
+            # end
+            next_deployment_model = next_dp -> MALPDeployment(next_dp, 0.654)
+            name=:MALP
                 println("$name: ")
                 amb_deployment[name] = Dict{Int, Vector{Int}}()
                 for namb in 25:5:50
@@ -140,7 +154,6 @@ test_inc_offpeak = .~inc_peak_period .* inc_test_filter;
                     amb_deployment[name][namb] = deployment(next_model)
                 end
                 println()
-            end
     JLD.jldopen("team_stats.jld", "w") do file
         write(file, "amb_deployment", amb_deployment)
         write(file, "scenarios", scenarios)

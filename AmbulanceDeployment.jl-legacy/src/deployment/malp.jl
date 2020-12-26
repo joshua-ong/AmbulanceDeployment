@@ -34,6 +34,9 @@ function MALPDeployment(p::DeploymentProblem,
             JuMP.@constraint(m, z[j,k] <= z[j,k-1])
         end
     end
+    for i in I
+        JuMP.@constraint(m, x[i] <= 5)
+    end
 
     MALPDeployment(m, x)
 end

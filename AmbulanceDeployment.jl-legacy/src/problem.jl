@@ -20,7 +20,7 @@ function DeploymentProblem(
         adjacent_nbhd::DataFrame,
         coverage::Array{Bool,2}; #!! changed from original !!
         namb = 30,
-        train_filter = (hourly_calls[:year] .== 2012) .* (hourly_calls[:month] .<= 3)
+        train_filter = (hourly_calls[:year] .== 2019) .* (hourly_calls[:month] .<= 3)
     )
     regions = Int[parse(Int,string(x)) for x in names(hourly_calls[!,5:end])]
     locations = collect(1:size(coverage,2))
@@ -30,7 +30,7 @@ function DeploymentProblem(
     indices = 1:nrow(hourly_calls)
     train_indices = indices[train_filter]
     test_indices = indices[.!train_filter]
- 
+
     DeploymentProblem(
         namb,
         length(locations),

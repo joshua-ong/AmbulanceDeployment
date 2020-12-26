@@ -43,7 +43,7 @@ DataFrames.first(calls, 6)
 # and the subsequent emergency calls from the remaining months as our test set
 peak_period = (hourly_calls[!,:hour] .>= 8) .* (hourly_calls[!,:hour] .<= 20)
 indices = 1:DataFrames.nrow(hourly_calls);
-train_filter = (hourly_calls[!,:year] .== 2012) .* (hourly_calls[!,:month] .<= 3)
+train_filter = (hourly_calls[!,:year] .== 2019) .* (hourly_calls[!,:month] .<= 3)
 test_filter  = .~train_filter;
 train_indices = indices[train_filter]
 test_indices = indices[test_filter];
@@ -52,7 +52,7 @@ test_indices = indices[test_filter];
 inc_peak_period = (calls[!,:hour] .>= 8) .* (calls[!,:hour] .<= 20)
 inc_indices = 1:DataFrames.nrow(calls);
 
-inc_train_filter = (calls[!,:year] .== 2012) .* (calls[!,:month] .<= 3)
+inc_train_filter = (calls[!,:year] .== 2019) .* (calls[!,:month] .<= 3)
 inc_test_filter  = .~inc_train_filter
 
 inc_train_indices = inc_indices[inc_train_filter]

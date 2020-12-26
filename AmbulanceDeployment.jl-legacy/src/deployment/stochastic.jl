@@ -39,6 +39,10 @@ function StochasticDeployment(p::DeploymentProblem; nperiods=params.nperiods, to
         JuMP.@constraint(m, z[j,t] >= demand[t,j] - inflow)
     end
 
+    for i in I
+        JuMP.@constraint(m, x[i] <= 5)
+    end
+    
     StochasticDeployment(m, x)
 end
 
