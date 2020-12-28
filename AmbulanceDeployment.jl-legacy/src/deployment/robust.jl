@@ -109,9 +109,7 @@ function Qrobust(problem::DeploymentProblem; α=paramss.α, verbose=false, solve
         covered_regions = filter(j->problem.coverage[j,i],J)
         JuMP.@constraint(m, sum(d[j] for j in covered_regions) <= γ._regional[i])
     end
-    for i in I
-        JuMP.@constraint(m, x[i] <= 5)
-    end
+
     JuMP.@constraint(m, sum(d[j] for j in J) <= γ._global)
 
     Qrobust(m, I, J, d, q, γ)
@@ -161,6 +159,9 @@ function RobustDeployment(p::DeploymentProblem; α=paramss.α)
     JuMP.@constraint(m, sum(x[i] for i=I) <= p.nambulances)
     for j in J # coverage over all regions
         JuMP.@constraint(m, sum(x[i] for i in filter(i->p.coverage[j,i], I)) >= 1)
+    end
+    for i in I
+        JuMP.@constraint(m, x[i] <= 5)
     end
 
     RobustDeployment(m, Qrobust(p, α=α, verbose=verbose), I, J, x, y, z, η,

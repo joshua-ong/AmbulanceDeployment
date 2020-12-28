@@ -91,58 +91,44 @@ test_inc_offpeak = .~inc_peak_period .* inc_test_filter;
     upptiming = Dict{Symbol, Dict{Int, Vector{Float64}}}()
     lowtiming = Dict{Symbol, Dict{Int, Vector{Float64}}}()
     amb_deployment = Dict{Symbol, Dict{Int, Vector{Int}}}()
-    # for(deployment_model, name) in ((dp -> RobustDeployment(dp, α=0.1), :Robust01),
-    #                                   (dp -> RobustDeployment(dp, α=0.05), :Robust005),
-    #                                   (dp -> RobustDeployment(dp, α=0.01), :Robust001),
-    #                                   (dp -> RobustDeployment(dp, α=0.001), :Robust0001),
-    #                                   (dp -> RobustDeployment(dp, α=0.0001), :Robust00001))
-    #     println("$name: ")
-    #     amb_deployment[name] = Dict{Int, Vector{Int}}()
-    #     scenarios[name] = Dict{Int, Vector{Vector{Int}}}()
-    #     generated_deployment[name] = Dict{Int, Vector{Vector{Int}}}()
-    #     upperbounds[name] = Dict{Int, Vector{Float64}}()
-    #     lowerbounds[name] = Dict{Int, Vector{Float64}}()
-    #     upptiming[name] = Dict{Int, Vector{Float64}}()
-    #     lowtiming[name] = Dict{Int, Vector{Float64}}()
-    #     for namb in 30:5:50
-    #         println("$namb ")
-    #         p.nambulances = namb
-    #         model = deployment_model(p)
-    #         set_optimizer(model.m, Gurobi.Optimizer)
-    #         # solve(model, p)
-    #         @time optimize!(model, p)
-    #         #print("($(toq())) ")
-    #         amb_deployment[name][namb] = deployment(model)
-    #
-    #         # for tracking purposes
-    #         scenarios[name][namb] = model.scenarios
-    #         generated_deployment[name][namb] = model.deployment
-    #         upperbounds[name][namb] = model.upperbounds
-    #         lowerbounds[name][namb] = model.lowerbounds
-    #         upptiming[name][namb] = model.upptiming
-    #         lowtiming[name][namb] = model.lowtiming
-    #     end
-    #     println
-    # end
+    for(deployment_model, name) in ((dp -> RobustDeployment(dp, α=0.1), :Robust01),
+                                      (dp -> RobustDeployment(dp, α=0.05), :Robust005),
+                                      (dp -> RobustDeployment(dp, α=0.01), :Robust001),
+                                      (dp -> RobustDeployment(dp, α=0.001), :Robust0001),
+                                      (dp -> RobustDeployment(dp, α=0.0001), :Robust00001))
+        println("$name: ")
+        amb_deployment[name] = Dict{Int, Vector{Int}}()
+        scenarios[name] = Dict{Int, Vector{Vector{Int}}}()
+        generated_deployment[name] = Dict{Int, Vector{Vector{Int}}}()
+        upperbounds[name] = Dict{Int, Vector{Float64}}()
+        lowerbounds[name] = Dict{Int, Vector{Float64}}()
+        upptiming[name] = Dict{Int, Vector{Float64}}()
+        lowtiming[name] = Dict{Int, Vector{Float64}}()
+        for namb in 30:5:50
+            println("$namb ")
+            p.nambulances = namb
+            model = deployment_model(p)
+            set_optimizer(model.m, Gurobi.Optimizer)
+            # solve(model, p)
+            @time optimize!(model, p)
+            #print("($(toq())) ")
+            amb_deployment[name][namb] = deployment(model)
+
+            # for tracking purposes
+            scenarios[name][namb] = model.scenarios
+            generated_deployment[name][namb] = model.deployment
+            upperbounds[name][namb] = model.upperbounds
+            lowerbounds[name][namb] = model.lowerbounds
+            upptiming[name][namb] = model.upptiming
+            lowtiming[name][namb] = model.lowtiming
+        end
+        println
+    end
 
 
-            #  for (next_deployment_model, name) in ((next_dp -> StochasticDeployment(next_dp, nperiods=500), :Stochastic),
-            #                                  (next_dp -> MEXCLPDeployment(next_dp, 0.654), :MEXCLP),
-            #                                  (next_dp -> MALPDeployment(next_dp, 0.654), :MALP))
-            #     println("$name: ")
-            #     amb_deployment[name] = Dict{Int, Vector{Int}}()
-            #     for namb in 25:5:50
-            #         println("$namb ")
-            #         p.nambulances = namb
-            #         next_model = next_deployment_model(p)
-            #         set_optimizer(next_model.m, Gurobi.Optimizer)
-            #         @time optimize!(next_model, p)
-            #         amb_deployment[name][namb] = deployment(next_model)
-            #     end
-            #     println()
-            # end
-            next_deployment_model = next_dp -> MALPDeployment(next_dp, 0.654)
-            name=:MALP
+             for (next_deployment_model, name) in ((next_dp -> StochasticDeployment(next_dp, nperiods=500), :Stochastic),
+                                             (next_dp -> MEXCLPDeployment(next_dp, 0.654), :MEXCLP),
+                                             (next_dp -> MALPDeployment(next_dp, 0.654), :MALP))
                 println("$name: ")
                 amb_deployment[name] = Dict{Int, Vector{Int}}()
                 for namb in 25:5:50
@@ -154,6 +140,20 @@ test_inc_offpeak = .~inc_peak_period .* inc_test_filter;
                     amb_deployment[name][namb] = deployment(next_model)
                 end
                 println()
+            end
+            # next_deployment_model = next_dp -> MALPDeployment(next_dp, 0.654)
+            # name=:MALP
+            #     println("$name: ")
+            #     amb_deployment[name] = Dict{Int, Vector{Int}}()
+            #     for namb in 25:5:50
+            #         println("$namb ")
+            #         p.nambulances = namb
+            #         next_model = next_deployment_model(p)
+            #         set_optimizer(next_model.m, Gurobi.Optimizer)
+            #         @time optimize!(next_model, p)
+            #         amb_deployment[name][namb] = deployment(next_model)
+            #     end
+            #     println()
     JLD.jldopen("team_stats.jld", "w") do file
         write(file, "amb_deployment", amb_deployment)
         write(file, "scenarios", scenarios)
