@@ -12,13 +12,17 @@ namb = 20
 lambda = 0
 
 local_path = ""
-hourly_calls = CSV.File(string(local_path,"../test/data/processed/2-weekday_calls.csv")) |> DataFrame
-adjacent_nbhd = CSV.File(string(local_path,"../test/data/processed/2-adjacent_nbhd.csv")) |> DataFrame
-coverage = JLD.load(string(local_path,"../test/data/processed/3-coverage.jld"), "stn_coverage")
-hospitals = CSV.File(string(local_path,"../test/data/processed/3-hospitals.csv")) |> DataFrame
-stations = CSV.File(string(local_path,"../test/data/processed/3-stations.csv")) |> DataFrame
+
+hospitals = CSV.File(string(local_path,"../test/austin-data/hospitals.csv")) |> DataFrame
+stations = CSV.File(string(local_path,"../test/austin-data/stations.csv")) |> DataFrame
  #solverstats = JLD.load(string(local_path,"data/processed/4-solve-stats.jld"))
-solverstats = JLD.load("../src/team_stats.jld")
+hourly_calls = CSV.File("../test/austin-data/Full_WeekdayCalls.csv") |> DataFrame
+ # weekend_hourly_calls = CSV.File("data/processed/2-weekend_calls.csv") |> DataFrame
+adjacent_nbhd = CSV.File("../test/austin-data/adjacent_nbhd.csv") |> DataFrame
+coverage = CSV.read("../test/austin-data/coverage_real.csv", DataFrame, header=false)
+coverage = convert(Array{Bool, 2}, coverage[:, :])
+incidents = CSV.File("../test/austin-data/austin_incidents.csv") |> DataFrame
+solverstats = JLD.load("../src/austin_team_stats.jld")
 
 amb_deployment = solverstats["amb_deployment"]
 const model_names = (:Stochastic, :MEXCLP, :MALP)
@@ -42,7 +46,7 @@ p = DeploymentProblem(
 # calls = DataFrames.readtable("data/processed/5-calls.csv");
 # inc_test_filter  = !((calls[:year] .== 2012) .* (calls[:month] .<= 3))
 # test_calls = calls[(1:nrow(calls))[inc_test_filter][1:ncalls],:];
-test_calls = CSV.File("../test/test_calls.csv")|> DataFrame
+test_calls = CSV.File("../test/austin-data/austin_test_calls.csv")|> DataFrame
 test_calls = test_calls[1:ncalls,:] #lowers call count. which makes simulation faster for debugging.
 result_dict = Dict{Symbol, Dict{Int, Vector{Float64}}}()
 
