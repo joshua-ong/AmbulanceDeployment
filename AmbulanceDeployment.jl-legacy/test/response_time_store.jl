@@ -25,7 +25,7 @@ incidents = CSV.File("../test/austin-data/austin_incidents.csv") |> DataFrame
 solverstats = JLD.load("../src/austin_team_stats.jld")
 
 amb_deployment = solverstats["amb_deployment"]
-const model_names = (:Stochastic, :MEXCLP, :MALP)
+const model_names = (:Stochastic, :Robust01, :Robust005, :Robust001, :Robust0001, :Robust00001, :MEXCLP, :MALP)
 # const model_names = (:Stochastic, :Robust01, :Robust005, :Robust001, :Robust0001, :Robust00001, :MEXCLP, :MALP)
 #const model_names = (:Stochastic, :Robust01,:MEXCLP, :MALP)
 model_namb = [30, 35, 40, 45, 50] #note 10 breaks some assertion in simulation
@@ -53,7 +53,7 @@ result_dict = Dict{Symbol, Dict{Int, Vector{Float64}}}()
 #iterates through model (names) and number of ambulances for example Stochastic model with 20 ambulances
 # results = Array{Float64,2}(undef, 8, 5) #it saves the results to print later
 results = Any[]
-for j = 1:3
+for j = 1:8
     # model_results = Any[]
     result_dict[model_names[j]] = Dict{Int, Vector{Int}}()
     for i = 1:5
