@@ -141,19 +141,6 @@ test_inc_offpeak = .~inc_peak_period .* inc_test_filter;
                 end
                 println()
             end
-            # next_deployment_model = next_dp -> MALPDeployment(next_dp, 0.654)
-            # name=:MALP
-            #     println("$name: ")
-            #     amb_deployment[name] = Dict{Int, Vector{Int}}()
-            #     for namb in 25:5:50
-            #         println("$namb ")
-            #         p.nambulances = namb
-            #         next_model = next_deployment_model(p)
-            #         set_optimizer(next_model.m, Gurobi.Optimizer)
-            #         @time optimize!(next_model, p)
-            #         amb_deployment[name][namb] = deployment(next_model)
-            #     end
-            #     println()
     JLD.jldopen("austin_team_stats.jld", "w") do file
         write(file, "amb_deployment", amb_deployment)
         write(file, "scenarios", scenarios)
