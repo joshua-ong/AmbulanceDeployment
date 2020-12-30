@@ -141,7 +141,7 @@ test_inc_offpeak = .~inc_peak_period .* inc_test_filter;
                 end
                 println()
             end
-    JLD.jldopen("austin_team_stats.jld", "w") do file
+    JLD.jldopen("outputs/austin_team_stats.jld", "w") do file
         write(file, "amb_deployment", amb_deployment)
         write(file, "scenarios", scenarios)
         write(file, "generated_deployment", generated_deployment)
