@@ -1,3 +1,9 @@
+#=
+Author : Ng Yeesian
+Modified : Guy Farmer / Zander Tedjo / Will Worthington
+defines and runs the simulation engine for ems dispatch and deployment
+=#
+
 include("dispatch/closestdispatch.jl")
 include("redeployment/assignment.jl")
 include("model.jl")

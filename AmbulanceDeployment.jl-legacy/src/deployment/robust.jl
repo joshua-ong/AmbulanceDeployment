@@ -1,4 +1,8 @@
-
+#=
+Author : Ng Yeesian
+Modified : Guy Farmer / Michael Hilborn / Zander Tedjo
+generates the robust deployment model
+=#
 include("../problem.jl")
 import JuMP, JuMP.optimize!
 Pkg.add("JuMP")

@@ -1,3 +1,8 @@
+#=
+Author : Ng Yeesian
+Modified : Guy Farmer / Zander Tedjo / Will Worthington
+generates the closest dispatch model
+=#
 struct ClosestDispatch <: DispatchModel
     drivetime::DataFrame
     candidates::Vector{Vector{Int}}

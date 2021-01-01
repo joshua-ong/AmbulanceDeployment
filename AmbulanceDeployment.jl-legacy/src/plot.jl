@@ -1,3 +1,8 @@
+#=
+Author : Joshua Ong
+tests plotting functionality in julia
+=#
+
 Pkg.add("Gadfly")
 Pkg.add("GeoInterface")
 Pkg.add("Winston")

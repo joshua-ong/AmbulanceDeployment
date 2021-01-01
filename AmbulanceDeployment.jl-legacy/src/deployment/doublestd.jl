@@ -1,3 +1,6 @@
+#=
+Author : Ng Yeesian
+=#
 type DSMDeployment <: DeploymentModel
     m::JuMP.Model
     x::Vector{JuMP.Variable}

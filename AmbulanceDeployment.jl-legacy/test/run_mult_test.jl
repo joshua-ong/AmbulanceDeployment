@@ -1,3 +1,8 @@
+#=
+Author : Joshua Ong
+Modified : None
+runs deployment and dispatch simulations on multiple deployment models and plots the mean response times
+=#
 using DataFrames, JLD, Distributions, CSV, Random, Plots
 import DataStructures: PriorityQueue, enqueue!, dequeue!
 include("..//src//model.jl")

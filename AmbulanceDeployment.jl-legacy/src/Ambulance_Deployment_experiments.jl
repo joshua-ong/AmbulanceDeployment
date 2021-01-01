@@ -1,3 +1,7 @@
+#=
+Author : Guy Farmer
+generates a distribution of ambulances for various ambulance counts and stores to a jld file
+=#
 using AmbulanceDeployment
 using DataFrames, Winston, JLD, CSV, Gurobi, JuMP
 #include("problem.jl")

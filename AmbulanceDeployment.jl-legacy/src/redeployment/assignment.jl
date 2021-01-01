@@ -1,3 +1,9 @@
+#=
+Author : Ng Yeesian
+Modified : Guy Farmer / Michael Hilborn
+generates the assignment model / assigns ambulances based on a queueing system
+currently operates on gurobi 0.8.1
+=#
 struct AssignmentModel <: RedeployModel
     model::Gurobi.Model
     #model::JuMP.Model

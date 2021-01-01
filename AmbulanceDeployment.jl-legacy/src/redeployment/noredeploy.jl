@@ -1,3 +1,8 @@
+#=
+Author : Ng Yeesian
+Modified : Guy Farmer / Michael Hilborn / Zander Tedjo
+generates the no redeploy model
+=#
 struct NoRedeployModel <: RedeployModel
     assignment::Vector{Int} # which location the ambulance is assigned to
     ambulances::Vector{Vector{Int}} # list of ambulances assigned to each location

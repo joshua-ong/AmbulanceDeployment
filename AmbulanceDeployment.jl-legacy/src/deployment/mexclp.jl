@@ -1,3 +1,8 @@
+#=
+Author : Ng Yeesian
+Modified : Guy Farmer
+generates the Maximum Expected Coverage Location Problem model
+=#
 struct MEXCLPDeployment <: DeploymentModel
     m::JuMP.Model
     x::Vector{JuMP.VariableRef}

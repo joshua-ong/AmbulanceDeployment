@@ -1,3 +1,9 @@
+#=
+Author : Guy Farmer
+Modified : none
+runs dispatch simulations on numerous dc models using original dc data and plots the results
+=#
+
 using DataFrames, JLD, Distributions, CSV, Random, Plots
 import DataStructures: PriorityQueue, enqueue!, dequeue!
 include("..//src//model.jl")

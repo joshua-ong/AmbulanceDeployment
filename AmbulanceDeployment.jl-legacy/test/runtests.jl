@@ -1,3 +1,9 @@
+#=
+Author : Ng Yeesian
+Modified : Guy Farmer / Michael Hilborn / Zander Tedjo / Will Worthington
+runs ambulance deployment and dispatch simulation on a single deployment model
+=#
+
 using AmbulanceDeployment, DataFrames, JLD, Distributions, CSV, Random
 include("..//src//model.jl")
 include("..//src//dispatch/closestdispatch.jl")

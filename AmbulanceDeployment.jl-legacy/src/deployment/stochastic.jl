@@ -1,3 +1,8 @@
+#=
+Author : Ng Yeesian
+Modified : Guy Farmer
+generates the stochastic deployment model
+=#
 struct StochasticDeployment <: DeploymentModel
     m::JuMP.Model
     x::Vector{JuMP.VariableRef}
@@ -42,7 +47,7 @@ function StochasticDeployment(p::DeploymentProblem; nperiods=params.nperiods, to
     for i in I
         JuMP.@constraint(m, x[i] <= 5)
     end
-    
+
     StochasticDeployment(m, x)
 end
 

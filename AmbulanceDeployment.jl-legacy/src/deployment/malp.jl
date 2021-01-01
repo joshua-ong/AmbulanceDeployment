@@ -1,3 +1,8 @@
+#=
+Author : Ng Yeesian
+Modified : Guy Farmer
+generates the Maximum Availability Location Problem model
+=#
 struct MALPDeployment <: DeploymentModel
     m::JuMP.Model
     x::Vector{JuMP.VariableRef}

@@ -1,3 +1,7 @@
+#=
+Author : Guy Farmer
+Runs simulations for all models (generated in Ambulance_Deployment_experiments.jl) and stores the response times in json file
+=#
 using DataFrames, JLD, Distributions, CSV, Random, Plots,JSON
 import DataStructures: PriorityQueue, enqueue!, dequeue!
 include("..//src//model.jl")
@@ -22,7 +26,7 @@ adjacent_nbhd = CSV.File("../test/austin-data/adjacent_nbhd.csv") |> DataFrame
 coverage = CSV.read("../test/austin-data/coverage_real.csv", DataFrame, header=false)
 coverage = convert(Array{Bool, 2}, coverage[:, :])
 incidents = CSV.File("../test/austin-data/austin_incidents.csv") |> DataFrame
-solverstats = JLD.load("../src/outputs/austin_team_stats.jld")
+solverstats = JLD.load("../src/austin_team_stats.jld")
 
 amb_deployment = solverstats["amb_deployment"]
 const model_names = (:Stochastic, :Robust01, :Robust005, :Robust001, :Robust0001, :Robust00001, :MEXCLP, :MALP)
@@ -75,6 +79,27 @@ for j = 1:8
     #results[j,i] = mean(df[!,:waittime] + df[!,:responsetime])
     end
 end
+
+    println("adding trivial solution")
+    #x = amb_deployment[model_names[j]][model_namb[i]]
+    x = ones(length(stations[:,1]))
+    x = convert(Array{Int64,1}, x)
+    x = [0, 0, 0, 0, 0, 0, 0, 2, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 0]
+    problem = DispatchProblem(test_calls, hospitals, stations, p.coverage, x, turnaround=turnaround)
+    dispatch = ClosestDispatch(p, problem)
+    redeploy = AssignmentModel(p, x, hospitals, stations, lambda=Float64(lambda))
+
+# id 145 dispatch to nbhd 88
+    Random.seed!(1234); # reset seed
+    @time df = simulate_events!(problem, dispatch, redeploy);
+    #@show mean(df[!,:waittime]), maximum(df[!,:waittime])
+    #@show mean(df[!,:waittime] + df[!,:responsetime])
+    #results[j,i,1] = mean(df[!,:waittime]), maximum(df[!,:waittime])
+    println("wait time : ", df[!,:waittime])
+    println("response time: ", df[!,:responsetime])
+    result_dict[[:trivial][length(stations[:,1]) = df[!,:responsetime]
+    #   results[j,i] = mean(df[!,:waittime] + df[!,:responsetime])
 
 
 JLD.jldopen("../src/outputs/austin_response_times.jld", "w") do file

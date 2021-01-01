@@ -1,3 +1,8 @@
+#=
+Author : Ng Yeesian
+Modified : Guy Farmer
+generates the AmbulanceDeployment package
+=#
 module AmbulanceDeployment
 
     import JuMP, Gurobi

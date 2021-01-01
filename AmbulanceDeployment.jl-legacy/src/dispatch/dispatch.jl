@@ -1,3 +1,8 @@
+#=
+Author : Ng Yeesian
+Modified : none
+Creates various dispatch models
+=#
 type LPDispatchGreedy <: DispatchModel
     m::JuMP.Model
     candidates::Vector{Vector{Int}}
@@ -408,7 +413,7 @@ function MALPDispatch(p::DeploymentProblem,
                       solver = GurobiSolver(OutputFlag=0))
     demand = vec(mean(p.demand[p.train,:],1))
     @assert length(demand) == p.nregions
-    
+
     I = 1:p.nlocations
     J = 1:p.nregions
     b = ceil(Int, log(1-α)/log(q))

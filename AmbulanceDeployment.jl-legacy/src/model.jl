@@ -1,3 +1,8 @@
+#=
+Author : Ng Yeesian
+Modified : Guy Farmer / Zander Tedjo / Michael Hilborn
+defines various deployment and dispatch models and functions that will be run on them
+=#
 using Gurobi
 abstract type DeploymentModel end
 
