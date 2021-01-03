@@ -24,7 +24,7 @@ function DeploymentProblem(
         adjacent_nbhd::DataFrame,
         coverage::Array{Bool,2}; #!! changed from original !!
         namb = 30,
-        train_filter = (hourly_calls[:year] .== 2019) .* (hourly_calls[:month] .<= 3)
+        train_filter = (hourly_calls[:year] .== 2020) .* (hourly_calls[:month] .<= 3)
     )
     regions = Int[parse(Int,string(x)) for x in names(hourly_calls[!,6:end])]
     locations = collect(1:size(coverage,2))
