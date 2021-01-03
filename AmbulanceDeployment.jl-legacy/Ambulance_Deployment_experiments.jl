@@ -9,10 +9,10 @@ coverage = JLD.load("../test/data/processed/3-coverage.jld", "stn_coverage")
 incidents = CSV.File("../test/data/processed/3-incidents_drivetime.csv") |> DataFrame
 
 
-regions = Int[parse(Int,string(x)) for x in names(hourly_calls[:,5:ncol(hourly_calls)])]
+regions = Int[parse(Int,string(x)) for x in names(hourly_calls[:,6:ncol(hourly_calls)])]
 locations = collect(1:size(coverage,2))
 adjacent = convert(Array, adjacent_nbhd[:,2:ncol(adjacent_nbhd)])[regions,regions] .> 0.5
-demand = convert(Array,hourly_calls[:,5:end]);
+demand = convert(Array,hourly_calls[:,6:end]);
 
 incidents = incidents[.~ismissing.(incidents[!,:stn1_min]), :] # drop 44 calls that were "unreachable" (because all stations are reachable from each other)
 incidents[!,:interarrival_seconds] = [0; incidents[!,:arrival_seconds][2:end] - incidents[!,:arrival_seconds][1:end-1]]

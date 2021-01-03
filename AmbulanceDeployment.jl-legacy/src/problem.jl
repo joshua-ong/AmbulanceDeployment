@@ -26,10 +26,10 @@ function DeploymentProblem(
         namb = 30,
         train_filter = (hourly_calls[:year] .== 2019) .* (hourly_calls[:month] .<= 3)
     )
-    regions = Int[parse(Int,string(x)) for x in names(hourly_calls[!,5:end])]
+    regions = Int[parse(Int,string(x)) for x in names(hourly_calls[!,6:end])]
     locations = collect(1:size(coverage,2))
     adjacent = convert(Array, adjacent_nbhd[!,2:end])[regions,regions] .> 0.5
-    demand = convert(Array,hourly_calls[:,5:end])
+    demand = convert(Array,hourly_calls[:,6:end])
 
     indices = 1:nrow(hourly_calls)
     train_indices = indices[train_filter]
