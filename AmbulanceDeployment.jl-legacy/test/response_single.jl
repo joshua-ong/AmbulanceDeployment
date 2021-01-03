@@ -40,7 +40,7 @@ p = DeploymentProblem(
     adjacent_nbhd,
     coverage,
     namb = namb,
-    train_filter = (hourly_calls[!,:year] .== 2020) .* (hourly_calls[!,:month] .<= 3)
+    train_filter = (hourly_calls[!,:year] .== 2019) .* (hourly_calls[!,:month] .<= 3)
 )
 
 # We focus on emergency calls during the "peak period" (8AM - 8PM),
