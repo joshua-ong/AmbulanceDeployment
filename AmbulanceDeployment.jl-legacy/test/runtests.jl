@@ -1,9 +1,3 @@
-#=
-Author : Ng Yeesian
-Modified : Guy Farmer / Michael Hilborn / Zander Tedjo / Will Worthington
-runs ambulance deployment and dispatch simulation on a single deployment model
-=#
-
 using AmbulanceDeployment, DataFrames, JLD, Distributions, CSV, Random
 include("..//src//model.jl")
 include("..//src//dispatch/closestdispatch.jl")
@@ -16,11 +10,17 @@ ncalls = 1000
 namb = 30
 lambda = 0
 
-hourly_calls = CSV.File("data/processed/2-weekday_calls.csv") |> DataFrame
-adjacent_nbhd = CSV.File("data/processed/2-adjacent_nbhd.csv") |> DataFrame
-coverage = JLD.load("data/processed/3-coverage.jld", "stn_coverage")
-hospitals = CSV.File("data/processed/3-hospitals.csv") |> DataFrame
-stations = CSV.File("data/processed/3-stations.csv") |> DataFrame
+# hourly_calls = CSV.File("data/processed/2-weekday_calls.csv") |> DataFrame
+# adjacent_nbhd = CSV.File("data/processed/2-adjacent_nbhd.csv") |> DataFrame
+# coverage = JLD.load("data/processed/3-coverage.jld", "stn_coverage")
+hourly_calls = CSV.File("../test/austin-data/Full_WeekdayCalls.csv") |> DataFrame
+adjacent_nbhd = CSV.File("../test/austin-data/adjacent_nbhd.csv") |> DataFrame
+coverage = CSV.read("../test/austin-data/coverage_real.csv", DataFrame, header=false)
+coverage = convert(Array{Bool, 2}, coverage[:, :])
+
+
+hospitals = CSV.File("../test/austin-data/hospitals.csv") |> DataFrame
+stations = CSV.File("../test/austin-data/stations.csv") |> DataFrame
 # solverstats = JLD.load("data/processed/4-solve-stats.jld")
 solverstats = JLD.load("../src/team_stats.jld")
 amb_deployment = solverstats["amb_deployment"]
@@ -43,7 +43,7 @@ p = DeploymentProblem(
 # calls = DataFrames.readtable("data/processed/5-calls.csv");
 # inc_test_filter  = !((calls[:year] .== 2012) .* (calls[:month] .<= 3))
 # test_calls = calls[(1:nrow(calls))[inc_test_filter][1:ncalls],:];
-test_calls = CSV.File("test_calls.csv")|> DataFrame
+test_calls = CSV.File("../test/austin-data/austin_test_calls.csv")|> DataFrame
 
 problem = DispatchProblem(test_calls, hospitals, stations, p.coverage, x, turnaround=turnaround)
 dispatch = ClosestDispatch(p, problem)

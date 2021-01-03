@@ -63,6 +63,7 @@ mutable struct DispatchProblem
     turnaround::LogNormal
     deployment::Vector{Int}
 
+    shortfalls::Int
     wait_queue::Vector{Vector{Int}} # length nbhd
     available::Vector{Int} # length stns
     redeploy_events::Vector{Tuple{Int,Int,Int,Int}} # amb,from,to,time
@@ -71,7 +72,8 @@ mutable struct DispatchProblem
                         hospitals::DataFrame,
                         stations::DataFrame,
                         coverage::Array{Bool,2};
-                        turnaround::LogNormal = LogNormal(3.65, 0.3)) =
+                        turnaround::LogNormal = LogNormal(3.65, 0.3),
+                        ) =
         new(emergency_data, hospitals, stations, coverage, turnaround)
 end
 
@@ -81,6 +83,7 @@ function initialize!(problem::DispatchProblem, deployment::Vector{Int})
     problem.available = copy(deployment)
     problem.deployment = deepcopy(deployment)
     problem.redeploy_events = Tuple{Int,Int,Int,Int}[]
+    problem.shortfalls = 0
 
     problem.emergency_calls[!,:arrival_seconds] =
         cumsum(problem.emergency_calls[!,:interarrival_seconds])
@@ -94,14 +97,14 @@ function DispatchProblem(
         stations::DataFrame,
         coverage::Array{Bool,2},
         deployment::Vector{Int};
-        turnaround::LogNormal = LogNormal(3.65, 0.3)
+        turnaround::LogNormal = LogNormal(3.65, 0.3),
     )
     problem = DispatchProblem(
         emergency_data,
         hospitals,
         stations,
         coverage,
-        turnaround=turnaround
+        turnaround=turnaround,
     )
     initialize!(problem, deployment)
 end

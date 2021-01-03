@@ -1,7 +1,8 @@
-#=
-Author : Joshua Ong
-creates a deployment problem and generates a maximum availability location distribution of ambulances
-=#
+#Author Joshua
+#Summary This is a condensed version of Ambulance Deployment Experiment
+#
+#Updated 12=17
+
 using AmbulanceDeployment
 using DataFrames, Winston, JLD, CSV, Gurobi, JuMP
 

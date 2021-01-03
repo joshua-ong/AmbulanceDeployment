@@ -50,8 +50,10 @@ function call_event!(
         nbhd::Int; # the neighborhood the call is from
         verbose::Bool = false
     )
+    #check if there is an ambulance within the coverage matrix
     if sum(problem.deployment[problem.coverage[nbhd,:]]) == 0
         @assert false "$id: no ambulance reachable for call at $nbhd"
+    #check if one of the ambulances within the coverage is available
     elseif sum(problem.available[problem.coverage[nbhd,:]]) > 0
         i = available_for(dispatch, id, problem)
         @assert i > 0 "$id: dispatch from $i to nbhd $nbhd" # assume valid i (enforced by <if> condition)
@@ -67,8 +69,11 @@ function call_event!(
         amb = respond_to!(redeploy, i, t)
         ems.eventlog[id, :ambulance] = amb
         enqueue!(ems.eventqueue, (:arrive, id, t + travel_time, amb), t + travel_time)
+    #else queue it
     else
         println(id, ": call from ", nbhd, " queued behind ", problem.wait_queue[nbhd])
+        problem.shortfalls = problem.shortfalls + 1
+        #push!(problem.shortfalls) # count shortfalls
         push!(problem.wait_queue[nbhd], id) # queue the emergency call
     end
 end
