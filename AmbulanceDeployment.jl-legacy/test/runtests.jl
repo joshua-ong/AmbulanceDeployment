@@ -48,6 +48,7 @@ Random.seed!(1234); # reset seed
 @time df = simulate_events!(problem, dispatch, redeploy);
 @show mean(df[!,:waittime]), maximum(df[!,:waittime])
 @show mean(df[!,:waittime] + df[!,:responsetime])
-
+print("shortfalls " , problem.shortfalls)
+#print(problem.shortfalls)
 # julia> mean(df[:responsetime])
 # 8.34253333333334

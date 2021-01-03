@@ -1,3 +1,8 @@
+#Author Joshua
+#Summary This is a condensed version of Ambulance Deployment Experiment
+#
+#Updated 12=17
+
 using AmbulanceDeployment
 using DataFrames, Winston, JLD, CSV, Gurobi, JuMP
 
