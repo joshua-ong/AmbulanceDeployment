@@ -175,7 +175,7 @@ function done_event!(
             ems.eventlog[id, :responsetime] = travel_time / 60 # minutes
             @assert travel_time >= 0
             total_delay = waittime + travel_time; @assert total_delay >= 0
-            tarrive = t + total_delay; @assert t + total_delay >= 0 "$t, $total_delay"
+            tarrive = t + total_delay; #@assert t + total_delay >= 0 "$t, $total_delay"
             enqueue!(ems.eventqueue, (:arrive, id, tarrive, amb), tarrive)
         end
     else # returned to base location
