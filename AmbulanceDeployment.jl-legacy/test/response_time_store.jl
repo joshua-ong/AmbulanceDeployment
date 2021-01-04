@@ -11,7 +11,7 @@ include("..//src//simulate.jl")
 include("..//src//evaluate.jl")
 
 turnaround = Distributions.LogNormal(3.65, 0.3)
-ncalls = 100
+ncalls = 400
 namb = 40
 lambda = 0
 
@@ -61,7 +61,11 @@ for j = 1:8
     # model_results = Any[]
     result_dict[model_names[j]] = Dict{Int, Vector{Int}}()
     for i = 1:5
-    print(i, j, "\n")
+    println()
+    println()
+    println("$model_name[j] $model_namb[i]")
+    println()
+    println()
     x = amb_deployment[model_names[j]][model_namb[i]]
     problem = DispatchProblem(test_calls, hospitals, stations, p.coverage, x, turnaround=turnaround)
     dispatch = ClosestDispatch(p, problem)

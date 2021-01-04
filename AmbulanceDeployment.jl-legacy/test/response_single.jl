@@ -11,7 +11,7 @@ include("..//src//simulate.jl")
 include("..//src//evaluate.jl")
 
 turnaround = Distributions.LogNormal(3.65, 0.3)
-ncalls = 400
+ncalls = 500
 namb = 40
 lambda = 0
 
@@ -26,7 +26,7 @@ adjacent_nbhd = CSV.File("../test/austin-data/adjacent_nbhd.csv") |> DataFrame
 coverage = CSV.read("../test/austin-data/coverage_real.csv", DataFrame, header=false)
 coverage = convert(Array{Bool, 2}, coverage[:, :])
 incidents = CSV.File("../test/austin-data/austin_incidents.csv") |> DataFrame
-solverstats = JLD.load("../src/austin_team_stats.jld")
+solverstats = JLD.load("../src/outputs/austin_team_stats_1_03.jld")
 
 amb_deployment = solverstats["amb_deployment"]
 
@@ -59,7 +59,7 @@ result_dict = Dict{Symbol, Dict{Int, Vector{Float64}}}()
 
     # model_results = Any[]
     println("running $namb ambuances & $ncalls calls")
-    x = amb_deployment[:Robust005][40]
+    x = amb_deployment[:Robust005][45]
     problem = DispatchProblem(test_calls, hospitals, stations, p.coverage, x, turnaround=turnaround)
     dispatch = ClosestDispatch(p, problem)
     redeploy = AssignmentModel(p, x, hospitals, stations, lambda=Float64(lambda))
