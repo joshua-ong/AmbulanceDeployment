@@ -26,7 +26,7 @@ adjacent_nbhd = CSV.File("../test/austin-data/adjacent_nbhd.csv") |> DataFrame
 coverage = CSV.read("../test/austin-data/coverage_real.csv", DataFrame, header=false)
 coverage = convert(Array{Bool, 2}, coverage[:, :])
 incidents = CSV.File("../test/austin-data/austin_incidents.csv") |> DataFrame
-solverstats = JLD.load("../src/austin_team_stats.jld")
+solverstats = JLD.load("../src/team_stats.jld")
 
 amb_deployment = solverstats["amb_deployment"]
 const model_names = (:Stochastic, :Robust01, :Robust005, :Robust001, :Robust0001, :Robust00001, :MEXCLP, :MALP)
@@ -61,11 +61,7 @@ for j = 1:8
     # model_results = Any[]
     result_dict[model_names[j]] = Dict{Int, Vector{Int}}()
     for i = 1:5
-    println()
-    println()
-    println("$model_name[j] $model_namb[i]")
-    println()
-    println()
+    print(i, j, "\n")
     x = amb_deployment[model_names[j]][model_namb[i]]
     problem = DispatchProblem(test_calls, hospitals, stations, p.coverage, x, turnaround=turnaround)
     dispatch = ClosestDispatch(p, problem)
