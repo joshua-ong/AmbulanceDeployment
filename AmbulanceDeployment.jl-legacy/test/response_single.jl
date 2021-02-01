@@ -11,7 +11,7 @@ include("..//src//simulate.jl")
 include("..//src//evaluate.jl")
 
 turnaround = Distributions.LogNormal(3.65, 0.3)
-ncalls = 500
+ncalls = 3000
 namb = 40
 lambda = 0
 
