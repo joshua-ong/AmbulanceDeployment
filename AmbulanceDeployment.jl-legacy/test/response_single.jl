@@ -12,7 +12,7 @@ include("..//src//evaluate.jl")
 
 turnaround = Distributions.LogNormal(3.65, 0.3)
 ncalls = 3000
-namb = 40
+namb = 45
 lambda = 0
 
 local_path = ""
@@ -74,6 +74,7 @@ result_dict = Dict{Symbol, Dict{Int, Vector{Float64}}}()
     println("response time: ", df[!,:responsetime])
 
     d = df[!,:responsetime]
+    r = d
     d = filter(x->x!=Inf,d)
     m =  mean(d)
     println("mean response time = $m")
