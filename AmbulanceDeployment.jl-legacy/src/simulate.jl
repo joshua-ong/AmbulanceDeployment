@@ -15,6 +15,21 @@ using Query, DataStructures
 mutable struct EMSEngine{T}
     eventlog::DataFrame
     eventqueue::PriorityQueue{T,Int,Base.Order.ForwardOrdering}
+    guiArray::Array{Any, 1}
+end
+
+struct gui_event
+    #call made / call responded / ambulance arrived
+    event_type::String
+    #neighborhood where call is made from
+    neighborhood_id::Int
+    # station where call is made from
+    deployment_id::Int
+    # id of the event generated
+    event_id::Int
+    ambulance_id::Int
+    arrival_time::Int
+
 end
 
 function EMSEngine(problem::DispatchProblem)
@@ -33,11 +48,12 @@ function EMSEngine(problem::DispatchProblem)
         ambulance = zeros(Int, ncalls)
     )
     eventqueue = PriorityQueue{Tuple{Symbol,Int,Int,Int},Int}()
+    guiArray = Any[]
     for i in 1:nrow(problem.emergency_calls)
         t = problem.emergency_calls[i, :arrival_seconds]
         enqueue!(eventqueue, (:call, i, t, problem.emergency_calls[i, :neighborhood]), t)
     end
-    EMSEngine{Tuple{Symbol,Int,Int,Int}}(eventlog, eventqueue)
+    EMSEngine{Tuple{Symbol,Int,Int,Int}}(eventlog, eventqueue,guiArray)
 end
 
 function call_event!(
@@ -72,6 +88,8 @@ function call_event!(
     #else queue it
     else
         println(id, ": call from ", nbhd, " queued behind ", problem.wait_queue[nbhd])
+        event = gui_event("call made", nbhd, -1, id, -1,-1)
+        push!(ems.guiArray,event)
         problem.shortfalls = problem.shortfalls + 1
         #push!(problem.shortfalls) # count shortfalls
         push!(problem.wait_queue[nbhd], id) # queue the emergency call
@@ -171,6 +189,18 @@ function done_event!(
         # respond to the person
         let id = popfirst!(problem.wait_queue[minindex])
             println(id,": amb ", amb, " redirected from stn ", stn, " to serve ", problem.emergency_calls[id, :neighborhood])
+            # =    call made / call responded / ambulance arrived
+            #    String::event_type
+                #neighborhood where call is made from
+            #    Int::neighborhood_id
+                # station where call is made from
+            #    Int::deployment_id
+                # id of the event generated
+            #    Int::event_id
+            #    Int::ambulance_id
+            #    =#
+            event = gui_event("call responded", problem.emergency_calls[id, :neighborhood], stn, id, amb,-1)
+            push!(ems.guiArray,event)
             ems.eventlog[id, :return_to] = id
             ems.eventlog[id, :return_type] = :incident
             ems.eventlog[id, :ambulance] = amb
@@ -179,6 +209,18 @@ function done_event!(
             travel_time = ceil(Int,60*problem.emergency_calls[id, Symbol("stn$(stn)_min")])
             ems.eventlog[id, :responsetime] = travel_time / 60 # minutes
             @assert travel_time >= 0
+            # =    call made / call responded / ambulance arrived
+            #    String::event_type
+                #neighborhood where call is made from
+            #    Int::neighborhood_id
+                # station where call is made from
+            #    Int::deployment_id
+                # id of the event generated
+            #    Int::event_id
+            #    Int::ambulance_id
+            #    =#
+            eventresp = gui_event("call arrived", problem.emergency_calls[id, :neighborhood], stn, id, amb,travel_time)
+            push!(ems.guiArray,eventresp)
             total_delay = waittime + travel_time; @assert total_delay >= 0
             tarrive = t + total_delay; #@assert t + total_delay >= 0 "$t, $total_delay"
             enqueue!(ems.eventqueue, (:arrive, id, tarrive, amb), tarrive)
@@ -192,6 +234,7 @@ function done_event!(
     end
 end
 
+
 function simulate_events!(
         problem::DispatchProblem,
         dispatch::DispatchModel,
@@ -199,6 +242,7 @@ function simulate_events!(
         verbose::Bool=false
     )
     ems = EMSEngine(problem)
+
     # @show problem.available
     # @show redeploy.ambulances
     while !isempty(ems.eventqueue)
@@ -228,5 +272,5 @@ function simulate_events!(
     end
     # @assert all(problem.available .== problem.deployment)
     @assert all(ems.eventlog[!,:dispatch_from] .>= 0)
-    ems.eventlog
+     ems.eventlog, ems.guiArray
 end
