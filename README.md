@@ -70,7 +70,7 @@
 
 ## How to run after installation
 1. In the Julia terminal, navigate to the AmbulanceDeployment.jl-legacy folder
-2. Import Pkg
+2. import Pkg
 3. Hit "]" to go into Pkg mode. Here, type "activate ."
 4. Go back to Julia mode by pressing backspace
 5. Pkg.instantiate()
