@@ -10,7 +10,7 @@ include("model.jl")
 #include("problem.jl")
 Pkg.add("Query")
 Pkg.add("CPLEX")
-using Query, DataStructures
+using Query, DataStructures, Dates
 
 mutable struct EMSEngine{T}
     eventlog::DataFrame
@@ -29,6 +29,8 @@ struct gui_event
     event_id::Int
     ambulance_id::Int
     arrival_time::Int
+    # current timestamp of event
+    timestamp::DateTime
 
 end
 
@@ -88,7 +90,7 @@ function call_event!(
     #else queue it
     else
         println(id, ": call from ", nbhd, " queued behind ", problem.wait_queue[nbhd])
-        event = gui_event("call made", nbhd, -1, id, -1,-1)
+        event = gui_event("call made", nbhd, -1, id, -1,-1,Dates.now())
         push!(ems.guiArray,event)
         problem.shortfalls = problem.shortfalls + 1
         #push!(problem.shortfalls) # count shortfalls
@@ -199,7 +201,7 @@ function done_event!(
             #    Int::event_id
             #    Int::ambulance_id
             #    =#
-            event = gui_event("call responded", problem.emergency_calls[id, :neighborhood], stn, id, amb,-1)
+            event = gui_event("call responded", problem.emergency_calls[id, :neighborhood], stn, id, amb,-1,Dates.now())
             push!(ems.guiArray,event)
             ems.eventlog[id, :return_to] = id
             ems.eventlog[id, :return_type] = :incident
@@ -219,7 +221,7 @@ function done_event!(
             #    Int::event_id
             #    Int::ambulance_id
             #    =#
-            eventresp = gui_event("call arrived", problem.emergency_calls[id, :neighborhood], stn, id, amb,travel_time)
+            eventresp = gui_event("call arrived", problem.emergency_calls[id, :neighborhood], stn, id, amb,travel_time,Dates.now())
             push!(ems.guiArray,eventresp)
             total_delay = waittime + travel_time; @assert total_delay >= 0
             tarrive = t + total_delay; #@assert t + total_delay >= 0 "$t, $total_delay"
