@@ -29,6 +29,7 @@ struct gui_event
     event_id::Int
     ambulance_id::Int
     arrival_time::Int
+    remaining_amb::Int
     # current timestamp of event
     timestamp::DateTime
 
@@ -86,11 +87,14 @@ function call_event!(
 
         amb = respond_to!(redeploy, i, t)
         ems.eventlog[id, :ambulance] = amb
+
+        event = gui_event("call responded", problem.emergency_calls[id, :neighborhood], i, id, amb,-1, problem.available[i] ,Dates.now())
+        push!(ems.guiArray,event)
         enqueue!(ems.eventqueue, (:arrive, id, t + travel_time, amb), t + travel_time)
     #else queue it
     else
         println(id, ": call from ", nbhd, " queued behind ", problem.wait_queue[nbhd])
-        event = gui_event("call made", nbhd, -1, id, -1,-1,Dates.now())
+        event = gui_event("call made", nbhd, -1, id, -1,-1,-1,Dates.now())
         push!(ems.guiArray,event)
         problem.shortfalls = problem.shortfalls + 1
         #push!(problem.shortfalls) # count shortfalls
@@ -201,7 +205,7 @@ function done_event!(
             #    Int::event_id
             #    Int::ambulance_id
             #    =#
-            event = gui_event("call responded", problem.emergency_calls[id, :neighborhood], stn, id, amb,-1,Dates.now())
+            event = gui_event("call responded", problem.emergency_calls[id, :neighborhood], stn, id, amb,-1,problem.available[stn],Dates.now())
             push!(ems.guiArray,event)
             ems.eventlog[id, :return_to] = id
             ems.eventlog[id, :return_type] = :incident
@@ -221,7 +225,7 @@ function done_event!(
             #    Int::event_id
             #    Int::ambulance_id
             #    =#
-            eventresp = gui_event("call arrived", problem.emergency_calls[id, :neighborhood], stn, id, amb,travel_time,Dates.now())
+            eventresp = gui_event("call arrived", problem.emergency_calls[id, :neighborhood], stn, id, amb,travel_time,-1,Dates.now())
             push!(ems.guiArray,eventresp)
             total_delay = waittime + travel_time; @assert total_delay >= 0
             tarrive = t + total_delay; #@assert t + total_delay >= 0 "$t, $total_delay"
