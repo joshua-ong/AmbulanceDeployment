@@ -69,6 +69,10 @@ include("..//src//evaluate.jl")
         d = filter(x->x!=Inf,d)
         m =  mean(d)
         println("mean response time = $m")
+        json_string = JSON.json(guiArray)
+        open("../src/outputs/guiArray.json","w") do f
+            write(f, json_string)
+        end
         return guiArray
         #results[j,i] = mean(df[!,:waittime] + df[!,:responsetime])
 end
