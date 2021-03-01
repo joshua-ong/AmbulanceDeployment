@@ -74,4 +74,4 @@ include("..//src//evaluate.jl")
 end
 
 
-stuff = generate_simulation("Stochastic", 30, 1000)
+# stuff = generate_simulation("Stochastic", 30, 1000)

@@ -16,6 +16,7 @@ mutable struct EMSEngine{T}
     eventlog::DataFrame
     eventqueue::PriorityQueue{T,Int,Base.Order.ForwardOrdering}
     guiArray::Array{Any, 1}
+    # num_ambulance_update::Array{Any, 1}
 end
 
 struct gui_event
@@ -69,6 +70,7 @@ function call_event!(
         nbhd::Int; # the neighborhood the call is from
         verbose::Bool = false
     )
+
     #check if there is an ambulance within the coverage matrix
     if sum(problem.deployment[problem.coverage[nbhd,:]]) == 0
         @assert false "$id: no ambulance reachable for call at $nbhd"
@@ -89,7 +91,12 @@ function call_event!(
         ems.eventlog[id, :ambulance] = amb
 
         event = gui_event("call responded", problem.emergency_calls[id, :neighborhood], i, id, amb,-1, problem.available[i] ,Dates.now())
+        num_ambulances_array = Array{Integer}(undef, size(problem.available, 1))
+        for i in 1:size(problem.available, 1)
+            num_ambulances_array[i] = problem.available[i]
+        end
         push!(ems.guiArray,event)
+        push!(ems.guiArray,num_ambulances_array)
         enqueue!(ems.eventqueue, (:arrive, id, t + travel_time, amb), t + travel_time)
     #else queue it
     else
@@ -161,6 +168,11 @@ function return_event!(
     @assert returntime >= 0 returntime
     t_end = t + returntime
     enqueue!(ems.eventqueue, (:done, id, t_end, amb), t_end)
+    # num_ambulances_array = Array{Integer}(undef, size(problem.available, 1))
+    # for i in 1:size(problem.available, 1)
+    #     num_ambulances_array[i] = problem.available[i]
+    # end
+    # push!(ems.guiArray,num_ambulances_array)
 end
 
 function done_event!(
@@ -206,7 +218,12 @@ function done_event!(
             #    Int::ambulance_id
             #    =#
             event = gui_event("call responded", problem.emergency_calls[id, :neighborhood], stn, id, amb,-1,problem.available[stn],Dates.now())
+            num_ambulances_array = Array{Integer}(undef, size(problem.available, 1))
+            for i in 1:size(problem.available, 1)
+                num_ambulances_array[i] = problem.available[i]
+            end
             push!(ems.guiArray,event)
+            push!(ems.guiArray,num_ambulances_array)
             ems.eventlog[id, :return_to] = id
             ems.eventlog[id, :return_type] = :incident
             ems.eventlog[id, :ambulance] = amb
@@ -236,7 +253,14 @@ function done_event!(
 #        @assert ems.eventlog[id, :return_type] == :station
         returned_to!(redeploy, amb, t)
         returned_to!(problem, stn, t)
+        # Add here
         update_ambulances!(dispatch, stn, 1)
+        num_ambulances_array = Array{Integer}(undef, size(problem.available, 1))
+        for i in 1:size(problem.available, 1)
+            num_ambulances_array[i] = problem.available[i]
+        end
+        push!(ems.guiArray,num_ambulances_array)
+
     end
 end
 
