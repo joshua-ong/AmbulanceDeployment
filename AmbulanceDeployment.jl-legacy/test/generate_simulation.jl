@@ -8,7 +8,7 @@ import DataStructures: PriorityQueue, enqueue!, dequeue!
 include("..//src//model.jl")
 include("..//src//dispatch/closestdispatch.jl")
 include("..//src//problem.jl")
-include("..//src//simulate.jl")
+#include("..//src//simulate.jl")
 include("..//src//evaluate.jl")
     function generate_simulation(model_name::String, namb::Int, ncalls::Int)
 
@@ -53,11 +53,13 @@ include("..//src//evaluate.jl")
         x = amb_deployment[model_dict[model_name]][namb]
         problem = DispatchProblem(test_calls, hospitals, stations, p.coverage, x, turnaround=turnaround)
         dispatch = ClosestDispatch(p, problem)
-        redeploy = AssignmentModel(p, x, hospitals, stations, lambda=Float64(lambda))
+
+
+        #redeploy = AssignmentModel(p, x, hospitals, stations, lambda=Float64(lambda))
 
         # id 145 dispatch to nbhd 88
         Random.seed!(1234); # reset seed
-        @time df, guiArray = simulate_events!(problem, dispatch, redeploy);
+        @time df, guiArray = simulate_events!(problem, dispatch);
         #@show mean(df[!,:waittime]), maximum(df[!,:waittime])
         #@show mean(df[!,:waittime] + df[!,:responsetime])
         #results[j,i,1] = mean(df[!,:waittime]), maximum(df[!,:waittime])
