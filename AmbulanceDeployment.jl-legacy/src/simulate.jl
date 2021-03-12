@@ -1,4 +1,4 @@
-using AmbulanceDeployment, DateTime
+using AmbulanceDeployment, DateTime, closestdispatch.jl
 
 struct EMSEngine{T}
     eventlog::DataFrame
@@ -82,7 +82,7 @@ function call_event!(
         @assert false "$id: no ambulance reachable for call at $nbhd"
     #check if one of the ambulances within the coverage is available
     elseif sum(problem.available[problem.coverage[nbhd,:]]) > 0
-        i = closest_ambulance(dispatch, id, problem)
+        i = closest_available(dispatch, id, problem)
         @assert i > 0 "$id: dispatch from $i to nbhd $nbhd" # assume valid i (enforced by <if> condition)
         update_ambulances!(dispatch, i, -1)
         ems.eventlog[id, :dispatch_from] = i
@@ -114,9 +114,4 @@ function call_event!(
         # push!(problem.wait_queue[nbhd], id) # queue the emergency call
         println(id, ": call from ", nbhd, " is a shortfall")
     end
-end
-
-
-function closest_ambulance(dispatch, id, problem)
-    
 end

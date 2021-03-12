@@ -22,9 +22,12 @@ function ClosestDispatch(p::DeploymentProblem, problem::DispatchProblem)
     ClosestDispatch(p, problem.emergency_calls[:, stn_names])
 end
 
-update_ambulances!(model::ClosestDispatch, i::Int, delta::Int) = nothing
+update_ambulances!(model::ClosestDispatch, i::Int, delta::Int)
+    model.available[i] += delta
+    @assert model.available[i] >= 0
+end
 
-function available_for(dispatch::ClosestDispatch, id::Int, problem::DispatchProblem)
+function closest_available(dispatch::ClosestDispatch, id::Int, problem::DispatchProblem)
     location = 0
     min_time = Inf
     for i in dispatch.candidates[problem.emergency_calls[id, :neighborhood]]
