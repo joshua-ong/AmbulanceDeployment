@@ -43,7 +43,7 @@
             * Pkg.status()
         * Julia should be using Gurobi 8.1.1. If not, then follow the instructions above for changing versions
         * In Julia terminal, run the following commands
-            * Import Pkg
+            * import Pkg
             * Pkg.add(“Gurobi”) or Pkg.add(name=”Gurobi”, version=”0.8.1”)
             * Pkg.build(“Gurobi”)
             * using Gurobi
