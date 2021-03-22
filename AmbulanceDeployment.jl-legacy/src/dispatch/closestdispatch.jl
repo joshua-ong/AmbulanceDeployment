@@ -22,7 +22,7 @@ function ClosestDispatch(p::DeploymentProblem, problem::DispatchProblem)
     ClosestDispatch(p, problem.emergency_calls[:, stn_names])
 end
 
-function update_ambulances!(model::ClosestDispatch, i::Int, delta::Int)
+update_ambulances!(model::ClosestDispatch, i::Int, delta::Int)
     model.available[i] += delta
     @assert model.available[i] >= 0
 end
