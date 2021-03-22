@@ -1,4 +1,4 @@
-using AmbulanceDeployment, DateTime, closestdispatch.jl
+using AmbulanceDeployment, Dates
 
 struct EMSEngine{T}
     eventlog::DataFrame
@@ -62,8 +62,8 @@ function simulate_events!(problem::DispatchProblem, dispatch::ClosestDispatch)
 
         elseif event == :hospital2station
 
-
-
+        end
+    end
 
 end
 
