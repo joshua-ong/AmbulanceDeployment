@@ -55,7 +55,8 @@ function simulate_events!(problem::DispatchProblem, dispatch::ClosestDispatch)
         if event == :call
             # if the event is reachable then change event to station2call
             # if not it is a shortfall
-            call_event!(engine, problem, dispatch, id, t, value)
+            #call_event!(engine, problem, dispatch, id, t, value)
+            println("calling event id: $id time: $t value: $value")
         elseif event == :station2call
             #
         elseif event == :call2hospital
