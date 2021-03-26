@@ -88,7 +88,7 @@ include("deployment/stochastic.jl")
 include("deployment/mexclp.jl")
 include("deployment/malp.jl")
 
-include("dispatch/closestdispatch.jl")
+#include("dispatch/closestdispatch.jl")
 #include("dispatch/dispatch.jl") # unused
 
 include("redeployment/assignment.jl")

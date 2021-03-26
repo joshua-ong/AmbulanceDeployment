@@ -7,6 +7,8 @@ struct ClosestDispatch <: DispatchModel
     drivetime::DataFrame
     candidates::Vector{Vector{Int}}
     available::Vector{Int}
+    assignment::Vector{Int} # which location the ambulance is assigned to
+    ambulances::Vector{Vector{Int}} # list of ambulances assigned to each location
 end
 
 function ClosestDispatch(p::DeploymentProblem, drivetime::DataFrame,distribution::Vector{Int})
@@ -16,6 +18,15 @@ function ClosestDispatch(p::DeploymentProblem, drivetime::DataFrame,distribution
         push!(candidates, I[vec(p.coverage[region,:])])
     end
     println("creating the dispatch problem :$distribution")
+
+    assignment = zeros(Int, nambulances)
+    ambulances = [Int[] for i in 1:nlocations]
+    k = 1
+    for i in eachindex(available), j in 1:available[i]
+        assignment[k] = i
+        push!(ambulances[i], k)
+        k += 1
+    end
     ClosestDispatch(drivetime, candidates, distribution)
 
 end

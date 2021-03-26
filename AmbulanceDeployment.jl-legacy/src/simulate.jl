@@ -56,6 +56,7 @@ function simulate_events!(problem::DispatchProblem, dispatch::ClosestDispatch)
             # if the event is reachable then change event to station2call
             # if not it is a shortfall
             #call_event!(engine, problem, dispatch, id, t, value)
+            #All Simulate Updates are in the Jupyter Notebook
             println("calling event id: $id time: $t value: $value")
         elseif event == :station2call
             #
