@@ -3,12 +3,12 @@ Author : Ng Yeesian
 Modified : Guy Farmer / Michael Hilborn / Zander Tedjo
 generates the robust deployment model
 =#
-include("../problem.jl")
+# include("../problem.jl")
 import JuMP, JuMP.optimize!
 Pkg.add("JuMP")
 Pkg.add("GLPK")
 #Pkg.add(name=”Gurobi” version=”0.8.1”)
-using JuMP, Gurobi, GLPK, Distributions
+using AmbulanceDeployment, JuMP, Gurobi, GLPK, Distributions
 
 struct Gamma
     _single::Vector{Int}
@@ -17,15 +17,15 @@ struct Gamma
     _global::Int
 end
 #remember to comment out with package
-struct Params
-    α::Float64 # Probabilistic Guarantee
-    ε::Float64 # Convergence
-    δ::Float64 # Solver Tolerance
-
-    nperiods::Int # for StochasticDeployment
-
-    maxiter::Int # for RobustDeployment
-end
+# struct Params
+#     α::Float64 # Probabilistic Guarantee
+#     ε::Float64 # Convergence
+#     δ::Float64 # Solver Tolerance
+#
+#     nperiods::Int # for StochasticDeployment
+#
+#     maxiter::Int # for RobustDeployment
+# end
 paramss = Params(0.01, 0.5, 1e-6, 500, 50)
 #might need to change JuMP.Variable into JuMP.VariableRef
 struct Qrobust
@@ -248,4 +248,5 @@ function optimize!(model::RobustDeployment, p::DeploymentProblem; verbose=false,
     end
 end
 
-optimize!(model::RobustDeployment, p::DeploymentProblem) = JuMP.optimize!(model.m)
+#Need to test for correct deployment with distribution
+# optimize!(model::RobustDeployment, p::DeploymentProblem) = JuMP.optimize!(model.m)

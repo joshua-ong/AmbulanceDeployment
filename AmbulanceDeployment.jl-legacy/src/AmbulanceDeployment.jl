@@ -8,15 +8,17 @@ module AmbulanceDeployment
     import JuMP, Gurobi
     import DataStructures: PriorityQueue, enqueue!, dequeue!
     import DataFrames: DataFrame, nrow
-    import Distributions: Poisson, LogNormal, quantile, sample
+    import Distributions: Poisson, LogNormal, quantile, sample, Random
+    import DataStructures: PriorityQueue, enqueue!, dequeue!
     import Pkg
     #import JLD, Query, CSV, CPLEX
     import CSV, JLD, Query
     using Gurobi, CSV, JLD, Query, JuMP
+    using DataFrames, JLD, Distributions, CSV, Random, Plots,JSON
     #Pkg.resolve()
+    include("problem.jl")
     include("model.jl")
     include("dispatch/closestdispatch.jl")
-    include("problem.jl")
     include("simulate.jl")
     include("evaluate.jl")
     include("plot.jl")
@@ -26,12 +28,10 @@ module AmbulanceDeployment
 
 
     export
-           DeploymentProblem,
            RobustDeployment,
            StochasticDeployment,
            MALPDeployment,
            MEXCLPDeployment,
-           DispatchProblem,
            ClosestDispatch,
            NoRedeployModel,
            AssignmentModel,
@@ -46,6 +46,6 @@ module AmbulanceDeployment
            test_performance,
            plot_timings,
            simulate_events!,
-           initialize!
+           generate_simulation
 
 end

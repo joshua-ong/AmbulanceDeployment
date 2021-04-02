@@ -3,13 +3,14 @@ Author : Guy Farmer, Michael Hilborn
 Runs simulations for all models (generated in Ambulance_Deployment_experiments.jl) and returns the data as a dictionary
 =#
 
-using DataFrames, JLD, Distributions, CSV, Random, Plots,JSON
-import DataStructures: PriorityQueue, enqueue!, dequeue!
-include("..//src//model.jl")
-include("..//src//dispatch/closestdispatch.jl")
-include("..//src//problem.jl")
+using AmbulanceDeployment
+#using DataFrames, JLD, Distributions, CSV, Random, Plots,JSON
+#import DataStructures: PriorityQueue, enqueue!, dequeue!
+#include("..//src//model.jl")
+#include("..//src//dispatch/closestdispatch.jl")
+#include("..//src//problem.jl")
 #include("..//src//simulate.jl")
-include("..//src//evaluate.jl")
+#include("..//src//evaluate.jl")
     function generate_simulation(model_name::String, namb::Int, ncalls::Int)
 
         turnaround = Distributions.LogNormal(3.65, 0.3)
