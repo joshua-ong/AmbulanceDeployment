@@ -1,14 +1,18 @@
 #=
 Author : Ng Yeesian
-Modified : Guy Farmer / Zander Tedjo / Will Worthington
+Modified : Guy Farmer / Zander Tedjo / Will Worthington / Michael Hilborn
 generates the closest dispatch model
 =#
-struct ClosestDispatch <: DispatchModel
+mutable struct ClosestDispatch <: DispatchModel
     drivetime::DataFrame
     candidates::Vector{Vector{Int}}
     available::Vector{Int}
     assignment::Vector{Int} # which location the ambulance is assigned to
     ambulances::Vector{Vector{Int}} # list of ambulances assigned to each location
+    status::Vector{Symbol} # the current status of the ambulance
+        # possible statuses: :available, :responding, :atscene, :conveying, :returning
+    fromtime::Vector{Int} # the time it started the new status
+    hospital::Vector{Int}
 end
 
 function ClosestDispatch(p::DeploymentProblem, drivetime::DataFrame,distribution::Vector{Int})
@@ -17,17 +21,21 @@ function ClosestDispatch(p::DeploymentProblem, drivetime::DataFrame,distribution
     for region in 1:p.nregions
         push!(candidates, I[vec(p.coverage[region,:])])
     end
-    println("creating the dispatch problem :$distribution")
+    #println("creating the dispatch problem :$distribution")
 
-    assignment = zeros(Int, nambulances)
-    ambulances = [Int[] for i in 1:nlocations]
+    assignment = zeros(Int, p.nambulances)
+    ambulances = [Int[] for i in 1:p.nlocations]
     k = 1
-    for i in eachindex(available), j in 1:available[i]
+    for i in eachindex(distribution), j in 1:distribution[i]
         assignment[k] = i
         push!(ambulances[i], k)
         k += 1
     end
-    ClosestDispatch(drivetime, candidates, distribution)
+    status = fill(:available, p.nambulances)
+    fromtime = zeros(Int, p.nambulances)
+    hospital = zeros(Int, p.nambulances)
+
+    ClosestDispatch(drivetime, candidates, distribution, assignment, ambulances, status, fromtime, hospital)
 
 end
 
@@ -46,10 +54,44 @@ function closest_available(dispatch::ClosestDispatch, id::Int, problem::Dispatch
     min_time = Inf
     for i in dispatch.candidates[problem.emergency_calls[id, :neighborhood]]
         if problem.available[i] > 0 && dispatch.drivetime[id, i] < min_time
-            println("apparently this station is available : $i and here is the amount of ambulances avalable: $(problem.available[i])")
+            #println("apparently this station is available : $i and here is the amount of ambulances avalable: $(problem.available[i])")
             location = i
             min_time = dispatch.drivetime[id, i]
         end
     end
     location
+end
+
+function respond_to!(dispatch::ClosestDispatch, i::Int, t::Int)
+    @assert length(dispatch.ambulances[i]) > 0 "$i: $(dispatch.ambulances[i])"
+    amb = popfirst!(dispatch.ambulances[i])
+    # @assert redeploy.hospital[amb] == 0
+    @assert amb != 0
+    @assert dispatch.status[amb] == :available "$amb: $(dispatch.status[amb])"
+    dispatch.status[amb] = :responding
+    #dispatch.fromtime[amb] = t
+    amb
+end
+
+function arriveatscene!(dispatch::ClosestDispatch, amb::Int, t::Int)
+    @assert dispatch.status[amb] == :responding "$amb: $(dispatch.status[amb])"
+    @assert dispatch.hospital[amb] == 0
+    dispatch.status[amb] = :atscene
+    dispatch.fromtime[amb] = t
+end
+
+function arriveathospital!(dispatch::DispatchModel, amb::Int, hosp::Int, t::Int)
+    @assert dispatch.status[amb] == :atscene "$amb: $(dispatch.status[amb])"
+    @assert dispatch.hospital[amb] != 0
+    dispatch.status[amb] = :atHospital
+    dispatch.fromtime[amb] = t
+    dispatch.hospital[amb] = hosp
+end
+
+function returning_to!(dispatch::DispatchModel, amb::Int, t::Int)
+    @assert dispatch.status[amb] == :atHospital "$amb: $(dispatch.status[amb])"
+    @assert dispatch.hospital[amb] != 0
+    dispatch.status[amb] = :returning
+    dispatch.fromtime[amb] = t
+    dispatch.assignment[amb]
 end
