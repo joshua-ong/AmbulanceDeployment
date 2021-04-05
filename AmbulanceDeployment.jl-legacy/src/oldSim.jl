@@ -4,13 +4,13 @@ Modified : Guy Farmer / Zander Tedjo / Will Worthington
 defines and runs the simulation engine for ems dispatch and deployment
 =#
 
-include("dispatch/closestdispatch.jl")
-include("redeployment/assignment.jl")
-include("model.jl")
-#include("problem.jl")
-Pkg.add("Query")
-Pkg.add("CPLEX")
-using Query, DataStructures, Dates
+# include("dispatch/closestdispatch.jl")
+# include("redeployment/assignment.jl")
+# include("model.jl")
+# #include("problem.jl")
+# Pkg.add("Query")
+# Pkg.add("CPLEX")
+# using Query, DataStructures, Dates
 
 mutable struct EMSEngine{T}
     eventlog::DataFrame

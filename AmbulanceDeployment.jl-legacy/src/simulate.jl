@@ -1,7 +1,7 @@
-using AmbulanceDeployment, Dates
-
-Pkg.add("Query")
-using Query
+# using AmbulanceDeployment, Dates
+#
+# Pkg.add("Query")
+# using Query
 
 struct EMSEngine{T}
     eventlog::DataFrame

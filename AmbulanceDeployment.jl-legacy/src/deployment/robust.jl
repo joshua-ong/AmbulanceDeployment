@@ -4,11 +4,12 @@ Modified : Guy Farmer / Michael Hilborn / Zander Tedjo
 generates the robust deployment model
 =#
 # include("../problem.jl")
-import JuMP, JuMP.optimize!
-Pkg.add("JuMP")
-Pkg.add("GLPK")
-#Pkg.add(name=”Gurobi” version=”0.8.1”)
-using AmbulanceDeployment, JuMP, Gurobi, GLPK, Distributions
+# import JuMP, JuMP.optimize!
+# Pkg.add("JuMP")
+# Pkg.add("GLPK")
+# #Pkg.add(name=”Gurobi” version=”0.8.1”)
+using AmbulanceDeployment
+# , JuMP, Gurobi, GLPK, Distributions
 
 struct Gamma
     _single::Vector{Int}

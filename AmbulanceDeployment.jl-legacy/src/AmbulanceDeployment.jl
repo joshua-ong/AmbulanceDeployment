@@ -13,8 +13,8 @@ module AmbulanceDeployment
     import Pkg
     #import JLD, Query, CSV, CPLEX
     import CSV, JLD, Query
-    using Gurobi, CSV, JLD, Query, JuMP
-    using DataFrames, JLD, Distributions, CSV, Random, Plots,JSON
+    using Gurobi, CSV, JLD, Query, JuMP, Dates
+    using DataFrames, Distributions, CSV, Random, Plots,JSON
     #Pkg.resolve()
     include("problem.jl")
     include("model.jl")
@@ -28,6 +28,8 @@ module AmbulanceDeployment
 
 
     export
+           DeploymentProblem,
+           DispatchProblem,
            RobustDeployment,
            StochasticDeployment,
            MALPDeployment,
@@ -45,7 +47,6 @@ module AmbulanceDeployment
            performance,
            test_performance,
            plot_timings,
-           simulate_events!,
-           generate_simulation
+           simulate_events!
 
 end

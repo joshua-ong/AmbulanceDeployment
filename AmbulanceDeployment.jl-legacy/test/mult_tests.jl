@@ -4,12 +4,12 @@ Modified : none
 runs dispatch simulations on numerous dc models using original dc data and plots the results
 =#
 
-using DataFrames, JLD, Distributions, CSV, Random, Plots
-import DataStructures: PriorityQueue, enqueue!, dequeue!
-include("..//src//model.jl")
-include("..//src//dispatch/closestdispatch.jl")
-include("..//src//problem.jl")
-include("..//src//simulate.jl")
+# using DataFrames, JLD, Distributions, CSV, Random, Plots
+# import DataStructures: PriorityQueue, enqueue!, dequeue!
+# include("..//src//model.jl")
+# include("..//src//dispatch/closestdispatch.jl")
+# include("..//src//problem.jl")
+# include("..//src//simulate.jl")
 #include("..//src//evaluate.jl")
 
 turnaround = Distributions.LogNormal(3.65, 0.3)

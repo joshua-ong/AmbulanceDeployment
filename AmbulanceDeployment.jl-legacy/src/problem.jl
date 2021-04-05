@@ -3,8 +3,9 @@ Author : Ng Yeesian
 Modified : Guy Farmer / Michael Hilborn / Zander Tedjo / Will Worthington
 Defines the DeploymentProblem struct and constructor. Defines params and naive_solution
 =#
-import Distributions, JLD, CSV, DataFrames,Pkg
-using DataFrames, Distributions, JLD, CSV, Pkg
+# import Distributions, JLD, CSV, DataFrames,Pkg
+# using DataFrames, Distributions, JLD, CSV, Pkg
+using AmbulanceDeployment
 abstract type BM <: AbstractMatrix{Bool} end
 abstract type IM <: AbstractMatrix{Int} end
 

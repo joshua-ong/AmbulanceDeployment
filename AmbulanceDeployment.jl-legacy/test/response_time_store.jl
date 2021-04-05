@@ -2,13 +2,14 @@
 Author : Guy Farmer
 Runs simulations for all models (generated in Ambulance_Deployment_experiments.jl) and stores the response times in json file
 =#
-using DataFrames, JLD, Distributions, CSV, Random, Plots,JSON
-import DataStructures: PriorityQueue, enqueue!, dequeue!
-include("..//src//model.jl")
-include("..//src//dispatch/closestdispatch.jl")
-include("..//src//problem.jl")
-include("..//src//simulate.jl")
-include("..//src//evaluate.jl")
+# using DataFrames, JLD, Distributions, CSV, Random, Plots,JSON
+# import DataStructures: PriorityQueue, enqueue!, dequeue!
+# include("..//src//model.jl")
+# include("..//src//dispatch/closestdispatch.jl")
+# include("..//src//problem.jl")
+# include("..//src//simulate.jl")
+# include("..//src//evaluate.jl")
+using AmbulanceDeployment
 
 turnaround = Distributions.LogNormal(3.65, 0.3)
 ncalls = 400
