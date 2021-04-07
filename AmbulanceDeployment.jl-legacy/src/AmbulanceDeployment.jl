@@ -12,16 +12,21 @@ module AmbulanceDeployment
     import DataStructures: PriorityQueue, enqueue!, dequeue!
     import Pkg
     #import JLD, Query, CSV, CPLEX
-    import CSV, JLD, Query
-    using Gurobi, CSV, JLD, Query, JuMP, Dates
+    import CSV, Query
+    using Gurobi, CSV, Query, JuMP, Dates, JLD, GLPK
     using DataFrames, Distributions, CSV, Random, Plots,JSON
     #Pkg.resolve()
+
+    const PROJECT_ROOT = pkgdir(AmbulanceDeployment)
+
     include("problem.jl")
     include("model.jl")
     include("dispatch/closestdispatch.jl")
     include("simulate.jl")
     include("evaluate.jl")
     include("plot.jl")
+    include("../test/generate_simulation.jl")
+    include("deployment/robust.jl")
     #include("problem.jl")
     #include("../test/runtests.jl")
 
@@ -47,6 +52,9 @@ module AmbulanceDeployment
            performance,
            test_performance,
            plot_timings,
-           simulate_events!
+           simulate_events!,
+           generate_simulation,
+           PROJECT_ROOT,
+           optimize!
 
 end

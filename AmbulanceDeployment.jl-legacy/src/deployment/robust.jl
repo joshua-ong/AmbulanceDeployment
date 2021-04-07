@@ -8,8 +8,7 @@ generates the robust deployment model
 # Pkg.add("JuMP")
 # Pkg.add("GLPK")
 # #Pkg.add(name=”Gurobi” version=”0.8.1”)
-using AmbulanceDeployment
-# , JuMP, Gurobi, GLPK, Distributions
+using AmbulanceDeployment, JuMP, Gurobi, GLPK, Distributions
 
 struct Gamma
     _single::Vector{Int}
@@ -250,4 +249,4 @@ function optimize!(model::RobustDeployment, p::DeploymentProblem; verbose=false,
 end
 
 #Need to test for correct deployment with distribution
-# optimize!(model::RobustDeployment, p::DeploymentProblem) = JuMP.optimize!(model.m)
+optimize!(model::RobustDeployment, p::DeploymentProblem) = JuMP.optimize!(model.m)

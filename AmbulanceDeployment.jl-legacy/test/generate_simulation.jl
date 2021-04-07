@@ -4,7 +4,7 @@ Runs simulations for all models (generated in Ambulance_Deployment_experiments.j
 =#
 
 
-using DataFrames, JLD, Distributions, CSV, Random, Plots,JSON
+using AmbulanceDeployment
 #import DataStructures: PriorityQueue, enqueue!, dequeue!
 #include("..//src//model.jl")
 #include("..//src//dispatch/closestdispatch.jl")
@@ -18,14 +18,14 @@ using DataFrames, JLD, Distributions, CSV, Random, Plots,JSON
         lambda = 0
         local_path = ""
 
-        hospitals = CSV.File(string(local_path,"../test/austin-data/hospitals.csv")) |> DataFrame
-        stations = CSV.File(string(local_path,"../test/austin-data/stations.csv")) |> DataFrame
-        hourly_calls = CSV.File("../test/austin-data/Full_WeekdayCalls.csv") |> DataFrame
-        adjacent_nbhd = CSV.File("../test/austin-data/adjacent_nbhd.csv") |> DataFrame
-        coverage = CSV.read("../test/austin-data/coverage_real.csv", DataFrame, header=false)
+        solverstats = load(PROJECT_ROOT * "/src/outputs/austin_team_stats_1_03.jld")
+        hospitals = CSV.File(string(local_path, PROJECT_ROOT * "/test/austin-data/hospitals.csv")) |> DataFrame
+        stations = CSV.File(string(local_path, PROJECT_ROOT * "/test/austin-data/stations.csv")) |> DataFrame
+        hourly_calls = CSV.File(PROJECT_ROOT * "/test/austin-data/Full_WeekdayCalls.csv") |> DataFrame
+        adjacent_nbhd = CSV.File(PROJECT_ROOT * "/test/austin-data/adjacent_nbhd.csv") |> DataFrame
+        coverage = CSV.read(PROJECT_ROOT * "/test/austin-data/coverage_real.csv", DataFrame, header=false)
         coverage = convert(Array{Bool, 2}, coverage[:, :])
-        incidents = CSV.File("../test/austin-data/austin_incidents.csv") |> DataFrame
-        solverstats = JLD.load("../src/outputs/austin_team_stats_1_03.jld")
+        incidents = CSV.File(PROJECT_ROOT * "/test/austin-data/austin_incidents.csv") |> DataFrame
         amb_deployment = solverstats["amb_deployment"]
         model_dict = Dict{String, Symbol}("Stochastic"=>:Stochastic, "Robust01"=>:Robust01, "Robust005"=>:Robust005, "Robust001"=>:Robust001, "Robust0001"=>:Robust0001,
         "Robust00001"=>:Robust00001, "MEXCLP"=>:MEXCLP, "MALP"=>:MALP)

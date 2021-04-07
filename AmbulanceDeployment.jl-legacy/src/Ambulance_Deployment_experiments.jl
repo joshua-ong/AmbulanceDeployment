@@ -3,7 +3,7 @@ Author : Guy Farmer
 generates a distribution of ambulances for various ambulance counts and stores to a jld file
 =#
 using AmbulanceDeployment
-# using DataFrames, Winston, JLD, CSV, Gurobi, JuMP
+using DataFrames, Winston, JLD, CSV, Gurobi, JuMP, GLPK
 #include("problem.jl")
 # all of these paths are subject to where your data directory is located
 # hourly_calls = CSV.File("../test/data/processed/2-weekday_calls.csv") |> DataFrame
@@ -12,12 +12,12 @@ using AmbulanceDeployment
 # coverage = JLD.load("../test/data/processed/3-coverage.jld", "stn_coverage")
 # incidents = CSV.File("../test/data/processed/3-incidents_drivetime.csv") |> DataFrame
 
-hourly_calls = CSV.File("../test/austin-data/Full_WeekdayCalls.csv") |> DataFrame
+hourly_calls = CSV.File(PROJECT_ROOT * "/test/austin-data/Full_WeekdayCalls.csv") |> DataFrame
 # weekend_hourly_calls = CSV.File("data/processed/2-weekend_calls.csv") |> DataFrame
-adjacent_nbhd = CSV.File("../test/austin-data/adjacent_nbhd.csv") |> DataFrame
-coverage = CSV.read("../test/austin-data/coverage_real.csv", DataFrame, header=false)
+adjacent_nbhd = CSV.File(PROJECT_ROOT * "/test/austin-data/adjacent_nbhd.csv") |> DataFrame
+coverage = CSV.read(PROJECT_ROOT * "/test/austin-data/coverage_real.csv", DataFrame, header=false)
 coverage = convert(Array{Bool, 2}, coverage[:, :])
-incidents = CSV.File("../test/austin-data/austin_incidents.csv") |> DataFrame
+incidents = CSV.File(PROJECT_ROOT * "/test/austin-data/austin_incidents.csv") |> DataFrame
 
 
 regions = Int[parse(Int,string(x)) for x in names(hourly_calls[:,6:ncol(hourly_calls)])]
@@ -145,12 +145,12 @@ test_inc_offpeak = .~inc_peak_period .* inc_test_filter;
                 end
                 println()
             end
-    JLD.jldopen("outputs/austin_team_stats.jld", "w") do file
-        write(file, "amb_deployment", amb_deployment)
-        write(file, "scenarios", scenarios)
-        write(file, "generated_deployment", generated_deployment)
-        write(file, "upperbounds", upperbounds)
-        write(file, "lowerbounds", lowerbounds)
-        write(file, "upptiming", upptiming)
-        write(file, "lowtiming", lowtiming)
-    end
+    # JLD.jldopen("outputs/austin_team_stats.jld", "w") do file
+    #     write(file, "amb_deployment", amb_deployment)
+    #     write(file, "scenarios", scenarios)
+    #     write(file, "generated_deployment", generated_deployment)
+    #     write(file, "upperbounds", upperbounds)
+    #     write(file, "lowerbounds", lowerbounds)
+    #     write(file, "upptiming", upptiming)
+    #     write(file, "lowtiming", lowtiming)
+    # end
