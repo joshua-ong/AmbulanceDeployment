@@ -18,7 +18,7 @@ using AmbulanceDeployment
         lambda = 0
         local_path = ""
 
-        solverstats = load(PROJECT_ROOT * "/src/outputs/austin_team_stats_1_03.jld")
+        solverstats = JSON.parsefile(PROJECT_ROOT * "/src/outputs/solver_stats.json")
         hospitals = CSV.File(string(local_path, PROJECT_ROOT * "/test/austin-data/hospitals.csv")) |> DataFrame
         stations = CSV.File(string(local_path, PROJECT_ROOT * "/test/austin-data/stations.csv")) |> DataFrame
         hourly_calls = CSV.File(PROJECT_ROOT * "/test/austin-data/Full_WeekdayCalls.csv") |> DataFrame
@@ -45,14 +45,15 @@ using AmbulanceDeployment
         # calls = DataFrames.readtable("data/processed/5-calls.csv");
         # inc_test_filter  = !((calls[:year] .== 2012) .* (calls[:month] .<= 3))
         # test_calls = calls[(1:nrow(calls))[inc_test_filter][1:ncalls],:];
-        test_calls = CSV.File("../test/austin-data/austin_test_calls.csv")|> DataFrame
+        test_calls = CSV.File(PROJECT_ROOT *"/test/austin-data/austin_test_calls.csv")|> DataFrame
         test_calls = test_calls[1:ncalls,:] #lowers call count. which makes simulation faster for debugging.
         #iterates through model (names) and number of ambulances for example Stochastic model with 20 ambulances
         # results = Array{Float64,2}(undef, 8, 5) #it saves the results to print later
 
         # model_results = Any[]
         println("running $namb ambuances & $ncalls calls")
-        x = amb_deployment[model_dict[model_name]][namb]
+        x = amb_deployment[model_name][string(namb)]
+        x = convert(Array{Int64}, x)
         problem = DispatchProblem(test_calls, hospitals, stations, p.coverage, x, turnaround=turnaround)
         dispatch = ClosestDispatch(p, problem)
 
@@ -74,7 +75,7 @@ using AmbulanceDeployment
         m =  mean(d)
         println("mean response time = $m")
         json_string = JSON.json(guiArray)
-        open("../src/outputs/guiArray.json","w") do f
+        open(PROJECT_ROOT *"/src/outputs/guiArray.json","w") do f
             write(f, json_string)
         end
         return guiArray

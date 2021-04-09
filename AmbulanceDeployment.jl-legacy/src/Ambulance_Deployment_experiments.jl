@@ -4,13 +4,7 @@ generates a distribution of ambulances for various ambulance counts and stores t
 =#
 using AmbulanceDeployment
 using DataFrames, Winston, JLD, CSV, Gurobi, JuMP, GLPK
-#include("problem.jl")
-# all of these paths are subject to where your data directory is located
-# hourly_calls = CSV.File("../test/data/processed/2-weekday_calls.csv") |> DataFrame
-# # weekend_hourly_calls = CSV.File("data/processed/2-weekend_calls.csv") |> DataFrame
-# adjacent_nbhd = CSV.File("../test/data/processed/2-adjacent_nbhd.csv") |> DataFrame
-# coverage = JLD.load("../test/data/processed/3-coverage.jld", "stn_coverage")
-# incidents = CSV.File("../test/data/processed/3-incidents_drivetime.csv") |> DataFrame
+
 
 hourly_calls = CSV.File(PROJECT_ROOT * "/test/austin-data/Full_WeekdayCalls.csv") |> DataFrame
 # weekend_hourly_calls = CSV.File("data/processed/2-weekend_calls.csv") |> DataFrame
@@ -114,7 +108,7 @@ test_inc_offpeak = .~inc_peak_period .* inc_test_filter;
             model = deployment_model(p)
             set_optimizer(model.m, Gurobi.Optimizer)
             # solve(model, p)
-            @time optimize!(model, p)
+            @time AmbulanceDeployment.optimize!(model, p)
             #print("($(toq())) ")
             amb_deployment[name][namb] = deployment(model)
 
@@ -140,17 +134,21 @@ test_inc_offpeak = .~inc_peak_period .* inc_test_filter;
                     p.nambulances = namb
                     next_model = next_deployment_model(p)
                     set_optimizer(next_model.m, Gurobi.Optimizer)
-                    @time optimize!(next_model, p)
+                    @time AmbulanceDeployment.optimize!(next_model, p)
                     amb_deployment[name][namb] = deployment(next_model)
                 end
                 println()
             end
-    # JLD.jldopen("outputs/austin_team_stats.jld", "w") do file
-    #     write(file, "amb_deployment", amb_deployment)
-    #     write(file, "scenarios", scenarios)
-    #     write(file, "generated_deployment", generated_deployment)
-    #     write(file, "upperbounds", upperbounds)
-    #     write(file, "lowerbounds", lowerbounds)
-    #     write(file, "upptiming", upptiming)
-    #     write(file, "lowtiming", lowtiming)
-    # end
+solver_stats = Dict{String, Any}()
+push!(solver_stats, "amb_deployment" => amb_deployment)
+push!(solver_stats, "scenarios" => scenarios)
+push!(solver_stats, "generated_deployment" => generated_deployment)
+push!(solver_stats, "upperbounds" => upperbounds)
+push!(solver_stats, "lowerbounds" => lowerbounds)
+push!(solver_stats, "upptiming" => upptiming)
+push!(solver_stats, "lowtiming" => lowtiming)
+json_string = JSON.json(solver_stats)
+
+open("src/outputs/solver_stats.json","w") do f
+                   write(f, json_string)
+               end

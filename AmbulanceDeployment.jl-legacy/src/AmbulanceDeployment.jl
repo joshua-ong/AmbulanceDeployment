@@ -25,8 +25,12 @@ module AmbulanceDeployment
     include("simulate.jl")
     include("evaluate.jl")
     include("plot.jl")
-    include("../test/generate_simulation.jl")
+    include(PROJECT_ROOT * "/test/generate_simulation.jl")
     include("deployment/robust.jl")
+    include("deployment/stochastic.jl")
+    include("deployment/malp.jl")
+    include("deployment/mexclp.jl")
+
     #include("problem.jl")
     #include("../test/runtests.jl")
 
