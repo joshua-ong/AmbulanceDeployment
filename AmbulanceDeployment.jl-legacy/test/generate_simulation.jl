@@ -78,7 +78,10 @@ using AmbulanceDeployment
         open(PROJECT_ROOT *"/src/outputs/guiArray.json","w") do f
             write(f, json_string)
         end
-        return guiArray
+        events = filter(x->typeof(x)==gui_event,guiArray)
+        responded_array = filter(x->x.event_type == "call responded", events)
+        arrived_array = filter(x->x.event_type == "ambulance arrived", events)
+        return guiArray, responded_array, arrived_array
         #results[j,i] = mean(df[!,:waittime] + df[!,:responsetime])
 end
 
