@@ -26,6 +26,10 @@ struct gui_event
     timestamp::DateTime
 end
 
+# pattern = re.compile('<PyCall.jlwrap AmbulanceDeployment.gui_event\((?P<event_type>\".*\"),
+# (?P<neighborhood_id>[0-9]*), (?P<deployment_id>.*), (?P<event_id>[0-9]*), (?P<ambulance_id>.*), (?P<arrival_time>.*),
+# (?P<remaining_amb>.*), (?P<timestamp>.*)\)>')
+
 ## generates the priority queue and instantiates the EMSEngine struct
 function generateCalls(problem::DispatchProblem)
     ncalls = nrow(problem.emergency_calls)
@@ -163,7 +167,7 @@ function station2call_event!(
     ems.eventlog[id, :scenetime] = scene_time / 60 # minutes
     @assert scene_time > 0
 
-    event = gui_event("ambulance arrived", problem.emergency_calls[id, :neighborhood], -1, id, amb, t,-1 ,Dates.now())
+    event = gui_event("ambulance arrived", problem.emergency_calls[id, :neighborhood], -1, id, amb, ceil(ems.eventlog[id, :responsetime]*60) ,-1 ,Dates.now())
     push!(ems.guiArray, event)
     enqueue!(ems.eventqueue, (:call2hospital, id, t + scene_time, amb), t + scene_time)
 end
