@@ -1,5 +1,0 @@
-[deps]
-CPLEX = "a076750e-1247-5638-91d2-ce28b192dca0"
-Gadfly = "c91e804a-d5a3-530f-b6f0-dfbca275c004"
-GeoInterface = "cf35fbd7-0cd7-5166-be24-54bfbe79505f"
-Query = "1a8c2f83-1ff3-5112-b086-8aa67b057ba1"
