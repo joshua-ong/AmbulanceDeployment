@@ -11,11 +11,9 @@ module AmbulanceDeployment
     import Distributions: Poisson, LogNormal, quantile, sample, Random
     import DataStructures: PriorityQueue, enqueue!, dequeue!
     import Pkg
-    #import JLD, Query, CSV, CPLEX
     import CSV, Query
     using Gurobi, CSV, Query, JuMP, Dates, JLD, GLPK
     using DataFrames, Distributions, CSV, Random, Plots,JSON
-    #Pkg.resolve()
 
     const PROJECT_ROOT = pkgdir(AmbulanceDeployment)
 
@@ -24,15 +22,14 @@ module AmbulanceDeployment
     include("dispatch/closestdispatch.jl")
     include("simulate.jl")
     include("evaluate.jl")
-    include("plot.jl")
     include(PROJECT_ROOT * "/test/generate_simulation.jl")
     include("deployment/robust.jl")
     include("deployment/stochastic.jl")
     include("deployment/malp.jl")
     include("deployment/mexclp.jl")
+    include("plot.jl")
+    include("Ambulance_Deployment_experiments.jl")
 
-    #include("problem.jl")
-    #include("../test/runtests.jl")
 
 
 
@@ -44,7 +41,6 @@ module AmbulanceDeployment
            MALPDeployment,
            MEXCLPDeployment,
            ClosestDispatch,
-           NoRedeployModel,
            AssignmentModel,
            solve,
            evaluate,

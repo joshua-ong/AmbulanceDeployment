@@ -83,13 +83,11 @@ function redirected!(redeploy::RedeployModel, amb::Int, t::Int)
     redeploy.fromtime[amb] = t
 end
 
-include("deployment/robust.jl")
-include("deployment/stochastic.jl")
-include("deployment/mexclp.jl")
-include("deployment/malp.jl")
-
-#include("dispatch/closestdispatch.jl")
-#include("dispatch/dispatch.jl") # unused
-
-include("redeployment/assignment.jl")
-include("redeployment/noredeploy.jl")
+# include("deployment/robust.jl")
+# include("deployment/stochastic.jl")
+# include("deployment/mexclp.jl")
+# include("deployment/malp.jl")
+#
+#
+#
+# include("redeployment/assignment.jl")

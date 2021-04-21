@@ -16,7 +16,7 @@ tests plotting functionality in julia
 # import Colors: LCHab, Colorant
 # import Compose: Polygon, UnitBox, context, compose, linewidth
 # import Compose: stroke, fill, mm, circle
-
+using AmbulanceDeployment
 function convergence_plot(robust_model::RobustDeployment)
     fp = FramedPlot(title="Bounds", xlabel="iteration", ylabel="shortfall")
     n = length(robust_model.upperbounds)

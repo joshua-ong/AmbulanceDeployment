@@ -8,14 +8,14 @@ generates the robust deployment model
 # Pkg.add("JuMP")
 # Pkg.add("GLPK")
 # #Pkg.add(name=”Gurobi” version=”0.8.1”)
-using AmbulanceDeployment, JuMP, Gurobi, GLPK, Distributions
+using AmbulanceDeployment
 
-struct Gamma
-    _single::Vector{Int}
-    _local::Vector{Int}
-    _regional::Vector{Int}
-    _global::Int
-end
+# struct Gamma
+#     _single::Vector{Int}
+#     _local::Vector{Int}
+#     _regional::Vector{Int}
+#     _global::Int
+# end
 #remember to comment out with package
 # struct Params
 #     α::Float64 # Probabilistic Guarantee
