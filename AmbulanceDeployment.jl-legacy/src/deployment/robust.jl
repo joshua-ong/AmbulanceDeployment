@@ -10,12 +10,12 @@ generates the robust deployment model
 # #Pkg.add(name=”Gurobi” version=”0.8.1”)
 using AmbulanceDeployment
 
-# struct Gamma
-#     _single::Vector{Int}
-#     _local::Vector{Int}
-#     _regional::Vector{Int}
-#     _global::Int
-# end
+struct robustGamma
+    _single::Vector{Int}
+    _local::Vector{Int}
+    _regional::Vector{Int}
+    _global::Int
+end
 #remember to comment out with package
 # struct Params
 #     α::Float64 # Probabilistic Guarantee
@@ -34,7 +34,7 @@ struct Qrobust
     J::UnitRange{Int}
     d::Vector{JuMP.VariableRef}
     q::Vector{JuMP.VariableRef}
-    γ::Gamma
+    γ::robustGamma
 end
 
 struct RobustDeployment <: DeploymentModel
@@ -81,7 +81,7 @@ function Gamma(p::DeploymentProblem; α=paramss.α)
     γ_local = [quantile(Poisson(mean(sum(demand[:,vec(p.adjacency[i,:])]))),1-α) for i=1:p.nregions]
     γ_regional = [quantile(Poisson(mean(sum(demand[:,p.coverage[:,i]]))),1-α) for i in 1:p.nlocations]
     γ_global = quantile(Poisson(mean(sum(demand))),1-α)
-    Gamma(γ_single,γ_local,γ_regional,γ_global)
+    robustGamma(γ_single,γ_local,γ_regional,γ_global)
 end
 
 function Qrobust(problem::DeploymentProblem; α=paramss.α, verbose=false, solver=Gurobi.Optimizer(OutputFlag=0)) #, MIPGapAbs=0.9)
@@ -214,39 +214,39 @@ function add_scenario(model::RobustDeployment, p::DeploymentProblem, scenario::V
     end
 end
 
-function optimize!(model::RobustDeployment, p::DeploymentProblem; verbose=false, maxiter=params.maxiter, eps=params.ε)
-    LB = 0.0
-    UB, scenario = evaluate(model.Q, model.deployment[end])
-    push!(model.lowerbounds, LB)
-    push!(model.upperbounds, UB)
-    push!(model.scenarios, scenario)
-
-    for k in 1:maxiter
-        verbose && println("iteration $k: LB $LB, UB $UB")
-        abs(UB - LB) < eps && break
-        verbose && println("  solving Q with $(model.deployment[end])")
-
-        add_scenario(model, p, scenario)
-        # tic()
-        status = JuMP.optimize!(model.m)
-        push!(model.lowtiming)
-        #@assert status == :Optimal
-
-        LB = JuMP.objective_value(model.m)
-
-        push!(model.deployment, [round(Int,x) for x in JuMP.value.(model.x)])
-
-        #tic()
-        shortfall, scenario = evaluate(model.Q, model.deployment[end])
-        push!(model.upptiming)
-        UB = min(UB, shortfall)
-
-        # for tracking convergence later
-        push!(model.upperbounds, UB)
-        push!(model.scenarios, scenario)
-        push!(model.lowerbounds, LB)
-    end
-end
+# function optimize!(model::RobustDeployment, p::DeploymentProblem; verbose=false, maxiter=params.maxiter, eps=params.ε)
+#     LB = 0.0
+#     UB, scenario = evaluate(model.Q, model.deployment[end])
+#     push!(model.lowerbounds, LB)
+#     push!(model.upperbounds, UB)
+#     push!(model.scenarios, scenario)
+#
+#     for k in 1:maxiter
+#         verbose && println("iteration $k: LB $LB, UB $UB")
+#         abs(UB - LB) < eps && break
+#         verbose && println("  solving Q with $(model.deployment[end])")
+#
+#         add_scenario(model, p, scenario)
+#         # tic()
+#         status = JuMP.optimize!(model.m)
+#         push!(model.lowtiming)
+#         #@assert status == :Optimal
+#
+#         LB = JuMP.objective_value(model.m)
+#
+#         push!(model.deployment, [round(Int,x) for x in JuMP.value.(model.x)])
+#
+#         #tic()
+#         shortfall, scenario = evaluate(model.Q, model.deployment[end])
+#         push!(model.upptiming)
+#         UB = min(UB, shortfall)
+#
+#         # for tracking convergence later
+#         push!(model.upperbounds, UB)
+#         push!(model.scenarios, scenario)
+#         push!(model.lowerbounds, LB)
+#     end
+# end
 
 #Need to test for correct deployment with distribution
 optimize!(model::RobustDeployment, p::DeploymentProblem) = JuMP.optimize!(model.m)

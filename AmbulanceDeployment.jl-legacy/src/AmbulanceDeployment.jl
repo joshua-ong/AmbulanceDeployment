@@ -8,12 +8,12 @@ module AmbulanceDeployment
     import JuMP, Gurobi
     import DataStructures: PriorityQueue, enqueue!, dequeue!
     import DataFrames: DataFrame, nrow
-    import Distributions: Poisson, LogNormal, quantile, sample, Random
+    import Distributions
     import DataStructures: PriorityQueue, enqueue!, dequeue!
     import Pkg
     import CSV, Query
     using Gurobi, CSV, Query, JuMP, Dates, JLD, GLPK
-    using DataFrames, Distributions, CSV, Random, Plots,JSON
+    using DataFrames, CSV, Random, Plots,JSON, Distributions
 
     const PROJECT_ROOT = pkgdir(AmbulanceDeployment)
 
@@ -55,6 +55,7 @@ module AmbulanceDeployment
            simulate_events!,
            generate_simulation,
            PROJECT_ROOT,
-           optimize!
+           optimize!,
+           generate_deployment
 
 end

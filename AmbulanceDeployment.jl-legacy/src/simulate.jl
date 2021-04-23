@@ -2,6 +2,7 @@
 #
 # Pkg.add("Query")
 # using Query
+using AmbulanceDeployment
 
 struct EMSEngine{T}
     eventlog::DataFrame
