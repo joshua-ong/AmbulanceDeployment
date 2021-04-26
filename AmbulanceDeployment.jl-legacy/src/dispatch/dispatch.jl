@@ -82,8 +82,6 @@ function StochasticDispatch(p::DeploymentProblem,
     for j in J
         candidates[region] = I[vec(p.coverage[j,:])]
     end
-    # status = JuMP.solve(m)
-    # @assert status == :Optimal
     StochasticDispatch(m, candidates, location)
 end
 
@@ -91,13 +89,6 @@ function update_ambulances!(model::StochasticDispatch, i::Int, delta::Int)
     constr = model.location[i]
     prev = JuMP.rhs(JuMP.LinearConstraint(constr))
     JuMP.chgConstrRHS(constr, prev + delta)
-    # @assert abs(JuMP.rhs(constr) - prev - delta) < 1e-6
-    #println("available: $([iround(JuMP.rhs(model.m.linconstr[loc])) for loc in 1:35])")
-    # status = JuMP.solve(model.m)
-    # if status != :Optimal
-    #     println("available: $([iround(JuMP.rhs(model.m.linconstr[loc])) for loc in 1:35])")
-    #     @assert status == :Optimal
-    # end
 end
 
 function available_for(model::StochasticDispatch, j::Int, problem::DispatchProblem)
@@ -143,7 +134,7 @@ function update_ambulances!(model::MEXCLPDispatch, i::Int, delta::Int)
     model.x[i] += delta
 end
 
-"the math says you'll return the location with the highest number of ambulances"
+#"the math says you'll return the location with the highest number of ambulances"
 function available_for(model::MEXCLPDispatch, j::Int, problem::DispatchProblem)
     location = 0
     max_x = 0
@@ -202,7 +193,6 @@ function update_ambulances!(model::MALPDispatch, i::Int, delta::Int)
             constr = model.region[j]
             prev = JuMP.rhs(JuMP.LinearConstraint(constr))
             JuMP.chgConstrRHS(constr, prev + delta)
-            # @assert abs(JuMP.rhs(model.m.linconstr[i]) - prev - delta) < 1e-6
         end
     end
 end

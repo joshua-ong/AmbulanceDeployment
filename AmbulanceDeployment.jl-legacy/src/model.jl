@@ -8,22 +8,9 @@ abstract type DeploymentModel end
 
 abstract type DispatchModel end
 
-abstract type RedeployModel end
-    # Interface
-    # =========
-    # assignment::Vector{Int} # which location the ambulance is assigned to
-    # ambulances::Vector{Vector{Int}} # list of ambulances assigned to each location
-    # status::Vector{Int} # the current status of the ambulance
-    # fromtime::Vector{Int} # the time it started the new status
-    # hospital::Vector{Int} # the hospital the ambulance is at (0 otherwise)
-
-    # MUST IMPLEMENT
-    # reassign_ambulances!(ems, problem::DispatchProblem, redeploy::DeployModel, t::Int)
-
 function respond_to!(redeploy::RedeployModel, i::Int, t::Int)
     @assert length(redeploy.ambulances[i]) > 0 "$i: $(redeploy.ambulances[i])"
     amb = popfirst!(redeploy.ambulances[i])
-    # @assert redeploy.hospital[amb] == 0
     @assert amb != 0
     @assert redeploy.status[amb] == :available "$amb: $(redeploy.status[amb])"
     redeploy.status[amb] = :responding
@@ -82,12 +69,3 @@ function redirected!(redeploy::RedeployModel, amb::Int, t::Int)
     redeploy.status[amb] = :responding
     redeploy.fromtime[amb] = t
 end
-
-# include("deployment/robust.jl")
-# include("deployment/stochastic.jl")
-# include("deployment/mexclp.jl")
-# include("deployment/malp.jl")
-#
-#
-#
-# include("redeployment/assignment.jl")

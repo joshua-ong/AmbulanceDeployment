@@ -27,10 +27,6 @@ struct gui_event
     timestamp::DateTime
 end
 
-# pattern = re.compile('<PyCall.jlwrap AmbulanceDeployment.gui_event\((?P<event_type>\".*\"),
-# (?P<neighborhood_id>[0-9]*), (?P<deployment_id>.*), (?P<event_id>[0-9]*), (?P<ambulance_id>.*), (?P<arrival_time>.*),
-# (?P<remaining_amb>.*), (?P<timestamp>.*)\)>')
-
 ## generates the priority queue and instantiates the EMSEngine struct
 function generateCalls(problem::DispatchProblem)
     ncalls = nrow(problem.emergency_calls)
@@ -114,7 +110,6 @@ function call_event!(
     #check if one of the ambulances within the coverage is available
     elseif sum(problem.available[problem.coverage[nbhd,:]]) > 0
         i = closest_available(dispatch, id, problem)
-        #println("closest available station : $i")
         @assert i > 0 "$id: dispatch from $i to nbhd $nbhd" # assume valid i (enforced by <if> condition)
         update_ambulances!(dispatch, i, -1)
         ems.eventlog[id, :dispatch_from] = i
@@ -141,12 +136,6 @@ function call_event!(
         enqueue!(ems.eventqueue, (:station2call, id, t + travel_time, amb), t + travel_time)
     #else queue it
     else
-        # println(id, ": call from ", nbhd, " queued behind ", problem.wait_queue[nbhd])
-        # event = gui_event("call made", nbhd, -1, id, -1,-1,-1,Dates.now())
-        # push!(ems.guiArray,event)
-        # problem.shortfalls = problem.shortfalls + 1
-        # #push!(problem.shortfalls) # count shortfalls
-        # push!(problem.wait_queue[nbhd], id) # queue the emergency call
         event = gui_event("shortfall", problem.emergency_calls[id, :neighborhood], -1, id, -1,-1,-1 ,Dates.now())
         push!(ems.guiArray, event)
         enqueue!(ems.shortqueue, (:call, id, t, problem.emergency_calls[id, :neighborhood]), t)
@@ -197,20 +186,6 @@ function call2hosp_event!(
     ems.eventlog[id, :conveytime] = conveytime / 60 # minutes
     @assert conveytime >= 0 conveytime
     arriveathospital!(dispatch, amb, h, t)
-
-    #         #call made / call responded / ambulance arrived / shortfall
-#     event_type::String
-#     #neighborhood where call is made from
-#     neighborhood_id::Int
-#     # station where call is made from
-#     deployment_id::Int
-#     # id of the event generated
-#     event_id::Int
-#     ambulance_id::Int
-#     arrival_time::Int
-#     remaining_amb::Int
-#     # current timestamp of event
-#     timestamp::DateTime
     event = gui_event("ambulance hospital", problem.emergency_calls[id, :neighborhood], -1, id, amb, t,-1 ,Dates.now())
     push!(ems.guiArray, event)
 
@@ -233,31 +208,11 @@ function return_event!(
     ems.eventlog[id, :returntime] = returntime / 60 # minutes
     @assert returntime >= 0 returntime
     t_end = t + returntime
-
-#         #call made / call responded / ambulance arrived / shortfall
-#     event_type::String
-#     #neighborhood where call is made from
-#     neighborhood_id::Int
-#     # station where call is made from
-#     deployment_id::Int
-#     # id of the event generated
-#     event_id::Int
-#     ambulance_id::Int
-#     arrival_time::Int
-#     remaining_amb::Int
-#     # current timestamp of event
-#     timestamp::DateTime
-
     event = gui_event("ambulance returning", problem.emergency_calls[id, :neighborhood], -1, id, amb, t,-1 ,Dates.now())
     push!(ems.guiArray, event)
 
 
     enqueue!(ems.eventqueue, (:done, id, t_end, amb), t_end)
-    # num_ambulances_array = Array{Integer}(undef, size(problem.available, 1))
-    # for i in 1:size(problem.available, 1)
-    #     num_ambulances_array[i] = problem.available[i]
-    # end
-    # push!(ems.guiArray,num_ambulances_array)
 end
 
 function done_event!(
@@ -276,21 +231,6 @@ function done_event!(
     dispatch.status[amb] = :available
     ems.eventlog[id, :return_to] = id
     @assert problem.available[i] > 0
-
-#         #call made / call responded / ambulance arrived / shortfall
-#     event_type::String
-#     #neighborhood where call is made from
-#     neighborhood_id::Int
-#     # station where call is made from
-#     deployment_id::Int
-#     # id of the event generated
-#     event_id::Int
-#     ambulance_id::Int
-#     arrival_time::Int
-#     remaining_amb::Int
-#     # current timestamp of event
-#     timestamp::DateTime
-
     event = gui_event("ambulance returned", problem.emergency_calls[id, :neighborhood], -1, id, amb, t,-1 ,Dates.now())
     push!(ems.guiArray, event)
 

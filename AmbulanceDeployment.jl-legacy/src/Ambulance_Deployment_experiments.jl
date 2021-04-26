@@ -7,7 +7,6 @@ using AmbulanceDeployment
 
 function generate_deployment()
     hourly_calls = CSV.File(PROJECT_ROOT * "/test/austin-data/Full_WeekdayCalls.csv") |> DataFrame
-    # weekend_hourly_calls = CSV.File("data/processed/2-weekend_calls.csv") |> DataFrame
     adjacent_nbhd = CSV.File(PROJECT_ROOT * "/test/austin-data/adjacent_nbhd.csv") |> DataFrame
     coverage = CSV.read(PROJECT_ROOT * "/test/austin-data/coverage_real.csv", DataFrame, header=false)
     coverage = convert(Array{Bool, 2}, coverage[:, :])
@@ -107,9 +106,7 @@ to 0=#
                 p.nambulances = namb
                 model = deployment_model(p)
                 set_optimizer(model.m, Gurobi.Optimizer)
-# solve(model, p)
                 @time AmbulanceDeployment.optimize!(model, p);
-#print("($(toq())) ")
                 amb_deployment[name][namb] = deployment(model)
 
 # for tracking purposes
