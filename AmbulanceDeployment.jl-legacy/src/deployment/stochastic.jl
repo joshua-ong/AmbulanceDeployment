@@ -10,7 +10,6 @@ end
 deployment(m::StochasticDeployment) = [round(Int,x) for x in JuMP.value.(m.x)]
 
 function StochasticDeployment(p::DeploymentProblem; nperiods=params.nperiods, tol=params.δ,
-    #solver=GurobiSolver(OutputFlag=0))
     solver=Gurobi.Optimizer(OutputFlag=0))
 
     nperiods = min(length(p.train), nperiods)

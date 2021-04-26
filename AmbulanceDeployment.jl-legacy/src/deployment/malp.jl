@@ -21,7 +21,6 @@ function MALPDeployment(p::DeploymentProblem,
     J = 1:p.nregions
     b = ceil(Int, log(1-α)/log(q))
 
-    #m = JuMP.Model(solver=solver)
     m = Model(GLPK.Optimizer)
     solver=Gurobi.Optimizer(OutputFlag=0)
     JuMP.@variable(m, x[1:p.nlocations] >= 0, Int)

@@ -21,7 +21,6 @@ function ClosestDispatch(p::DeploymentProblem, drivetime::DataFrame,distribution
     for region in 1:p.nregions
         push!(candidates, I[vec(p.coverage[region,:])])
     end
-    #println("creating the dispatch problem :$distribution")
 
     assignment = zeros(Int, p.nambulances)
     ambulances = [Int[] for i in 1:p.nlocations]
@@ -54,7 +53,6 @@ function closest_available(dispatch::ClosestDispatch, id::Int, problem::Dispatch
     min_time = Inf
     for i in dispatch.candidates[problem.emergency_calls[id, :neighborhood]]
         if problem.available[i] > 0 && dispatch.drivetime[id, i] < min_time
-            #println("apparently this station is available : $i and here is the amount of ambulances avalable: $(problem.available[i])")
             location = i
             min_time = dispatch.drivetime[id, i]
         end
@@ -65,11 +63,9 @@ end
 function respond_to!(dispatch::ClosestDispatch, i::Int, t::Int)
     @assert length(dispatch.ambulances[i]) > 0 "$i: $(dispatch.ambulances[i])"
     amb = popfirst!(dispatch.ambulances[i])
-    # @assert redeploy.hospital[amb] == 0
     @assert amb != 0
     @assert dispatch.status[amb] == :available "$amb: $(dispatch.status[amb])"
     dispatch.status[amb] = :responding
-    #dispatch.fromtime[amb] = t
     amb
 end
 

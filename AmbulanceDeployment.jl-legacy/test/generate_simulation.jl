@@ -5,12 +5,6 @@ Runs simulations for all models (generated in Ambulance_Deployment_experiments.j
 
 
 using AmbulanceDeployment
-#import DataStructures: PriorityQueue, enqueue!, dequeue!
-#include("..//src//model.jl")
-#include("..//src//dispatch/closestdispatch.jl")
-#include("..//src//problem.jl")
-#include("..//src//simulate.jl")
-#include("..//src//evaluate.jl")
 
     function generate_simulation(model_name::String, namb::Int, ncalls::Int)
 
@@ -42,30 +36,15 @@ using AmbulanceDeployment
         # with the emergency calls from the first 3 month as our training set,
         # and the subsequent emergency calls from the remaining months as our test set
 
-        # calls = DataFrames.readtable("data/processed/5-calls.csv");
-        # inc_test_filter  = !((calls[:year] .== 2012) .* (calls[:month] .<= 3))
-        # test_calls = calls[(1:nrow(calls))[inc_test_filter][1:ncalls],:];
-        test_calls = CSV.File(PROJECT_ROOT *"/test/austin-data/austin_test_calls.csv")|> DataFrame
-        test_calls = test_calls[1:ncalls,:] #lowers call count. which makes simulation faster for debugging.
-        #iterates through model (names) and number of ambulances for example Stochastic model with 20 ambulances
-        # results = Array{Float64,2}(undef, 8, 5) #it saves the results to print later
-
-        # model_results = Any[]
         println("running $namb ambuances & $ncalls calls")
         x = amb_deployment[model_name][string(namb)]
         x = convert(Array{Int64}, x)
         problem = DispatchProblem(test_calls, hospitals, stations, p.coverage, x, turnaround=turnaround)
         dispatch = ClosestDispatch(p, problem)
 
-
-        #redeploy = AssignmentModel(p, x, hospitals, stations, lambda=Float64(lambda))
-
         # id 145 dispatch to nbhd 88
         Random.seed!(1234); # reset seed
         @time df, guiArray = simulate_events!(problem, dispatch);
-        #@show mean(df[!,:waittime]), maximum(df[!,:waittime])
-        #@show mean(df[!,:waittime] + df[!,:responsetime])
-        #results[j,i,1] = mean(df[!,:waittime]), maximum(df[!,:waittime])
         println("wait time : ", df[!,:waittime])
         println("response time: ", df[!,:responsetime])
 
@@ -84,6 +63,3 @@ using AmbulanceDeployment
         return guiArray, responded_array, arrived_array
         #results[j,i] = mean(df[!,:waittime] + df[!,:responsetime])
 end
-
-
-# stuff = generate_simulation("Stochastic", 30, 1000)

@@ -3,11 +3,6 @@ Author : Ng Yeesian
 Modified : Guy Farmer / Michael Hilborn / Zander Tedjo
 generates the robust deployment model
 =#
-# include("../problem.jl")
-# import JuMP, JuMP.optimize!
-# Pkg.add("JuMP")
-# Pkg.add("GLPK")
-# #Pkg.add(name=”Gurobi” version=”0.8.1”)
 using AmbulanceDeployment
 
 struct robustGamma
@@ -16,18 +11,7 @@ struct robustGamma
     _regional::Vector{Int}
     _global::Int
 end
-#remember to comment out with package
-# struct Params
-#     α::Float64 # Probabilistic Guarantee
-#     ε::Float64 # Convergence
-#     δ::Float64 # Solver Tolerance
-#
-#     nperiods::Int # for StochasticDeployment
-#
-#     maxiter::Int # for RobustDeployment
-# end
 paramss = Params(0.01, 0.5, 1e-6, 500, 50)
-#might need to change JuMP.Variable into JuMP.VariableRef
 struct Qrobust
     m::JuMP.Model
     I::UnitRange{Int}
@@ -70,14 +54,6 @@ function Gamma(p::DeploymentProblem; α=paramss.α)
         end
         push!(γ_single,y)
     end
-#have to know what the purpose is for dealing with the mean in this manner,
-# quick repair is to adjust the dimensions by changing sum(demand[:,vec(p.adjacency[i,:])], 2) to sum(demand[:,vec(p.adjacency[i,:])])
-# this will give the total sum across 2 dimensions, but will nullify the mean function
-# will change the mean function from mean(A) to actually divide the sum by the total indices in the demand subarray
-# the same logic is occuring for γ_regional and γ_global
-# /90 represents the number of calls in a 3 month period
-    #γ_local = [quantile(Poisson((sum(demand[:,vec(p.adjacency[i,:])], 2))/90),1-α) for i=1:p.nregions]
-    # γ_local = [quantile(Poisson(mean(sum(demand[:,vec(p.adjacency[i,:])]))),1-α) for i=1:p.nregions]
     γ_local = [quantile(Poisson(mean(sum(demand[:,vec(p.adjacency[i,:])]))),1-α) for i=1:p.nregions]
     γ_regional = [quantile(Poisson(mean(sum(demand[:,p.coverage[:,i]]))),1-α) for i in 1:p.nlocations]
     γ_global = quantile(Poisson(mean(sum(demand))),1-α)
@@ -87,7 +63,6 @@ end
 function Qrobust(problem::DeploymentProblem; α=paramss.α, verbose=false, solver=Gurobi.Optimizer(OutputFlag=0)) #, MIPGapAbs=0.9)
     if verbose
         solver=Gurobi.Optimizer(OutputFlag=1) #, MIPGapAbs=0.9)
-        #solver=JuMP.set_optimizer_attribute(model.m,MOI.TimeLimitSec(), 30)
     end
     γ = Gamma(problem, α=α)
     upp_bound = maximum(γ._single)
@@ -121,7 +96,6 @@ end
 
 function evaluate(Q::Qrobust, x::Vector{T}) where {T <: Real}
     JuMP.@objective(Q.m, Max, sum(Q.d[j] for j in Q.J) - sum(x[i]*Q.q[i] for i in Q.I))
-    #status = JuMP.solve(Q.m)
     status = JuMP.optimize!(Q.m)
     JuMP.objective_value(Q.m), Int[round(Int,JuMP.value(d)) for d in Q.d]
 

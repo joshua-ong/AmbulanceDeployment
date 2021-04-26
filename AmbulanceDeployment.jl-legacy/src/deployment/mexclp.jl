@@ -24,7 +24,6 @@ function MEXCLPDeployment(p::DeploymentProblem,
     J = 1:p.nregions
     K = 1:max_amb
 
-    #m = JuMP.Model(solver=solver)
     m = Model(GLPK.Optimizer)
     solver=Gurobi.Optimizer(OutputFlag=0, MIPGapAbs=0.9)
     JuMP.@variable(m, x[1:p.nlocations] >= 0, Int)
