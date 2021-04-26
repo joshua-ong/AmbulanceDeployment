@@ -6,13 +6,22 @@ using AmbulanceDeployment
 #using DataFrames, Winston, JLD, CSV, Gurobi, JuMP, GLPK
 
 function generate_deployment()
+
+    #=  inputs
+    hourly calls - file containing a subset of emergency calls in Travis County (calls / hour)
+    adjacent_nbhd - file containing a grid (neighborhoods x neighborhoods) which shows whether one neighborhood is adjacent to another
+    coverage - (station x neighborhood) matrix where C[i][j] = 1 if placing an ambulance at station[i] covers neighborhood[j]
+    incidents - master data containing all of the emergency calls mapping a call to a neighborhood
+    =#
     hourly_calls = CSV.File(PROJECT_ROOT * "/test/austin-data/Full_WeekdayCalls.csv") |> DataFrame
     adjacent_nbhd = CSV.File(PROJECT_ROOT * "/test/austin-data/adjacent_nbhd.csv") |> DataFrame
     coverage = CSV.read(PROJECT_ROOT * "/test/austin-data/coverage_real.csv", DataFrame, header=false)
     coverage = convert(Array{Bool, 2}, coverage[:, :])
     incidents = CSV.File(PROJECT_ROOT * "/test/austin-data/austin_incidents.csv") |> DataFrame
 
-
+    #=
+    
+    =#
     regions = Int[parse(Int,string(x)) for x in names(hourly_calls[:,6:ncol(hourly_calls)])]
     locations = collect(1:size(coverage,2))
     adjacent = convert(Array, adjacent_nbhd[:,2:ncol(adjacent_nbhd)])[regions,regions] .> 0.5
