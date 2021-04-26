@@ -23,6 +23,8 @@ using AmbulanceDeployment
         amb_deployment = solverstats["amb_deployment"]
         model_dict = Dict{String, Symbol}("Stochastic"=>:Stochastic, "Robust01"=>:Robust01, "Robust005"=>:Robust005, "Robust001"=>:Robust001, "Robust0001"=>:Robust0001,
         "Robust00001"=>:Robust00001, "MEXCLP"=>:MEXCLP, "MALP"=>:MALP)
+        test_calls = CSV.File(PROJECT_ROOT *"/test/austin-data/austin_test_calls.csv")|> DataFrame
+        test_calls = test_calls[1:ncalls,:]
 
         p = DeploymentProblem(
         hourly_calls,

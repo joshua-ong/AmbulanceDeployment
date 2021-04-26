@@ -8,7 +8,7 @@ abstract type DeploymentModel end
 
 abstract type DispatchModel end
 
-function respond_to!(redeploy::RedeployModel, i::Int, t::Int)
+#=function respond_to!(redeploy::RedeployModel, i::Int, t::Int)
     @assert length(redeploy.ambulances[i]) > 0 "$i: $(redeploy.ambulances[i])"
     amb = popfirst!(redeploy.ambulances[i])
     @assert amb != 0
@@ -69,3 +69,4 @@ function redirected!(redeploy::RedeployModel, amb::Int, t::Int)
     redeploy.status[amb] = :responding
     redeploy.fromtime[amb] = t
 end
+=#
