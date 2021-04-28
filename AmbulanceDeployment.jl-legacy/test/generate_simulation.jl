@@ -24,7 +24,11 @@ using AmbulanceDeployment
         model_dict = Dict{String, Symbol}("Stochastic"=>:Stochastic, "Robust01"=>:Robust01, "Robust005"=>:Robust005, "Robust001"=>:Robust001, "Robust0001"=>:Robust0001,
         "Robust00001"=>:Robust00001, "MEXCLP"=>:MEXCLP, "MALP"=>:MALP)
         test_calls = CSV.File(PROJECT_ROOT *"/test/austin-data/austin_test_calls.csv")|> DataFrame
+        # remember to reset number of calls
         test_calls = test_calls[1:ncalls,:]
+        #filtering out invalid neighborhoods
+
+        test_calls = filter(x->x[:neighborhood]>0,test_calls)
 
         p = DeploymentProblem(
         hourly_calls,
