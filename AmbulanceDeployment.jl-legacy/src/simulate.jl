@@ -116,7 +116,7 @@ function call_event!(
         @assert problem.available[i] >= 0
 
 
-        travel_time = ceil(Int, 60*2*problem.emergency_calls[id, Symbol("stn$(i)_min")])
+        travel_time = ceil(Int, 60*problem.emergency_calls[id, Symbol("stn$(i)_min")])
         @assert travel_time >= 0
         if(t != problem.emergency_calls[id, :arrival_seconds])
             print("This is a shortfall")
