@@ -98,7 +98,6 @@ function evaluate(Q::Qrobust, x::Vector{T}) where {T <: Real}
     JuMP.@objective(Q.m, Max, sum(Q.d[j] for j in Q.J) - sum(x[i]*Q.q[i] for i in Q.I))
     status = JuMP.optimize!(Q.m)
     JuMP.objective_value(Q.m), Int[round(Int,JuMP.value(d)) for d in Q.d]
-
 end
 
 function evaluate_objvalue(Q::Qrobust, x::Vector{T}) where {T <: Real}
@@ -188,39 +187,39 @@ function add_scenario(model::RobustDeployment, p::DeploymentProblem, scenario::V
     end
 end
 
-# function optimize!(model::RobustDeployment, p::DeploymentProblem; verbose=false, maxiter=params.maxiter, eps=params.ε)
-#     LB = 0.0
-#     UB, scenario = evaluate(model.Q, model.deployment[end])
-#     push!(model.lowerbounds, LB)
-#     push!(model.upperbounds, UB)
-#     push!(model.scenarios, scenario)
-#
-#     for k in 1:maxiter
-#         verbose && println("iteration $k: LB $LB, UB $UB")
-#         abs(UB - LB) < eps && break
-#         verbose && println("  solving Q with $(model.deployment[end])")
-#
-#         add_scenario(model, p, scenario)
-#         # tic()
-#         status = JuMP.optimize!(model.m)
-#         push!(model.lowtiming)
-#         #@assert status == :Optimal
-#
-#         LB = JuMP.objective_value(model.m)
-#
-#         push!(model.deployment, [round(Int,x) for x in JuMP.value.(model.x)])
-#
-#         #tic()
-#         shortfall, scenario = evaluate(model.Q, model.deployment[end])
-#         push!(model.upptiming)
-#         UB = min(UB, shortfall)
-#
-#         # for tracking convergence later
-#         push!(model.upperbounds, UB)
-#         push!(model.scenarios, scenario)
-#         push!(model.lowerbounds, LB)
-#     end
-# end
+function optimize_robust!(model::RobustDeployment, p::DeploymentProblem; verbose=false, maxiter=params.maxiter, eps=params.ε)
+    LB = 0.0
+    UB, scenario = evaluate(model.Q, model.deployment[end])
+    push!(model.lowerbounds, LB)
+    push!(model.upperbounds, UB)
+    push!(model.scenarios, scenario)
+
+    for k in 1:maxiter
+        verbose && println("iteration $k: LB $LB, UB $UB")
+        abs(UB - LB) < eps && break
+        verbose && println("  solving Q with $(model.deployment[end])")
+
+        add_scenario(model, p, scenario)
+        # tic()
+        status = JuMP.optimize!(model.m)
+        push!(model.lowtiming)
+        #@assert status == :Optimal
+
+        LB = JuMP.objective_value(model.m)
+
+        push!(model.deployment, [round(Int,x) for x in JuMP.value.(model.x)])
+
+        #tic()
+        shortfall, scenario = evaluate(model.Q, model.deployment[end])
+        push!(model.upptiming)
+        UB = min(UB, shortfall)
+
+        # for tracking convergence later
+        push!(model.upperbounds, UB)
+        push!(model.scenarios, scenario)
+        push!(model.lowerbounds, LB)
+    end
+end
 
 #Need to test for correct deployment with distribution
-optimize!(model::RobustDeployment, p::DeploymentProblem) = JuMP.optimize!(model.m)
+#optimize!(model::RobustDeployment, p::DeploymentProblem) = JuMP.optimize!(model.m)
