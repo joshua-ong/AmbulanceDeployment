@@ -8,6 +8,7 @@ currentpath = joshpath
 
 using AmbulanceDeployment
 using DataFrames, Winston, JLD, CSV, Gurobi, JuMP, GLPK, Dates
+using JSON
 
 function generate_robust()
     # hourly calls - regions x hours x number of calls/ per region per hour (e.g. 210 x 10000 x Z)
@@ -86,5 +87,21 @@ function generate_robust()
     lowerbounds[name][namb] = model.lowerbounds
     upptiming[name][namb] = model.upptiming
     lowtiming[name][namb] = model.lowtiming
+
+
+    solver_stats = Dict{String, Any}()
+    push!(solver_stats, "amb_deployment" => amb_deployment)
+    push!(solver_stats, "scenarios" => scenarios)
+    push!(solver_stats, "generated_deployment" => generated_deployment)
+    push!(solver_stats, "upperbounds" => upperbounds)
+    push!(solver_stats, "lowerbounds" => lowerbounds)
+    push!(solver_stats, "upptiming" => upptiming)
+    push!(solver_stats, "lowtiming" => lowtiming)
+    json_string = JSON.json(solver_stats)
+
+    open(string(PROJECT_ROOT , "/src/outputs/solver_stats_5_21.json"),"w") do f
+     write(f, json_string)
+    end
+
     model
 end

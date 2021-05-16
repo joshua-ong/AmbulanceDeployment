@@ -27,7 +27,8 @@ function StochasticDeployment(p::DeploymentProblem; nperiods=params.nperiods, to
 
     JuMP.@constraint(m, sum(x[i] for i=I) <= p.nambulances)
 
-    for j in J # coverage over all regions
+    # coverage over all regions
+    for j in J
         JuMP.@constraint(m, sum(x[i] for i in filter(i->p.coverage[j,i], I)) >= 1)
     end
 

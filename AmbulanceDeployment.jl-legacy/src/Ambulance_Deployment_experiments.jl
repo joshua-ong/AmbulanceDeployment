@@ -6,22 +6,14 @@ using AmbulanceDeployment
 #using DataFrames, Winston, JLD, CSV, Gurobi, JuMP, GLPK
 
 function generate_deployment()
-
-    #=  inputs
-    hourly calls - file containing a subset of emergency calls in Travis County (calls / hour)
-    adjacent_nbhd - file containing a grid (neighborhoods x neighborhoods) which shows whether one neighborhood is adjacent to another
-    coverage - (station x neighborhood) matrix where C[i][j] = 1 if placing an ambulance at station[i] covers neighborhood[j]
-    incidents - master data containing all of the emergency calls mapping a call to a neighborhood
-    =#
     hourly_calls = CSV.File(PROJECT_ROOT * "/test/austin-data/Full_WeekdayCalls.csv") |> DataFrame
+    # weekend_hourly_calls = CSV.File("data/processed/2-weekend_calls.csv") |> DataFrame
     adjacent_nbhd = CSV.File(PROJECT_ROOT * "/test/austin-data/adjacent_nbhd.csv") |> DataFrame
     coverage = CSV.read(PROJECT_ROOT * "/test/austin-data/coverage_real.csv", DataFrame, header=false)
     coverage = convert(Array{Bool, 2}, coverage[:, :])
     incidents = CSV.File(PROJECT_ROOT * "/test/austin-data/austin_incidents.csv") |> DataFrame
 
-    #=
-    
-    =#
+
     regions = Int[parse(Int,string(x)) for x in names(hourly_calls[:,6:ncol(hourly_calls)])]
     locations = collect(1:size(coverage,2))
     adjacent = convert(Array, adjacent_nbhd[:,2:ncol(adjacent_nbhd)])[regions,regions] .> 0.5
@@ -115,7 +107,9 @@ to 0=#
                 p.nambulances = namb
                 model = deployment_model(p)
                 set_optimizer(model.m, Gurobi.Optimizer)
+# solve(model, p)
                 @time AmbulanceDeployment.optimize!(model, p);
+#print("($(toq())) ")
                 amb_deployment[name][namb] = deployment(model)
 
 # for tracking purposes
@@ -130,21 +124,21 @@ to 0=#
     end
 
 
-    for (next_deployment_model, name) in ((next_dp -> StochasticDeployment(next_dp, nperiods=500), :Stochastic),
-                                 (next_dp -> MEXCLPDeployment(next_dp, 0.654), :MEXCLP),
-                                 (next_dp -> MALPDeployment(next_dp, 0.654), :MALP))
-    println("$name: ")
-    amb_deployment[name] = Dict{Int, Vector{Int}}()
-        for namb in 25:5:50
-            println("$namb ")
-            p.nambulances = namb
-            next_model = next_deployment_model(p)
-            set_optimizer(next_model.m, Gurobi.Optimizer)
-            @time AmbulanceDeployment.optimize!(next_model, p)
-            amb_deployment[name][namb] = deployment(next_model)
-        end
-        println()
-    end
+    # for (next_deployment_model, name) in ((next_dp -> StochasticDeployment(next_dp, nperiods=500), :Stochastic),
+    #                              (next_dp -> MEXCLPDeployment(next_dp, 0.654), :MEXCLP),
+    #                              (next_dp -> MALPDeployment(next_dp, 0.654), :MALP))
+    # println("$name: ")
+    # amb_deployment[name] = Dict{Int, Vector{Int}}()
+    #     for namb in 25:5:50
+    #         println("$namb ")
+    #         p.nambulances = namb
+    #         next_model = next_deployment_model(p)
+    #         set_optimizer(next_model.m, Gurobi.Optimizer)
+    #         @time AmbulanceDeployment.optimize!(next_model, p)
+    #         amb_deployment[name][namb] = deployment(next_model)
+    #     end
+    #     println()
+    # end
     solver_stats = Dict{String, Any}()
     push!(solver_stats, "amb_deployment" => amb_deployment)
     push!(solver_stats, "scenarios" => scenarios)
@@ -158,6 +152,5 @@ to 0=#
     open("src/outputs/solver_stats.json","w") do f
         write(f, json_string)
     end
-
 
 end
