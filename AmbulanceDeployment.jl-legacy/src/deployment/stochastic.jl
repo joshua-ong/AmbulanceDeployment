@@ -1,6 +1,6 @@
 #=
 Author : Ng Yeesian
-Modified : Guy Farmer
+Modified : Joshua Ong / Guy Farmer
 generates the stochastic deployment model
 =#
 struct StochasticDeployment <: DeploymentModel
@@ -27,7 +27,7 @@ function StochasticDeployment(p::DeploymentProblem; nperiods=params.nperiods, to
 
     JuMP.@constraint(m, sum(x[i] for i=I) <= p.nambulances)
 
-    # coverage over all regions
+    #Guarantees coverage for all regions
     for j in J
         JuMP.@constraint(m, sum(x[i] for i in filter(i->p.coverage[j,i], I)) >= 1)
     end
@@ -44,6 +44,7 @@ function StochasticDeployment(p::DeploymentProblem; nperiods=params.nperiods, to
         JuMP.@constraint(m, z[j,t] >= demand[t,j] - inflow)
     end
 
+    # any location can only house so many hospitals
     for i in I
         JuMP.@constraint(m, x[i] <= 5)
     end

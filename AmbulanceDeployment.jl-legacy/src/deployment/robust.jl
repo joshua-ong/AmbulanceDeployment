@@ -1,6 +1,6 @@
 #=
 Author : Ng Yeesian
-Modified : Guy Farmer / Michael Hilborn / Zander Tedjo
+Modified : Joshua Ong /Guy Farmer / Michael Hilborn
 generates the robust deployment model
 =#
 using AmbulanceDeployment
@@ -137,6 +137,7 @@ function RobustDeployment(p::DeploymentProblem; α=paramss.α)
     for j in J # coverage over all regions
         JuMP.@constraint(m, sum(x[i] for i in filter(i->p.coverage[j,i], I)) >= 1)
     end
+
     for i in I
         JuMP.@constraint(m, x[i] <= 5)
     end
@@ -166,13 +167,13 @@ function add_scenario(model::RobustDeployment, p::DeploymentProblem, scenario::V
     #     model.z[l][j] = JuMP.VariableRef(model.m, 0, Inf, :Int, String("z[$j,$l]"))
     # end
     for j in model.J
-               variable = @variable(model.m)
-               set_lower_bound(variable, 0)
-               set_upper_bound(variable, Inf)
-               set_integer(variable)
-               set_name(variable, String("z[$j,$l]"))
-               model.z[l][j] = variable
-           end
+       variable = @variable(model.m)
+       set_lower_bound(variable, 0)
+       set_upper_bound(variable, Inf)
+       set_integer(variable)
+       set_name(variable, String("z[$j,$l]"))
+       model.z[l][j] = variable
+   end
 
     # (1) η >= 1ᵀ(dˡ + Bᴶyˡ)^+
     JuMP.@constraint(model.m, model.η >= sum(model.z[l][j] for j=model.J) + tol*sum(model.y[l][i,j] for i=model.I, j=model.J))
@@ -221,5 +222,4 @@ function optimize_robust!(model::RobustDeployment, p::DeploymentProblem; verbose
     end
 end
 
-#Need to test for correct deployment with distribution
 #optimize!(model::RobustDeployment, p::DeploymentProblem) = JuMP.optimize!(model.m)
