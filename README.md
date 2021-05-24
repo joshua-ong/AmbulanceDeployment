@@ -17,7 +17,7 @@ In 2019-2020, Austin EMS (Emergency Medical Service) served a total of 246,809 c
 
 ## Introduction 
 
-![Overview](https://github.com/michaelhilborn/AmbulanceDeployment/blob/master/results/flowchar.png "Flowchart Overview")
+![Overview](https://github.com/michaelhilborn/AmbulanceDeployment/blob/master/results/flowchart.png "Flowchart Overview")
 
 <a name="Description"/>
 
