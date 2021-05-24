@@ -8,10 +8,13 @@ In 2019-2020, Austin EMS (Emergency Medical Service) served a total of 246,809 c
 ## Table of Contents 
 
 1. [Introduction](#Introduction)
-2. [Description](#Description)
-3. [How to install](#install)
-4. [How to run](#run)
-5. Credits
+3. [Austin EMS Data Preprocessing](#Austin)
+4. [Open Street Map](#Open)
+5. [Linear Program Solver](#Linear)
+6. [Simulation Engine](#Simulation)
+7. [Graphing](#Graphing)
+8. [GUI Package](#GUI)
+9. [Credits](#Credits)
 
 <a name="Introduction"/>
 
@@ -19,16 +22,28 @@ In 2019-2020, Austin EMS (Emergency Medical Service) served a total of 246,809 c
 
 ![Overview](https://github.com/michaelhilborn/AmbulanceDeployment/blob/master/results/flowchart.png "Flowchart Overview")
 
-<a name="Description"/>
+<a name="Austin"/>
 
-## Description 
+## Austin EMS Data Preprocessing 
 
-<a name="install"/>
+<a name="Open"/>
 
-## How to install
+## Open Street Map
 
-<a name="run"/>
+<a name="Linear"/>
 
-## How to run
+## Linear Program Solver
+
+<a name="Simulation"/>
+
+## Simulation Engine
+
+<a name="Graphing"/>
+
+## Graphing
+
+<a name="GUI"/>
+
+## GUI Package
 
 <a name="License"/>
