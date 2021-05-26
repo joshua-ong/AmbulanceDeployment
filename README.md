@@ -74,7 +74,7 @@ headers = {
 
 You will need Julia, Gurobi and jupyter notebooks. You can choose to run this code in Julia or jupyter notebooks. We suggest atom as an IDE for Julia. For a tutorial on how to install and run Julia and Gurobi reference here. 
 
-* Single_Robust and Single_Stochastic set PROJECT_ROOT =  the_directory_of_AmbulanceDeploymentLegacy.jl
+* For Single_Robust and Single_Stochastic set PROJECT_ROOT =  the_directory_of_AmbulanceDeploymentLegacy.jl
 
 ### Outputs
 
