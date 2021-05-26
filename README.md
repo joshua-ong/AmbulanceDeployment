@@ -28,7 +28,7 @@ In 2019-2020, Austin EMS (Emergency Medical Service) served a total of 246,809 c
 
 ### How to run
 
-You will need jupyter notebooks to run this code. If this is your first time using jupyter notebook, we recommend installing anaconda and jupyter notebook here (https://www.anaconda.com/products/individual).
+You will need python and jupyter notebooks to run this code. If this is your first time using jupyter notebook, we recommend installing anaconda and jupyter notebook here (https://www.anaconda.com/products/individual).
 
 In anaconda you can install the necessary packages to run this code by installing any missing packages, for example:
 
@@ -51,6 +51,13 @@ Note: to change the grid size, run the open street map module with a different g
 <a name="Open"/>
 
 ## Open Street Map
+
+### How to run
+
+You will need python and jupyter notebooks to run this code.
+
+### Outputs
+
 
 <a name="Linear"/>
 
