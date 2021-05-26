@@ -54,10 +54,17 @@ Note: to change the grid size, run the open street map module with a different g
 
 ### How to run
 
-You will need python and jupyter notebooks to run this code.
-
+You will need python and jupyter notebooks to run this code. You also will need an open service routing key which is free (https://openrouteservice.org/services/). In the line with the header, put in your API key.
+```python
+headers = {
+    'Accept': 'application/json, application/geo+json, application/gpx+xml, img/png; charset=utf-8',
+    'Authorization': 'YOUR_KEY_HERE',
+    'Content-Type': 'application/json; charset=utf-8'
+}
+```
 ### Outputs
 
+* create_regions: it uses census tract data to obtain travis county coordinates and then outputs travis county into a grid. We query from open street map to find the distance between any two grid points. This grid info is saved into a .json that goes into the Austin data preprocessing.
 
 <a name="Linear"/>
 
