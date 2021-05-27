@@ -135,10 +135,30 @@ Plotting is done in python and jupyter notebooks. To run, you need results from 
 
 ### How to run
 
-To run this website you need to run a react front end and a python backend. The react website will make calls to the python-flask website. 
-First you need to install [nvm](https://developpaper.com/how-to-install-and-use-nvm-in-windows/), [npm](https://www.npmjs.com/get-npm), and [yarn](https://yarnpkg.com/getting-started/install) for the react portion. Instructions may differ with operating system.
+To run this website you need to run a react front end and a python backend. 
+
+The react website will make calls to the python-flask website. 
+First you need to install [nvm](https://github.com/coreybutler/nvm-windows/releases), [npm](https://www.npmjs.com/get-npm), and [yarn](https://yarnpkg.com/getting-started/install) for the react portion. Instructions may differ with operating system. To run the react side,
+
+```command prompt
+cd your/project/directory/API
+yarn
+yarn start
+```
+
+Next install flask and any other packages you don't have in python.
+
+```command python
+cd your/project/directory/API
+flask run
+```
 
 ### Outputs
 
+After hosting both sites you should have a functioning visualization like this:
 
-<a name="License"/>
+![PDF](https://github.com/michaelhilborn/AmbulanceDeployment/blob/master/results/React.png "PDF")
+
+<a name="Credit"/>
+
+## Credit
