@@ -157,7 +157,7 @@ flask run
 
 After hosting both sites you should have a functioning visualization like this:
 
-![PDF](https://github.com/michaelhilborn/AmbulanceDeployment/blob/master/results/React.png "PDF")
+![PDF](https://github.com/michaelhilborn/AmbulanceDeployment/blob/master/results/react.png "PDF")
 
 <a name="Credit"/>
 
