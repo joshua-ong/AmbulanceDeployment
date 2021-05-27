@@ -72,7 +72,12 @@ headers = {
 
 ### How to run
 
-You will need Julia, Gurobi and jupyter notebooks. You can choose to run this code in Julia or jupyter notebooks. We suggest atom as an IDE for Julia. For a tutorial on how to install and run Julia and Gurobi reference [here.](https://github.com/michaelhilborn/AmbulanceDeployment/blob/master/documentation/gurobi.md)
+You will need Julia, Gurobi and jupyter notebooks. You can choose to run this code in Julia or jupyter notebooks. We suggest atom as an IDE for Julia. For a tutorial on how to install and run Julia and Gurobi reference [here.](https://github.com/michaelhilborn/AmbulanceDeployment/blob/master/documentation/gurobi.md) Add any packages you dont have in Julia like this:
+
+```julia
+using Pkg
+Pkg.add("Package Name")
+```
 
 * For Single_Robust and Single_Stochastic set PROJECT_ROOT =  the_directory_of_AmbulanceDeploymentLegacy.jl
 
@@ -82,9 +87,22 @@ You will need Julia, Gurobi and jupyter notebooks. You can choose to run this co
 * Single_Robust (jupyter notebook): solves a two-stage robust linear program using the column constraint method. It outputs the according optimal deployment x. It also outputs details about run time. Since the column constraint method is an iterative method, it outputs upper and lower bounds for each iteration. This is saved to a .json.
 * Ambulance_Deployment_experiments (Julia): solves classical models MALP,MEXCLP as well as the stochastic and robust deployments for [30,35,40,45,50] number of ambulances resulting in solving 20 linear programs. These are saved into a dict into a .json.
 
+
+```julia
+44-element Array{Int64,1}:
+ 2 2 1 1 1 0 1 2 2 0 0 0 0 ...  1 2 0 0 0 0 1 0 1 0 1 1
+```
 <a name="Simulation"/>
 
 ## Simulation Engine
+
+### How to run
+
+Again you can run these with jupyter notebooks or with Julia. 
+
+### Outputs
+
+*
 
 <a name="Graphing"/>
 
