@@ -135,15 +135,8 @@ Plotting is done in python and jupyter notebooks. To run, you need results from 
 
 ### How to run
 
-nvm
-https://developpaper.com/how-to-install-and-use-nvm-in-windows/
-npm
-https://www.npmjs.com/get-npm
-yarn
-https://yarnpkg.com/getting-started/install
-GUI
-https://www.w3schools.com/react/default.asp	
-
+To run this website you need to run a react front end and a python backend. The react website will make calls to the python-flask website. 
+First you need to install [nvm](https://developpaper.com/how-to-install-and-use-nvm-in-windows/), [npm](https://www.npmjs.com/get-npm), and [yarn](https://yarnpkg.com/getting-started/install) for the react portion. Instructions may differ with operating system.
 
 ### Outputs
 
