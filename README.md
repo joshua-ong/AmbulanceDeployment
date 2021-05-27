@@ -12,7 +12,7 @@ In 2019-2020, Austin EMS (Emergency Medical Service) served a total of 246,809 c
 4. [Open Street Map](#Open)
 5. [Linear Program Solver](#Linear)
 6. [Simulation Engine](#Simulation)
-7. [Graphing](#Graphing)
+7. [Graphing Plots](#Graphing)
 8. [GUI Package](#GUI)
 9. [Credits](#Credits)
 
@@ -98,19 +98,42 @@ Pkg.add("Package Name")
 
 ### How to run
 
-Again you can run these with jupyter notebooks or with Julia. 
+Again you can run these with jupyter notebooks (.ipynb) or in a Julia (.jl). To run on a new dataset replace (adjacent_nbhd, coverage, Full_weekday_calls, hospitals, and stations) in the the austin data folder. You may want to do this, for example, if you want to run data from another city or the same data with a different grid resolution.
 
 ### Outputs
 
-*
+* closestSimulation.ipynb or generate_simulation.jl runs the simulation on historical data given the optimal ambulance location and routing policy. It outputs details like 
+```julia
+calling event id: 1 time: 38 value: 83
+Ambulance has arrived on the scene for event 1 at time 338
+calling event id: 2 time: 575 value: 38
+calling event id: 3 time: 673 value: 129
+calling event id: 4 time: 691 value: 107
+Ambulance for event 1 has arrived at the hospital at time 1021
+```
+Which is outputed to a .csv for analysis and graphing, and a gui_event dataframe for the GUI.
 
 <a name="Graphing"/>
 
-## Graphing
+## Graphing Plots
+
+### How to run
+
+Plotting is done in python and jupyter notebooks. To run, you need results from the simulation enginge.
+
+### Outputs
+
+* visualization: Outputs a ton of graphs. Violin plots, probability distributions, ect.
+* Geographic Bubble Map: Outputs a visualization of the optimal deployment. (Cover image)
+
+![PDF](https://github.com/michaelhilborn/AmbulanceDeployment/blob/master/results/pdf.png "PDF")
+
 
 <a name="GUI"/>
 
 ## GUI Package
+
+### How to run
 
 nvm
 https://developpaper.com/how-to-install-and-use-nvm-in-windows/
@@ -120,5 +143,9 @@ yarn
 https://yarnpkg.com/getting-started/install
 GUI
 https://www.w3schools.com/react/default.asp	
+
+
+### Outputs
+
 
 <a name="License"/>
