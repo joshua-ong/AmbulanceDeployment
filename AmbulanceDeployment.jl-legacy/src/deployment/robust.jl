@@ -222,4 +222,5 @@ function optimize_robust!(model::RobustDeployment, p::DeploymentProblem; verbose
     end
 end
 
+#overriding optimize doesn't seem to work so I commented out this line.
 #optimize!(model::RobustDeployment, p::DeploymentProblem) = JuMP.optimize!(model.m)

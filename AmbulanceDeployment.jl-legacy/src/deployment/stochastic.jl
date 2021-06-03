@@ -6,6 +6,7 @@ generates the stochastic deployment model
 struct StochasticDeployment <: DeploymentModel
     m::JuMP.Model
     x::Vector{JuMP.VariableRef}
+    y::Array{JuMP.VariableRef,3}
 end
 deployment(m::StochasticDeployment) = [round(Int,x) for x in JuMP.value.(m.x)]
 
@@ -49,7 +50,7 @@ function StochasticDeployment(p::DeploymentProblem; nperiods=params.nperiods, to
         JuMP.@constraint(m, x[i] <= 5)
     end
 
-    StochasticDeployment(m, x)
+    StochasticDeployment(m, x, y)
 end
 
 optimize!(model::StochasticDeployment) = JuMP.optimize!(model.m)
