@@ -56,7 +56,8 @@
 5. Instantiate the package, calling 'Pkg.instantiate()'
     * Since we have a Manifest.toml file, this command will download all the packages declared in that manifest.
     * If all is going well here, this should download pretty much everything you need.  I did this a week ago, so my steps could be slightly out of order, but this command did most of the heavy lifting for me.
-6. Now, cd into the 'tests' directory, and call 'include(generate_simulation.jl)'
+6. Now, you can try running some code. Try running "using AmbulanceDeployment".
+7. cd into the 'src' directory, and call 'include("Single_Robust.jl")' and generate_robust().
     * You may get errors telling you to add a package.  Just do whatever the message says.
     * Keep adding packages and calling include again until you've downloaded all necessary packages
 
@@ -70,7 +71,7 @@
 3. Hit "]" to go into Pkg mode. Here, type "activate ."
 4. Go back to Julia mode by pressing backspace
 5. Pkg.instantiate()
-6. Pkg.add(name="Gurobi", version="0.8.1")
+6. Pkg.add(name="Gurobi", version="0.9.1")
 7. Pkg.build("Gurobi")
 8. using Gurobi
 9. cd into src
