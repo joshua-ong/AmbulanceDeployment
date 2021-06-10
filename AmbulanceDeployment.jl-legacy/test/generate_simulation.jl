@@ -3,6 +3,15 @@ Author : Guy Farmer, Michael Hilborn
 Runs simulations for all models (generated in Ambulance_Deployment_experiments.jl) and returns the data as a dictionary
 =#
 
+import JuMP, Gurobi
+import DataStructures: PriorityQueue, enqueue!, dequeue!
+import DataFrames: DataFrame, nrow
+import Distributions
+import DataStructures: PriorityQueue, enqueue!, dequeue!
+import Pkg
+import CSV, Query
+using Gurobi, CSV, Query, JuMP, Dates, JLD, GLPK
+using DataFrames, CSV, Random, Plots, JSON, Distributions
 
 using AmbulanceDeployment
 
