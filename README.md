@@ -24,6 +24,14 @@ In 2019-2020, Austin EMS (Emergency Medical Service) served a total of 246,809 c
 
 <a name="Austin"/>
 
+* Austin EMS Data Preprocessing- This program processes data like call location and call time into .csv's for the simulation. This code needs to be run if you would like to 1) add more call data 2) include more or fewer counties or change the map completely 3) increase or decrease map resolution
+* Open Street Map- This program calculates distances for the grid. This code needs to be run adjunct with EMS Data Preprocessing to change map constraints. 
+* Linear Program Solver- These programs optimize ambulance stationing and routing. Note you only need to run this code to optimize results once.
+* Simulation Engine- This program simulates a given ambulance strategy. This code can be run with different simulation parameters like which linear program solver to use
+* Graphing Plots- This program shows interesting results from simulation.
+* GUI Package- This is a prototype of what a GUI for EMS could like. We are still unsure of what features would be most useful for Austin EMS. Its main purpose was to demystify what an optimal model would look like.
+
+
 ## Austin EMS Data Preprocessing 
 
 ### How to run

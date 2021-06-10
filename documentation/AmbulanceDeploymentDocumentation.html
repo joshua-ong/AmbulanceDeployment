@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Ambulance Deployment Documentation</title>
+    <meta charset="windows-1252">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            background-color: SeaShell;
+            margin-top: 40px;
+            margin-right: 120px;
+            margin-bottom: 40px;
+            margin-left: 40px;
+        }
+
+        p {
+            font-size: 16px;
+        }
+
+        ol {
+            padding: 20px;
+        }
+
+        li {
+            padding: 5px;
+        }
+
+        td {
+            padding: 5px 15px 5px 20px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        button {
+            background-color: lightgreen;
+        }
+
+        h2 {
+            text-align: left;
+            background-color: burlywood;
+        }
+
+        h3 {
+            text-align: left;
+            background-color: thistle;
+        }
+
+        code {
+            background: #f4f4f4;
+            border: 1px solid #ddd;
+            border-left: 3px solid #f36d33;
+            color: #666;
+            page-break-inside: avoid;
+            font-family: monospace;
+            font-size: 15px;
+            line-height: 1.6;
+            margin-bottom: 1.6em;
+            max-width: 100%;
+            overflow: auto;
+            padding: 1em 1.5em;
+            display: block;
+            word-wrap: break-word;
+        }
+
+        kbd {
+            border-radius: 2px;
+            padding: 2px;
+            border: 1px solid black;
+        }
+
+        samp {
+            font-weight: bold;
+            letter-spacing: 2px;
+            color: DarkGray;
+        }
+    </style>
+</head>
+<body>
+    <h1>Commentary on installing the Ambulance Deployment program</h1>
+    <p>David Kulpanowski</p>
+    <p>2 June 2021</p>
+    <p>The following instructions describe how to set up the Ambulance Deployment program on a Windows 10 machine. If you are using Linux or MacOS your experience will be different.</p>
+    <h3>UT Good Systems Team&nbsp;&nbsp;|&nbsp;&nbsp;Joshua Ong&nbsp;&nbsp;|&nbsp;&nbsp;Ngoc Tran&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;</h3>
+    <p>I am reading your documentation and creating an html page to make it more explicit and easy to follow. </p>
+    <p>I am making  my way through the documentation and the project is nearly set up. However there are a few sticking points where I need your help.</p>
+    <ul>
+        <li>At the Open Street Map Routing Service <a href="#Problem1">here</a>, I have the key, but what do I do with it? There are numerous <em>ipynb</em> and <em>.jl</em> files in the project. Where does the key go?</li>
+        <li>Setting up Gurobi within the Julia environment but I am encountering error messages <a href="#Problem2">here</a>.</li>
+        <li>If there are mistakes in my documentation please feel free to correct them by modifying this html file. Rename it AmbulanceDeploymentDocumentation_v2.html and send it back to me.</li>
+        <li>Would it be useful to add Julia to the Anaconda Jupyter Notebook? Directions are <a href="https://datatofish.com/add-julia-to-jupyter/" target="_blank">here</a>.</li>
+        <li>What does Jupyter Notebook do that Python scripts cannot do?</li>
+    </ul>
+    <h2>Step 1.) Ambulance Deployment from Github</h2>
+
+    <p>I pull this github repo onto my local machine. On the <a href="https://github.com/joshua-ong/AmbulanceDeployment">Ambulance Deployment Github page</a> there is a green button labeled Code  with a drop-down arrow. <button type="button"><img src="AmbulanceDeploymentExhibits\file-arrow-down.svg" /> &nbsp; Code</button> Click it and choose Download Zip. Place the zip file in a convenient place of your choosing. Make note of where you store the file - you will need it later.</p>
+    <h4>Example of obtaining the Git hub repository.</h4>
+    <img src="AmbulanceDeploymentExhibits\PullThisGithubRepository.png" width="1000px" height="700px" />
+    <h3>Familiarize yourself with the contents of Ambulance Deployment-master</h3>
+    <p> Unzip the AmbulanceDeployment-master.zip file and open up each subfolder and look at the contents. These files can be opened in Jupyter Notebook or as a Notepad text file. Open each file and look at the code. Start to familiarize yourself with the project.</p>
+    <table>
+        <tr>
+            <td><img src="AmbulanceDeploymentExhibits\folder.svg" width="25px" height="25px" /></td>
+            <td>AmbulanceDeployment.jl-legacy</td>
+            <td>Contains Jupyter notebook files for plotting and testing. This appears to be the modelling files necessary for the optimization.</td>
+        </tr>
+        <tr>
+            <td><img src="AmbulanceDeploymentExhibits\folder.svg" width="25px" height="25px" /></td>
+            <td>Data_Preprocessing</td>
+            <td>Contains input and output file for census data, stations, hospitals, and grids. Jupyter notebooks and json files</td>
+        </tr>
+        <tr>
+            <td><img src="AmbulanceDeploymentExhibits\folder.svg" width="25px" height="25px" /></td>
+            <td>documentation</td>
+            <td>Contains a single file; A mark down page regarding the Gurobi installation</td>
+        </tr>
+        <tr>
+            <td><img src="AmbulanceDeploymentExhibits\folder.svg" width="25px" height="25px" /></td>
+            <td>Open_Street_Map</td>
+            <td>The census_tracts folder contains numerous text files. I don't understand what these are. A data-prep subfolder contains comma separated value files and Jupyter notebook files to process these data.</td>
+        </tr>
+        <tr>
+            <td><img src="AmbulanceDeploymentExhibits\folder.svg" width="25px" height="25px" /></td>
+            <td>results</td>
+            <td>A series of exhibits in png format showing output from the program.</td>
+        </tr>
+        <tr>
+            <td><img src="AmbulanceDeploymentExhibits\folder.svg" width="25px" height="25px" /></td>
+            <td></td>
+            <td>miscellaneous files such as a license and a read me markdown file.</td>
+        </tr>
+    </table>
+
+    <h2>Step 2.) Set up Anaconda</h2>
+    <p>In data science, the Anaconda distribution is widely used. If you don't already have this software it can be downloaded <a href="https://www.anaconda.com/">here</a>. Accept the default values for the program installation.</p>
+    <p>For this project you will be using Jupyter Notebooks extensively. Simply click the Launch button within the tab to open a notebook.</p>
+    <img src="AmbulanceDeploymentExhibits\AnacondaHome.png" width="900px" height="500px" /><br />
+
+
+    <h2>Step 3.) Set up Julia</h2>
+    <p>This project is has quite a steep learning curve because there are numerous computer programs working together. There are also files which need to placed in very specific locations on your computer. These would be license files, package files, data files, etc. </p>
+    <p>Download Julia from <a href="https://julialang.org/">here</a> and install it following the default prompts. In this documentation I am working with Julia 1.6.1.</p>
+    <p>If there is an icon on your desktop for Julia double click it to start the program. You will be confronted with a blinking cursor and ascii art. There is very little to to this IDE. If you are needing to write text files and examine the raw code then I would suggest the <a href="https://atom.io/">Atom IDE</a>. It is necessary to <a href="https://docs.julialang.org/en/v1/stdlib/REPL/">read the Julia documentation</a> before starting.</p>
+    <p>Inside the Julia shell I <strong>generate</strong> a new package called <em>AmbulanceDeployment</em>. Here are directions to make that happen followed by a screenshot.</p>
+    <ol>
+        <li><kbd>;</kbd> to get into the shell.</li>
+        <li><kbd>cd c:</kbd></li>
+        <li><kbd>cd .julia</kbd></li>
+        <li><kbd>backspace</kbd> to get out of the shell</li>
+        <li><kbd>]</kbd> to enter into the pkg mode of Julia</li>
+        <li><kbd>generate AmbulanceDeployment</kbd></li>
+        <li><kbd>backspace</kbd> to get out of the pkg mode</li>
+        <li><kbd>;</kbd> to get into a shell.</li>
+        <li><kbd>cd AmbulanceDeployment</kbd> demonstrates there is a file at the location <samp>C:\Users\em3124\.julia\AmbulanceDeployment</samp></li>
+        <li><kbd>backspace</kbd> to return to the Julia prompt</li>
+        <li><kbd>exit()</kbd> to close the program completely.</li>
+    </ol>
+    <h4>Example of setting up Julia.</h4>
+    <img src="AmbulanceDeploymentExhibits\SetupJulia.png" width="900px" height="500px" /><br />
+    <p>The AmbulanceDeployment package <strong style="color:DarkMagenta;">(Joshua: Is package the correct word?)</strong></p>
+    <p><strong>This section needs explicit direction. Instead of <em>click here</em> and <em>paste there</em> it should be a command prompt such as  or some other explicit statement.</strong></p>
+    <p>For example:&nbsp;&nbsp;<kbd>move c:\Temp\AmbulanceDeployment c:\users\em3124\.julia</kbd></p>
+    <ol>
+        <li>Using Windows Explorer navigate to your package. On my computer it is located at <samp>C:\Users\em3124\.julia</samp> where <em>em3124</em> is my unique Windows name. If you accepted the default prompts when installing the Julia software the location of the package should be similar.</li>
+        <li>right click on the folder "AmbulanceDeployment" and choose rename. You will rename this file to "AmbulanceDeployment.jl"</li>
+        <li>Open an additional Windows Explorer window. There are now two Windows Explorer windows open on your screen. Navigate to where you saved the AmbulanceDeployment zip file when you downloaded it from Github.</li>
+        <li>Double-click the AmbulanceDeployment-master folder to open it.</li>
+        <li>Double-click the AmbulanceDeployment.jl-legacy folder to open it.</li>
+        <li>There are three folders here (plots, src and test). There are also several files such as Manifest.toml, Project.toml, README.md and a few others. Using your mouse to select and copy them all. Or use <kbd>ctrl A</kbd> to select all the contents, then <kbd>ctrl C</kbd> to copy the contents.</li>
+        <li>Navigate back to <samp>C:\Users\&#60;YourWindowsUserName&#62;\.julia\AmbulanceDeployment.jl</samp> and paste the contents to this folder. You will receive a warning dialogue stating there are files with the same name. Choose to overwrite those files. Your file directory should look something similar to the following.</li>
+    </ol>
+    <img src="AmbulanceDeploymentExhibits\CopyPasteFiles.png" width="900px" height="500px" /><br />
+    <hr />
+
+    <h2>Step 4.) Set up Gurobi</h2>
+    <p>You will need a license file to use the Gurobi optimizer. An academic license will typically last for one semester. A trial version will work for a short while until you can make a <em>use-case</em> for the purchase of this optimization algorithm. The Gurobi software is available <a href="https://www.gurobi.com/">here</a>. This project currently uses 8.1 version however this tutorial recommends the 9.1 version of the software.</p>
+    <p>In this case the project is using an academic license. Your case may be different. Register at the Gurobi website for the software download and license. At the email address provided you will receive an email with instructions to install the license.</p>
+    <img src="AmbulanceDeploymentExhibits\GurobiLicense.png" width="900px" height="500px" />
+    <p>The email instructions direct you the install the license. In order to do this you will open a command prompt. On the keyboard press the <kbd>windows + R</kbd> and at the dialogue box type in <kbd>cmd</kbd> and hit enter. A blinking dos prompt will appear. You will <strong>not</strong> need to change the directory. In the email received from Gurobi there is an instruction paragraph: copy the text starting with <em>grbgetkey....</em> then navigate to the command prompt and paste the string of text into the blinking cursor and hit <kbd>enter</kbd> key.</p>
+    <p><kbd>c:\grbgetkey 9ca3dfec-c487-9999-99999-9999</kbd></p>
+    <p><kbd>enter</kbd></p>
+    <p>If the license installed succesfully you should receive a command prompt stating <br /><samp>The license was written to c:\users\em3124\gurobi.lic</samp> <br />Your location will be different.</p>
+    <ul>
+        <li>Open the Anaconda Navigator. Landing page shows a navigation pane on the left side. To the right are the applications available within the Anaconda environment. This is your entry point for data science within Anaconda. On the left side of this screen click on the Enrironments button.</li>
+        <li> There are three columns within Environment. On the left hand side of the screen are four buttons: Home, Environments, Learning and Community. the middle tab has a search bar for environments and a base(root) section with a right pointing arrow. The right section shows the packages already installed in this version of Anaconda.</li>
+        <li>In the middle section click the green right arrow for the base(root) section. A fly-out section will appear with four options. Choose the option for Open Terminal. A dialogue box with a blinking cursor will appear as shown below.</li>
+    </ul>
+    <img src="AmbulanceDeploymentExhibits\AnacondaEnvironment.png" width="900px" height="500px" />
+    <br />
+    <ul>
+        <li>At the command prompt you do not need to change the directory. The (default) is fine. Type in the command <kbd>pip install gurobipy</kbd> then hit the enter key.</li>
+    </ul>
+    <img src="AmbulanceDeploymentExhibits\PipInstallGurobipy.png" width="900px" height="500px" />
+    <br />
+    <ul>
+        <li>If you have Gurobi installed correctly using the previous instructions you should receive a screen showing Gurobipy was successfully installed.</li>
+    </ul>
+    <img src="AmbulanceDeploymentExhibits\GurobiPySuccessfullyInstalled.png" width="900px" height="500px" />
+    <br />
+
+
+
+
+    <h3>Verify Gurobi is integrated with Anaconda Python</h3>
+    <p>In order to verify gurobi is integrated with Anaconda download a python file. At the <a href="https://www.gurobi.com/documentation/9.1/examples/facility_py.html#subsubsection:facility.py">Gurobi website there are Python code examples</a>. I chose the example for <em>facility locations</em>.</p>
+    <p>Open the Anaconda Navigator and click the Launch button for the Spyder program.</p>
+    <img src="AmbulanceDeploymentExhibits\AnacondaLaunchSpyder.png" width="900px" height="500px" /><br />
+    <p><a href="https://www.gurobi.com/documentation/9.1/examples/facility_py.html#subsubsection:facility.py">From the website page</a> copy the Python code</p>
+    <p>Paste the Python code for the facility location problem into a new Spyder window. Save the program and click the green triangle pointing to the right or you can press the <kbd>F5</kbd> button on your keyboard. The top pane is the Python program and the bottom pane is the output of the program. If Gurobi is installed correctly on your machine the output should show the number of pencils and pens from the warehouse to the destination city.</p>
+    <p>If the console output shows an error message then that error will have to be fixed.</p>
+    <img src="AmbulanceDeploymentExhibits\SpyderIDE.png" width="900px" height="500px" /><br />
+    <p>By the way, Gurobi has <a href="https://www.gurobi.com/resource/mathematical-programming-tutorial-linear-programming/">tutorials</a> posted on their web site that are a great source of free education. Never stop learning.</p>
+
+
+
+
+
+
+    <h2>Step 5.) Set up Flask</h2>
+    <p>If you installed the latest version of Anaconda Distribution you would already have Flask installed on your machine. You can check this by opening Anaconda Navigator from the Windows Start menu. On the left hand side is button for Environments. Click this button and the main window will change to the following screenshot. At the Search Packages input box type in <kbd>flask</kbd>. </p>
+    <p>If flask is <strong>not</strong> installed on your distribution of Anaconda follow the steps similar to setting up Gurobi within Anaconda. Within the Environments tab of the Anaconda Navigator click the base(root) button and select <kbd>Open Terminal</kbd>. At the Terminal prompt type in <kbd>pip install flask</kbd>. This will install Flask as well as all the dependencies.</p>
+    <img src="AmbulanceDeploymentExhibits\FlaskInstalled.png" width="900px" height="500px" /><br />
+    <p>After you have Flask, you will need to install React.js and other dependencies.</p>
+    <h2>Step 6.) Set up Open Street Map Routing Service</h2>
+    <p>You will need a key for the routing service. This is available from <a href="https://openrouteservice.org/services/">Open Route Service</a> website.</p>
+    <p>At the head of the web page click the <em>Sign up</em> option. If you have a GitHub account you can use it here. Or you can create an account for this service.</p>
+    <p>After signing up for the service you will receive an email welcoming you. Within this email click on the hyperlink for API key to obtain the license you need to run the routing service.</p>
+    <img src="AmbulanceDeploymentExhibits\OpenRouteServiceEmail.png" width="600px" height="500px" /><br />
+    <p>The hyperlink will lead you back to the Open Route Service webpage and you will log back in if necessary. To request a token choose the drop-down menu and select <kbd>Free</kbd>, for the token name give it a name you can remember. In this case I named it <strong>AustinEMS</strong>. Then click the button on the bottom right side of the screen to <strong>Create Token</strong>. A long string of alpha-numeric text is listed on the web page. This long string of text is your token. You will paste this long string of text into the Jupyter Notebook/Python program.</p>
+    <p><a name="Problem1">Where does the key go?</a></p>
+    <img src="AmbulanceDeploymentExhibits\OpenRouteServiceTokenPage.png" width="800px" height="500px" /><br />
+    <h2>Step 7. Return to Julia to install Gurobi.</h2>
+    <p>Return to the Julia program.</p>
+    <ul>
+        <li>At the Julia prompt type <kbd>import Pkg</kbd> and hit enter</li>
+        <li>Within the Julia prompt type <kbd>Pkg.status()</kbd> This will generate a list of packages installed in Julia</li>
+        <li>At the Julia prompt type <kbd>Pkg.add("gurobi")</kbd> This will install the necessary Gurobi packages</li>
+        <li>At the Julia prompt type <kbd>Pkg.build("Gurobi")</kbd></li>
+        <li>At the Julia prompt type <kbd>using Gurobi</kbd></li>
+        <li>At the Julia prompt type <kbd>Gurobi</kbd> It will return <strong>Gurobi</strong> indicating the program installed correctly.</li>
+        <li>At the Julia prompt type <kbd>Gurobi.Model</kbd> This should return <strong>Gurobi.Model</strong> back to the terminal. Unfortunately I receive the following error at this step.</li>
+    </ul>
+    <img src="AmbulanceDeploymentExhibits\JuliaModelNotDefined.png" width="700px" height="600px" /><br />
+    <ul>
+        <li>At the Julia prompt type <kbd>;</kbd> This will lead you to the <samp>shell</samp> prompt</li>
+        <li>At the shell prompt type <kbd>cd c:</kbd> this will lead you to the root which in this case is <samp>c:\Users\em3124</samp> your computer will be different.</li>
+        <li>at the shell prompt type <kbd>cd .Julia</kbd> this will lead you to <samp>c:\Users\em3124\.Julia</samp></li>
+        <li>at the shell prompt type <kbd>cd AmbulanceDeployment.jl</kbd> this will return the project of <samp>c:\Users\em3124\.Julia\AmbulanceDeployment.jl</samp></li>
+        <li>within the shell prompt click the <kbd>backspace</kbd> key, which returns you to the Julia shell</li>
+        <li>At the Julia prompt type <kbd>Import Pkg</kbd></li>
+        <li><kbd>]</kbd> takes the user into Package mode</li>
+        <li><kbd>activity .</kbd> notice there is a space between the activity and the dot. This returns <samp>Activating environment at 'c:\Users\em3124\.Julia\AmbulanceDeployment.jl\Project.toml'</samp> Also notice the prompt has changed to <samp>(AmbulanceDeployment) pkg</samp></li>
+        <li>click the <kbd>backspace</kbd> key</li>
+        <li>At the Julia prompt type <kbd>Pkg.instantiate()</kbd> This generates a lot of output.</li>
+        <li><kbd>Package.add("Gurobi")</kbd> which returns an error message <samp>ERROR: UndefVarError: Package not defined stracktrace: [1] top-level scope @REPL[15]:1</samp></li>
+        <li>Or try this alternative <kbd>Pkg.add(name="Gurobi", version="0.9.13")</kbd> This generates a lot of output.</li>
+        <li><kbd>Pkg.build("Gurobi")</kbd> Returns an error message <samp>ERROR: The following package names could not be resolved: gurobi (not found in project or manifest)</samp></li>
+        <li><kbd>using Gurobi</kbd></li>
+        <li><kbd>;</kbd>go to the shell and cd into the src folder</li>
+        <li><kbd>cd src</kbd> returns to the folder <samp>c:\Users\em3124\.Julia\AmbulanceDeployment.jl\src</samp></li>
+        <li><kbd>backspace</kbd> key to exit the shell and back to the Julia prompt</li>
+        <li>run a file with <kbd>include(file_name)</kbd> for example: <kbd>include("Ambulance_Deployment_Experiments.jl")</kbd> This returns an error message</li>
+    </ul>
+    <a name="Problem2">How do I fix this error?</a>
+    <img src="AmbulanceDeploymentExhibits\JuliaIncludeError.png" width="1200px" height="800px" /><br />
+    <h3>Learning Curve! Commentary of David Kulpanowski</h3>
+    <p>The following will not be included in the documenation. It is here as an admission of the complexity of this project.</p>
+    <p>It is necessary to install the following programs as well as dependencies</p>
+    <ol>
+        <li>Anaconda: Using the Anaconda distribution it is necessary to learn Jupyter Notebooks. The files contained in this project are <em>ipynb</em> files and are distinct from the Python files you would normally write using the Spyder IDE.</li>
+        <li>Julia: Go over the tutorials before doing any work in this program. It is unlike any other computer program.<sup>Note 1.)</sup></li>
+        <li>Gurobi: It is necessary to either download a trial version of this software or obtain an academic license. Alternatively you can pay for a retail version of this software. In my case, since I am a life-long-learner I chose the academic license. I now have the choice to put the license file in the default location or a location of my choice. With a location of my choice, if I understand this correctly, I can put this license file on my desktop and on my laptop. However, this would make it necessary to point the software to the file. This adds to the complexity. Working with Eclipse IDE has taught me how complex setting up customized programming environments can be. My Gurobi license file ends on 02 August 2021.</li>
+        <li>Open Street Map license</li>
+        <li>Ambulance Deployment Git Hub files</li>
+        <li>Flask: Read the documentation before starting this project</li>
+        <li>Atom: I am aware of this IDE for use in editing html files. But it can also be used for Python and Julia. Configuration is necessary for these environments - adding to the learning curve.</li>
+        <li>React.js and other dependencies.</li>
+        <li>Not an installation, but rather a commentary. I have never worked with json files. I never need to; I have SQL Server and ArcGIS and Python dataframes.</li>
+        <li>Not an installation, but rather a commentary. I have never worked with markdown text. Everything I do is html.</li>
+        <li>A final commentary; If you have never worked with emergency medical services data before there is a learning curve. An understanding of the street level operations is necessary for this code to work. How else would you know what parameters to input? How else would you know which datasets to input and how to make a subset of the data available to the model? For what purpose are you optimizing the system?</li>
+    </ol>
+    <hr />
+    <p>These issues listed above are necessary for the project to run successfully. Each one of them is necessary for an end result. If you are missing one component the project will either not run or it may be incomplete.</p>
+    <h3>Future development</h3>
+    <p><strong>Team: </strong>Could this project be run completely in Python? Why is Julia necessary? Atom could also go away if you are not dealing with Julia. Also, could there be an open source solver? The ability to run all of the code in anaconda Python would be a huge relief. Obtaining a temporary Gurobi license would disappear. Dealing with Julia and the strange syntax and setup would disappear. This would leave Anaconda Python and Open Street Map Routing. </p>
+    <p>Removing Gurobi and Julia would make this project much simpler for a variety of reasons.</p>
+    <p>Python is not really built for GUI development, but there is  PyQT and widget programs for Python. A pure Python application would streamline everything. </p>
+    <p>I don't understand the concept of using Jupyter notebooks (See Note 1.) My concept would be to use Python (Spyder or IDLE IDE) and use PYODBC to link into the SQL Server database to derive your emergency events and supporting data such as time stamps and acuity. This would then be worked with as a Pandas dataframe. What does Notebooks get me?</p>
+    <p><strong>Team: </strong>There are several different sets of directions on the Github repository and they are written in the markdown syntax. Can we have one set of directions written in html or as pdf file.</p>
+    <p>Think of a way to <a href="https://www.algorist.co.uk/post/how-to-convert-jupyter-notebooks-to-python-script/">convert Jupyter Notebooks to Python code</a> run in Spyder</p>
+    <p><sup>Note 1.) </sup>Of course this is coming from a guy who thinks IDLE is a great way to write Python. I am a huge believer in simplicity.</p>
+
+    <!--<img src="AmbulanceDeploymentExhibits\AmbulanceDeploymentCouldNotBeFound.png" />-->
+    <!--<img src="AmbulanceDeploymentExhibits\FollowingPackagesCouldNotBeResolved.png" />-->
+    <!--<img src="AmbulanceDeploymentExhibits\UsingJupyterNotebook.png" />-->
+</body>
+</html>
