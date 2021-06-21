@@ -7,7 +7,6 @@ import JuMP, Gurobi
 import DataStructures: PriorityQueue, enqueue!, dequeue!
 import DataFrames: DataFrame, nrow
 import Distributions
-import DataStructures: PriorityQueue, enqueue!, dequeue!
 import Pkg
 import CSV, Query
 using Gurobi, CSV, Query, JuMP, Dates, JLD, GLPK
