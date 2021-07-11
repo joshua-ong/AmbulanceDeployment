@@ -6,3 +6,6 @@ AmbulanceDeployment.jl-legacy/Project.toml
 Input_Data
 Output_Data
 .csv
+*.toml
+AmbulanceDeployment.jl-legacy/Manifest.toml
+*.csv

@@ -2,7 +2,14 @@
 Author : Guy Farmer
 generates a distribution of ambulances for various ambulance counts and stores to a jld file
 =#
+<<<<<<< Updated upstream
 using AmbulanceDeployment
+=======
+#using AmbulanceDeployment
+using DataFrames, Winston, JLD, CSV, Gurobi, JuMP
+using JLD, JSON
+
+>>>>>>> Stashed changes
 
 hourly_calls = CSV.File("../test/austin-data/Full_WeekdayCalls.csv") |> DataFrame
 adjacent_nbhd = CSV.File("../test/austin-data/adjacent_nbhd.csv") |> DataFrame
