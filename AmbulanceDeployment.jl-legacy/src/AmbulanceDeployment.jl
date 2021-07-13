@@ -13,7 +13,8 @@ module AmbulanceDeployment
     import Pkg
     import CSV, Query
     using Gurobi, CSV, Query, JuMP, Dates, JLD, GLPK
-    using DataFrames, CSV, Random, Plots,JSON, Distributions
+    using DataFrames, CSV, Random, JSON, Distributions #Plots
+
 
     const PROJECT_ROOT = pkgdir(AmbulanceDeployment)
 
@@ -28,7 +29,7 @@ module AmbulanceDeployment
     include("deployment/malp.jl")
     include("deployment/mexclp.jl")
     include("plot.jl")
-    include("Ambulance_Deployment_experiments.jl")
+    #include("Ambulance_Deployment_experiments.jl")
     include("Single_Robust.jl")
 
     export

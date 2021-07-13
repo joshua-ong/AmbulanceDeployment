@@ -81,48 +81,6 @@ to 0=#
 
 ## make sure to include @time begin
 
-
-<<<<<<< Updated upstream
-    scenarios = Dict{Symbol, Dict{Int, Vector{Vector{Int}}}}()
-    generated_deployment = Dict{Symbol, Dict{Int, Vector{Vector{Int}}}}()
-    upperbounds = Dict{Symbol, Dict{Int, Vector{Float64}}}()
-    lowerbounds = Dict{Symbol, Dict{Int, Vector{Float64}}}()
-    upptiming = Dict{Symbol, Dict{Int, Vector{Float64}}}()
-    lowtiming = Dict{Symbol, Dict{Int, Vector{Float64}}}()
-    amb_deployment = Dict{Symbol, Dict{Int, Vector{Int}}}()
-    for(deployment_model, name) in ((dp -> RobustDeployment(dp, α=0.1), :Robust01),
-                          (dp -> RobustDeployment(dp, α=0.05), :Robust005),
-                          (dp -> RobustDeployment(dp, α=0.01), :Robust001),
-                          (dp -> RobustDeployment(dp, α=0.001), :Robust0001),
-                          (dp -> RobustDeployment(dp, α=0.0001), :Robust00001))
-        println("$name: ")
-        amb_deployment[name] = Dict{Int, Vector{Int}}()
-        scenarios[name] = Dict{Int, Vector{Vector{Int}}}()
-        generated_deployment[name] = Dict{Int, Vector{Vector{Int}}}()
-        upperbounds[name] = Dict{Int, Vector{Float64}}()
-        lowerbounds[name] = Dict{Int, Vector{Float64}}()
-        upptiming[name] = Dict{Int, Vector{Float64}}()
-        lowtiming[name] = Dict{Int, Vector{Float64}}()
-            for namb in 30:5:50
-                println("$namb ")
-                p.nambulances = namb
-                model = deployment_model(p)
-                set_optimizer(model.m, Gurobi.Optimizer)
-# solve(model, p)
-                @time AmbulanceDeployment.optimize!(model, p);
-#print("($(toq())) ")
-                amb_deployment[name][namb] = deployment(model)
-
-# for tracking purposes
-                scenarios[name][namb] = model.scenarios
-                generated_deployment[name][namb] = model.deployment
-                upperbounds[name][namb] = model.upperbounds
-                lowerbounds[name][namb] = model.lowerbounds
-                upptiming[name][namb] = model.upptiming
-                lowtiming[name][namb] = model.lowtiming
-            end
-            println()
-=======
 scenarios = Dict{Symbol, Dict{Int, Vector{Vector{Int}}}}()
 generated_deployment = Dict{Symbol, Dict{Int, Vector{Vector{Int}}}}()
 upperbounds = Dict{Symbol, Dict{Int, Vector{Float64}}}()
@@ -160,7 +118,6 @@ for(deployment_model, name) in ((dp -> RobustDeployment(dp, α=0.1), :Robust01),
         lowerbounds[name][namb] = model.lowerbounds
         upptiming[name][namb] = model.upptiming
         lowtiming[name][namb] = model.lowtiming
->>>>>>> Stashed changes
     end
     println
 end

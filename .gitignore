@@ -9,3 +9,10 @@ Output_Data
 *.toml
 AmbulanceDeployment.jl-legacy/Manifest.toml
 *.csv
+AmbulanceDeployment.jl-legacy/Manifest.toml
+AmbulanceDeployment.jl-legacy/Project.toml
+*.toml
+.ipynb_checkpoints
+*/.ipynb_checkpoints/*
+AmbulanceDeployment.jl-legacy/test/austin-data/Austin_Data_big/team_stats.jld
+*.zip

@@ -25,14 +25,19 @@ function DeploymentProblem(
         namb = 30,
         train_filter = (hourly_calls[:year] .== 2020) .* (hourly_calls[:month] .<= 3)
     )
-    regions = Int[parse(Int,string(x)) for x in names(hourly_calls[!,6:end])]
+    regions = Int[parse(Int,string(x)) for x in names(hourly_calls[!,6:end-1])]
     locations = collect(1:size(coverage,2))
-    adjacent = convert(Array, adjacent_nbhd[!,2:end])[regions,regions] .> 0.5
-    demand = convert(Array,hourly_calls[:,6:end])
+    adjacent = Matrix(adjacent_nbhd[!,2:end])
+    adjacent = adjacent[regions,regions] .> 0.5
+    #adjacent = convert(Array, adjacent_nbhd[!,2:end])[regions,regions] .> 0.5 #convert is deprecated
+    demand = Matrix(hourly_calls[:,6:end])
+    #demand = convert(Array,hourly_calls[:,6:end]) #convert is deprecated
 
     indices = 1:nrow(hourly_calls)
     train_indices = indices[train_filter]
     test_indices = indices[.!train_filter]
+
+    #print(coverage[:,:],)
 
     DeploymentProblem(
         namb,
@@ -41,7 +46,7 @@ function DeploymentProblem(
         demand,
         train_indices,
         test_indices,
-        coverage[regions,:],
+        coverage[:,:],
         Array{Bool,2}(adjacent)
     )
 end
@@ -78,7 +83,7 @@ end
 
 
 function initialize!(problem::DispatchProblem, deployment::Vector{Int})
-    problem.wait_queue = [Int[] for i in 1:size(problem.coverage,1)]
+    problem.wait_queue = [Int[] for i in 1:size(problem.coverage,2)]
     problem.available = copy(deployment)
     problem.deployment = deepcopy(deployment)
     problem.redeploy_events = Tuple{Int,Int,Int,Int}[]
