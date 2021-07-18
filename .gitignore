@@ -61,3 +61,6 @@ AmbulanceDeployment.jl-legacy/Project.toml
 .idea/misc.xml
 AmbulanceDeployment.jl-legacy/Manifest.toml
 AmbulanceDeployment.jl-legacy/test/austin_data/Austin_Data_big/team_stats.jld
+AmbulanceDeployment.jl-legacy/Manifest.toml
+AmbulanceDeployment.jl-legacy/Project.toml
+AmbulanceDeployment.jl-legacy/test/.ipynb_checkpoints/closestSimulation-checkpoint.ipynb
