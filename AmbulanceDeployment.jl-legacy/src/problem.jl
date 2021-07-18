@@ -19,25 +19,37 @@ mutable struct DeploymentProblem
 end
 
 function DeploymentProblem(
+        nregions::Int,
         hourly_calls::DataFrame,
         adjacent_nbhd::DataFrame,
         coverage::Array{Bool,2}; #!! changed from original !!
         namb = 30,
         train_filter = (hourly_calls[:year] .== 2020) .* (hourly_calls[:month] .<= 3)
     )
-    regions = Int[parse(Int,string(x)) for x in names(hourly_calls[!,6:end-1])]
+    #regions = Int[parse(Int,string(x)) for x in names(hourly_calls[!,6:end - 8])]
+    regions = collect(1:nregions) #recall julia indexes from 1
     locations = collect(1:size(coverage,2))
-    adjacent = Matrix(adjacent_nbhd[!,2:end])
+    adjacent = Matrix(adjacent_nbhd[!,2:end]) #adjacent = convert(Array, adjacent_nbhd[!,2:end])[regions,regions] .> 0.5
     adjacent = adjacent[regions,regions] .> 0.5
-    #adjacent = convert(Array, adjacent_nbhd[!,2:end])[regions,regions] .> 0.5 #convert is deprecated
-    demand = Matrix(hourly_calls[:,6:end])
-    #demand = convert(Array,hourly_calls[:,6:end]) #convert is deprecated
+    #adjacent = adjacent[1,:,1,:] #the previous bit operation changes the shape to 1x200x1x200
+
+    demand = Matrix(hourly_calls[:,6:7]) #demand = convert(Array,hourly_calls[:,6:end]) #convert is deprecated
+
 
     indices = 1:nrow(hourly_calls)
     train_indices = indices[train_filter]
     test_indices = indices[.!train_filter]
 
-    #print(coverage[:,:],)
+    println(namb)
+    println(length(locations))
+    println(length(regions))
+    println(size(demand))
+    println(size(train_indices))
+    println(size(test_indices))
+    println(size(coverage[:,:]))
+    println(typeof(coverage))
+    println(size(Array{Bool,2}(adjacent)))
+    println(typeof(adjacent))
 
     DeploymentProblem(
         namb,

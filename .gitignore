@@ -56,3 +56,8 @@ Data_Preprocessing/Input_Data/grid_info_smaller.json
 Data_Preprocessing/Input_Data/grid_info_smaller_2018.json
 Data_Preprocessing/Input_Data/grid_info_smaller_2018_fips.json
 Data_Preprocessing/Input_Data/grid_info_smaller_scaled.json
+AmbulanceDeployment.jl-legacy/Manifest.toml
+AmbulanceDeployment.jl-legacy/Project.toml
+.idea/misc.xml
+AmbulanceDeployment.jl-legacy/Manifest.toml
+AmbulanceDeployment.jl-legacy/test/austin_data/Austin_Data_big/team_stats.jld
