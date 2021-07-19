@@ -77,7 +77,17 @@ def unit_test_compare_travel_times(g, g2):
     plt.show()
     return
 
+def unit_test_testcall_coverage(calls, coverage, test_name): 
+    nsamples = 1000
+    for i in range(1,nsamples):
+        nbhd = calls[i,1]
+        nbhd_coverage = np.sum(coverage_3200_r[:,int(nbhd)])   
+        print(nbhd_coverage)
+    return
 
+##############
+#LOAD ALL DATA
+##############
 # Using old distance matrix to get an idea of how close we are (?)
 with open("../Input_Data/grid_info_3200_v2.json", "r") as f:
     grid_json = json.load(f)
@@ -94,10 +104,17 @@ adjacent_3200 = (np.genfromtxt("../Output_Data/austin_data_3200/adjacent_nbhd.cs
 coverage_210 = (np.genfromtxt("../Output_Data/austin_data/coverage.csv", delimiter=","))
 coverage_210 = coverage_210[1:,1:] #take off header row and column.
 coverage_3200_r = (np.genfromtxt("../Output_Data/austin_data_3200/coverage_regression.csv", delimiter=","))
-coverage_3200_r = coverage_3200_r[1:,1:] 
+coverage_3200_r = coverage_3200_r[1:,1:] #take off header row and column.
+
+calls = (np.genfromtxt("../Output_Data/austin_data_3200/austin_test_calls_v3.csv", delimiter=","))
+
+##############
+#UNIT TEST
+##############
 
 # unit_test_adjacent_file_size(g_lil, adjacent_210)
-unit_test_compare_coverage_percentage(coverage_210,coverage_3200_r)
 #unit_test_compare_travel_times(g_lil,g_big) #takes a long time to flatten
-  
+#unit_test_compare_coverage_percentage(coverage_210,coverage_3200_r)
+#unit_test_compare_coverage_percentage(coverage_210,coverage_3200_r)
+unit_test_testcall_coverage(calls,coverage_3200_r,"3200 test call coverage")
 print("hello world")
