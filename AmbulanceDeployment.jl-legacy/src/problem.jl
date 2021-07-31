@@ -40,16 +40,16 @@ function DeploymentProblem(
     train_indices = indices[train_filter]
     test_indices = indices[.!train_filter]
 
-    println(namb)
-    println(length(locations))
-    println(length(regions))
-    println(size(demand))
-    println(size(train_indices))
-    println(size(test_indices))
-    println(size(coverage[:,:]))
-    println(typeof(coverage))
-    println(size(Array{Bool,2}(adjacent)))
-    println(typeof(adjacent))
+    # println(namb)
+    # println(length(locations))
+    # println(length(regions))
+    # println(size(demand))
+    # println(size(train_indices))
+    # println(size(test_indices))
+    # println(size(coverage[:,:]))
+    # println(typeof(coverage))
+    # println(size(Array{Bool,2}(adjacent)))
+    # println(typeof(adjacent))
 
     DeploymentProblem(
         namb,
