@@ -11,7 +11,7 @@ struct robustGamma
     _regional::Vector{Int}
     _global::Int
 end
-paramss = Params(0.01, 0.5, 1e-6, 500, 50)
+params = Params(0.01, 0.5, 1e-6, 500, 50)
 struct Qrobust
     m::JuMP.Model
     I::UnitRange{Int}
@@ -57,6 +57,7 @@ function Gamma(p::DeploymentProblem; α=paramss.α)
     γ_local = [quantile(Poisson(mean(sum(demand[:,vec(p.adjacency[i,:])]))),1-α) for i=1:p.nregions]
     γ_regional = [quantile(Poisson(mean(sum(demand[:,p.coverage[:,i]]))),1-α) for i in 1:p.nlocations]
     γ_global = quantile(Poisson(mean(sum(demand))),1-α)
+    print("gamma global " * string(γ_global) )
     robustGamma(γ_single,γ_local,γ_regional,γ_global)
 end
 
@@ -65,6 +66,7 @@ function Qrobust(problem::DeploymentProblem; α=paramss.α, verbose=false, solve
         solver=Gurobi.Optimizer(OutputFlag=1) #, MIPGapAbs=0.9)
     end
     γ = Gamma(problem, α=α)
+    print("gamma global " * string(γ) )
     upp_bound = maximum(γ._single)
     I = 1:problem.nlocations
     J = 1:problem.nregions
