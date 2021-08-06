@@ -26,6 +26,7 @@ module AmbulanceDeployment
     include(PROJECT_ROOT * "/test/generate_simulation.jl")
     include("deployment/robust.jl")
     include("deployment/stochastic.jl")
+    include("deployment/stochastic_hyp.jl")
     include("deployment/malp.jl")
     include("deployment/mexclp.jl")
     include("plot.jl")
@@ -55,6 +56,7 @@ module AmbulanceDeployment
            generate_simulation,
            PROJECT_ROOT,
            optimize!,
-           generate_deployment
-
+           generate_deployment,
+           DeploymentModel,
+           StochasticDeployment_hyp
 end

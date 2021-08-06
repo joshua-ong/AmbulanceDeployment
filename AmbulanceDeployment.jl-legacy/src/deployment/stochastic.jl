@@ -3,10 +3,12 @@ Author : Ng Yeesian
 Modified : Joshua Ong / Guy Farmer
 generates the stochastic deployment model
 =#
+
 struct StochasticDeployment <: DeploymentModel
     m::JuMP.Model
     x::Vector{JuMP.VariableRef}
     y::Array{JuMP.VariableRef,3}
+
 end
 deployment(m::StochasticDeployment) = [round(Int,x) for x in JuMP.value.(m.x)]
 
