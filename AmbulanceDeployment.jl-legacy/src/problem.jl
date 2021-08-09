@@ -134,10 +134,8 @@ end
 struct Params
     α::Float64 # Probabilistic Guarantee
     ε::Float64 # Convergence
-    δ::Float64 # Solver Tolerance
-
-    nperiods::Int # for StochasticDeployment
-
+    δ::Float64 # Solver
+    nperiods::Int # for 
     maxiter::Int # for RobustDeployment
 end
 params = Params(0.01, 0.5, 1e-6, 500, 50)

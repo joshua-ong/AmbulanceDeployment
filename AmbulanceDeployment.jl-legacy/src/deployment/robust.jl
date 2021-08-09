@@ -43,7 +43,7 @@ struct RobustDeployment <: DeploymentModel
 end
 deployment(m::RobustDeployment) = m.deployment[end]
 
-function Gamma(p::DeploymentProblem; α=paramss.α)
+function Gamma(p::DeploymentProblem; α=params.α)
     demand = p.demand[p.train,:]
     γ_single = Any[] # vec(maximum(demand,1) + 1 *(maximum(demand,1) .== 0))
 
@@ -54,14 +54,17 @@ function Gamma(p::DeploymentProblem; α=paramss.α)
         end
         push!(γ_single,y)
     end
-    γ_local = [quantile(Poisson(mean(sum(demand[:,vec(p.adjacency[i,:])]))),1-α) for i=1:p.nregions]
-    γ_regional = [quantile(Poisson(mean(sum(demand[:,p.coverage[:,i]]))),1-α) for i in 1:p.nlocations]
-    γ_global = quantile(Poisson(mean(sum(demand))),1-α)
+    total_hours = 300 #size(demand)[1]
+    γ_local = [quantile(Poisson(mean(sum(demand[:,vec(p.adjacency[i,:])]) / total_hours )),1-α) for i=1:p.nregions]
+    γ_regional = [quantile(Poisson(mean(sum(demand[:,p.coverage[:,i]])/ total_hours)),1-α) for i in 1:p.nlocations]
+    γ_global = quantile(Poisson(mean(sum(demand) / total_hours )),1-α) #way to many calls possible so I added to dicide by demand
     print("gamma global " * string(γ_global) )
     robustGamma(γ_single,γ_local,γ_regional,γ_global)
 end
 
-function Qrobust(problem::DeploymentProblem; α=paramss.α, verbose=false, solver=Gurobi.Optimizer(OutputFlag=0)) #, MIPGapAbs=0.9)
+
+
+function Qrobust(problem::DeploymentProblem; α=params.α, verbose=false, solver=Gurobi.Optimizer(OutputFlag=0)) #, MIPGapAbs=0.9)
     if verbose
         solver=Gurobi.Optimizer(OutputFlag=1) #, MIPGapAbs=0.9)
     end
@@ -109,9 +112,9 @@ function evaluate_objvalue(Q::Qrobust, x::Vector{T}) where {T <: Real}
 end
 
 
-function RobustDeployment(p::DeploymentProblem; α=paramss.α)
-     eps=paramss.ε
-     tol=paramss.δ
+function RobustDeployment(p::DeploymentProblem; α=params.α)
+     eps=params.ε
+     tol=params.δ
      m = Model(GLPK.Optimizer)
      solver=Gurobi.Optimizer(OutputFlag=0, MIPGapAbs=0.9)
      #JuMP.set_optimizer_attribute(m,MOI.TimeLimitSec(), 30)
@@ -149,7 +152,7 @@ function RobustDeployment(p::DeploymentProblem; α=paramss.α)
                      Vector{Int}[warmstart], Vector{Float64}(), Vector{Float64}())
 end
 
-function add_scenario(model::RobustDeployment, p::DeploymentProblem, scenario::Vector{T}; tol=paramss.δ) where {T <: Real}
+function add_scenario(model::RobustDeployment, p::DeploymentProblem, scenario::Vector{T}; tol=params.δ) where {T <: Real}
     # Create variables yˡ
     push!(model.y, Array{VariableRef}(undef,(p.nlocations,p.nregions)))
     l = length(model.y)

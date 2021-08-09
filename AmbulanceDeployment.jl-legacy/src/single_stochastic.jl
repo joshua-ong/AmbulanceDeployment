@@ -21,7 +21,7 @@ coverage = Matrix(coverage);
 coverage = convert(Array{Bool, 2}, coverage[:, :]);
 adjacent = Matrix(adjacent_nbhd[!,2:end]);
 adjacent = adjacent[regions,regions] .> 0.5;
-demand = Matrix(hourly_calls[!,5:end]); #we were trimming first 6 collumns but it seems to me it only the first contain ex
+demand = Matrix(hourly_calls[!,5:end-1]); #we were trimming first 6 collumns but it seems to me it only the first contain ex
 
 #= previously there was an error that didnt account for all the regions because it
  it only included regions for incidents. the regions without incidents are changed
@@ -62,4 +62,8 @@ println("time for model solution - stochastic $namb ambulances")
 @time AmbulanceDeployment.optimize!(model, p)
 #@time AmbulanceDeployment.StochasticDeployment_hyp!(model, p, extra_amb = 1)
 
+#deployment(m::StochasticDeployment) = [round(Int,x) for x in JuMP.getValue(m.x)]
+#deployment2(m::StochasticDeployment_hyp) = [round(Int,x) for x in JuMP.getValue(m.x)]
 amb_deployment[name][namb] = deployment(model)
+
+#[0.0, 0.0, 0.0, -0.0, 0.0, 0.0, 0.0, -0.0, -0.0, 0.0, -0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.0, 0.0]

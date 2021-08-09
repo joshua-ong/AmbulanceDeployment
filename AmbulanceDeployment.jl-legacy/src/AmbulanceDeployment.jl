@@ -27,6 +27,7 @@ module AmbulanceDeployment
     include("deployment/robust.jl")
     include("deployment/stochastic.jl")
     include("deployment/stochastic_hyp.jl")
+    include("deployment/stochastic_rem.jl")
     include("deployment/malp.jl")
     include("deployment/mexclp.jl")
     include("plot.jl")
@@ -58,5 +59,6 @@ module AmbulanceDeployment
            optimize!,
            generate_deployment,
            DeploymentModel,
-           StochasticDeployment_hyp
+           StochasticDeployment_hyp,
+           StochasticDeployment_rem
 end

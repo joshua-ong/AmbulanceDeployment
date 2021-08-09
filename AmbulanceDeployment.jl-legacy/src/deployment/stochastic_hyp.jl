@@ -9,7 +9,7 @@ struct StochasticDeployment_hyp <: DeploymentModel
     y::Array{JuMP.VariableRef,3}
     slack::Vector{JuMP.VariableRef}
 end
-deployment(m::StochasticDeployment) = [round(Int,x) for x in JuMP.value.(m.x)]
+deployment(m::StochasticDeployment_hyp) = [round(Int,x) for x in JuMP.value.(m.x)]
 
 function StochasticDeployment_hyp(p::DeploymentProblem; nperiods=params.nperiods, tol=params.δ,
     solver=Gurobi.Optimizer(OutputFlag=0), extra_amb = 1)
@@ -33,9 +33,9 @@ function StochasticDeployment_hyp(p::DeploymentProblem; nperiods=params.nperiods
 
     #ensure new solution is within slack of the old x.
     for i in I #collect(1:44)
-        JuMP.@constraint(m, x[i] + slack[i] == old_x[i]);
+        JuMP.@constraint(m, x[i] - slack[i] == old_x[i]);
     end
-    JuMP.@constraint(m, sum(slack[i] for i in I) == 1) #make sure slack is the +/- n ambulances of the old solution
+    JuMP.@constraint(m, sum(slack[i] for i in I) == extra_amb) #make sure slack is the +/- n ambulances of the old solution
 
     #Guarantees coverage for all regions
     for j in J
